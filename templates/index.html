@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>物联网数据大屏 - LoRa传感器监控</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0ea5e9',
+                        secondary: '#06b6d4',
+                        accent: '#3b82f6',
+                        dark: '#0f172a',
+                        light: '#f8fafc'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .text-shadow {
+                text-shadow: 0 0 10px rgba(14, 165, 233, 0.5);
+            }
+            .text-shadow-lg {
+                text-shadow: 0 0 20px rgba(14, 165, 233, 0.7);
+            }
+            .glow {
+                box-shadow: 0 0 20px rgba(14, 165, 233, 0.3);
+            }
+            .glow-lg {
+                box-shadow: 0 0 30px rgba(14, 165, 233, 0.5);
+            }
+            .grid-bg {
+                background-image: 
+                    linear-gradient(rgba(14, 165, 233, 0.1) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(14, 165, 233, 0.1) 1px, transparent 1px);
+                background-size: 20px 20px;
+            }
+            .pulse-slow {
+                animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+            }
+            .pulse-fast {
+                animation: pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+            }
+            @keyframes float {
+                0%, 100% {
+                    transform: translateY(0);
+                }
+                50% {
+                    transform: translateY(-10px);
+                }
+            }
+            .float {
+                animation: float 6s ease-in-out infinite;
+            }
+            @keyframes fadeInUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(20px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+            .fade-in-up {
+                animation: fadeInUp 0.5s ease-out;
+            }
+            @keyframes slideInRight {
+                from {
+                    opacity: 0;
+                    transform: translateX(20px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+            }
+            .slide-in-right {
+                animation: slideInRight 0.5s ease-out;
+            }
+        }
+    </style>
+</head>
+<body class="bg-dark text-light min-h-screen grid-bg">
+    <div class="container mx-auto px-6 py-8">
+        <!-- 顶部标题栏 -->
+        <header class="mb-10 fade-in-up">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center">
+                    <div class="w-16 h-16 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center mr-6 glow-lg float">
+                        <i class="fa fa-connectdevelop text-3xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-4xl font-bold text-shadow-lg">物联网数据大屏</h1>
+                        <p class="text-primary/70 text-lg">LoRa传感器监控系统</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-6">
+                    <div class="bg-dark/50 backdrop-blur-sm px-6 py-3 rounded-lg border border-primary/30 glow">
+                        <span class="text-sm text-primary/70">系统状态:</span>
+                        <span class="ml-3 text-green-400 font-semibold">运行中</span>
+                    </div>
+                    <div class="bg-dark/50 backdrop-blur-sm px-6 py-3 rounded-lg border border-primary/30 glow">
+                        <span id="current-time" class="text-lg"></span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- 主要内容区 -->
+        <main class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            <!-- 左侧：传感器数据卡片 -->
+            <div class="lg:col-span-1 space-y-8">
+                <!-- 温度卡片 -->
+                <div class="bg-dark/50 backdrop-blur-sm rounded-2xl border border-primary/30 p-8 glow fade-in-up">
+                    <div class="flex justify-between items-start mb-6">
+                        <div>
+                            <h3 class="text-2xl font-semibold">温度</h3>
+                            <p class="text-primary/70 text-sm">环境温度监测</p>
+                        </div>
+                        <div class="w-14 h-14 rounded-full bg-primary/20 flex items-center justify-center">
+                            <i class="fa fa-thermometer-half text-2xl text-primary"></i>
+                        </div>
+                    </div>
+                    <div class="mt-8">
+                        <div class="text-7xl font-bold text-shadow-lg" id="temperature-value">--</div>
+                        <div class="text-primary/70 text-lg mt-4">
+                            <span id="temperature-unit">°C</span>
+                        </div>
+                    </div>
+                    <div class="mt-8">
+                        <canvas id="temperature-chart" height="200"></canvas>
+                    </div>
+                </div>
+
+                <!-- 湿度卡片 -->
+                <div class="bg-dark/50 backdrop-blur-sm rounded-2xl border border-primary/30 p-8 glow fade-in-up">
+                    <div class="flex justify-between items-start mb-6">
+                        <div>
+                            <h3 class="text-2xl font-semibold">湿度</h3>
+                            <p class="text-primary/70 text-sm">环境湿度监测</p>
+                        </div>
+                        <div class="w-14 h-14 rounded-full bg-primary/20 flex items-center justify-center">
+                            <i class="fa fa-tint text-2xl text-primary"></i>
+                        </div>
+                    </div>
+                    <div class="mt-8">
+                        <div class="text-7xl font-bold text-shadow-lg" id="humidity-value">--</div>
+                        <div class="text-primary/70 text-lg mt-4">
+                            <span id="humidity-unit">%</span>
+                        </div>
+                    </div>
+                    <div class="mt-8">
+                        <canvas id="humidity-chart" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右侧：配置和数据详情 -->
+            <div class="lg:col-span-3 space-y-8">
+                <!-- 数据概览卡片 -->
+                <div class="bg-dark/50 backdrop-blur-sm rounded-2xl border border-primary/30 p-8 glow fade-in-up">
+                    <h3 class="text-2xl font-semibold mb-8">数据概览</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="bg-dark/80 rounded-xl p-6 border border-primary/20 glow">
+                            <div class="text-primary/70 text-lg">最新温度</div>
+                            <div class="text-3xl font-bold mt-4" id="latest-temp">--</div>
+                            <div class="text-sm text-primary/50 mt-3">更新时间: <span id="temp-time">--</span></div>
+                        </div>
+                        <div class="bg-dark/80 rounded-xl p-6 border border-primary/20 glow">
+                            <div class="text-primary/70 text-lg">最新湿度</div>
+                            <div class="text-3xl font-bold mt-4" id="latest-hum">--</div>
+                            <div class="text-sm text-primary/50 mt-3">更新时间: <span id="hum-time">--</span></div>
+                        </div>
+                        <div class="bg-dark/80 rounded-xl p-6 border border-primary/20 glow">
+                            <div class="text-primary/70 text-lg">数据采集频率</div>
+                            <div class="text-3xl font-bold mt-4" id="query-frequency">2s</div>
+                            <div class="text-sm text-primary/50 mt-3">实时更新</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 历史数据图表 -->
+                <div class="bg-dark/50 backdrop-blur-sm rounded-2xl border border-primary/30 p-8 glow fade-in-up">
+                    <div class="flex justify-between items-center mb-8">
+                        <h3 class="text-2xl font-semibold">历史数据趋势</h3>
+                        <div class="flex items-center space-x-4">
+                            <select id="time-range" class="bg-dark/80 border border-primary/30 rounded-lg px-4 py-2 text-light focus:outline-none focus:ring-2 focus:ring-primary/50">
+                                <option value="day">当天</option>
+                                <option value="week">近七日</option>
+                                <option value="month">近一个月</option>
+                                <option value="year">近一年</option>
+                                <option value="custom">自定义</option>
+                            </select>
+                            <div id="custom-date-range" class="hidden flex items-center space-x-2">
+                                <input type="datetime-local" id="start-date" class="bg-dark/80 border border-primary/30 rounded-lg px-3 py-2 text-light focus:outline-none focus:ring-2 focus:ring-primary/50">
+                                <span class="text-primary">至</span>
+                                <input type="datetime-local" id="end-date" class="bg-dark/80 border border-primary/30 rounded-lg px-3 py-2 text-light focus:outline-none focus:ring-2 focus:ring-primary/50">
+                                <button id="apply-date" class="px-4 py-2 bg-primary rounded-lg hover:opacity-90 transition-all">应用</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="relative">
+                        <canvas id="history-chart" height="500"></canvas>
+                        <div class="absolute top-6 right-6 bg-dark/70 backdrop-blur-sm px-4 py-2 rounded-lg border border-primary/30 glow">
+                            <span class="text-primary font-semibold">实时更新</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 配置面板 -->
+                <div class="bg-dark/50 backdrop-blur-sm rounded-2xl border border-primary/30 p-8 glow fade-in-up">
+                    <h3 class="text-2xl font-semibold mb-8">系统配置</h3>
+                    <div class="space-y-6">
+                        <!-- 串口配置 -->
+                        <div>
+                            <h4 class="text-xl font-medium mb-6">串口配置</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-sm text-primary/70 mb-3">串口端口</label>
+                                    <select id="serial-port" class="w-full bg-dark/80 border border-primary/30 rounded-lg px-6 py-3 text-light focus:outline-none focus:ring-2 focus:ring-primary/50">
+                                        <option value="">加载中...</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm text-primary/70 mb-3">波特率</label>
+                                    <select id="serial-baudrate" class="w-full bg-dark/80 border border-primary/30 rounded-lg px-6 py-3 text-light focus:outline-none focus:ring-2 focus:ring-primary/50">
+                                        <option value="9600" selected>9600</option>
+                                        <option value="19200">19200</option>
+                                        <option value="38400">38400</option>
+                                        <option value="57600">57600</option>
+                                        <option value="115200">115200</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm text-primary/70 mb-3">校验位</label>
+                                    <select id="serial-parity" class="w-full bg-dark/80 border border-primary/30 rounded-lg px-6 py-3 text-light focus:outline-none focus:ring-2 focus:ring-primary/50">
+                                        <option value="N" selected>无</option>
+                                        <option value="E">偶校验</option>
+                                        <option value="O">奇校验</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm text-primary/70 mb-3">停止位</label>
+                                    <select id="serial-stopbits" class="w-full bg-dark/80 border border-primary/30 rounded-lg px-6 py-3 text-light focus:outline-none focus:ring-2 focus:ring-primary/50">
+                                        <option value="1" selected>1</option>
+                                        <option value="2">2</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 问询周期设置 -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
+                            <div>
+                                <label class="block text-sm text-primary/70 mb-3">问询周期 (秒)</label>
+                                <input type="number" id="query-interval" min="1" max="60" value="2" class="w-full bg-dark/80 border border-primary/30 rounded-lg px-6 py-3 text-light focus:outline-none focus:ring-2 focus:ring-primary/50">
+                            </div>
+                            <div class="flex items-end">
+                                <button id="update-interval" class="px-8 py-3 bg-gradient-to-r from-primary to-secondary rounded-lg font-semibold hover:opacity-90 transition-all transform hover:scale-105">
+                                    更新周期
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- 帧数据显示 -->
+                        <div class="pt-8">
+                            <h4 class="text-xl font-medium mb-6">Modbus-RTU帧数据</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="bg-dark/80 rounded-xl p-6 border border-primary/30 glow">
+                                    <h5 class="text-lg font-semibold mb-4 text-primary">问询帧</h5>
+                                    <div id="query-frame" class="bg-dark/90 rounded-lg p-4 font-mono text-sm overflow-x-auto">
+                                        未发送
+                                    </div>
+                                </div>
+                                <div class="bg-dark/80 rounded-xl p-6 border border-primary/30 glow">
+                                    <h5 class="text-lg font-semibold mb-4 text-primary">应答帧</h5>
+                                    <div id="response-frame" class="bg-dark/90 rounded-lg p-4 font-mono text-sm overflow-x-auto">
+                                        未接收
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 操作按钮 -->
+                        <div class="flex space-x-6 pt-8 flex-wrap gap-4">
+                            <button id="open-serial" class="px-8 py-4 bg-gradient-to-r from-primary to-secondary rounded-lg font-semibold text-lg hover:opacity-90 transition-all transform hover:scale-105">
+                                打开串口
+                            </button>
+                            <button id="close-serial" class="px-8 py-4 bg-dark/80 border border-primary/30 rounded-lg font-semibold text-lg hover:bg-primary/10 transition-all transform hover:scale-105">
+                                关闭串口
+                            </button>
+                            <button id="start-query" class="px-8 py-4 bg-gradient-to-r from-green-500 to-green-600 rounded-lg font-semibold text-lg hover:opacity-90 transition-all transform hover:scale-105">
+                                启动问询
+                            </button>
+                            <button id="stop-query" class="px-8 py-4 bg-dark/80 border border-red-500/30 rounded-lg font-semibold text-lg hover:bg-red-500/10 transition-all transform hover:scale-105">
+                                停止问询
+                            </button>
+                            <button id="refresh-data" class="px-8 py-4 bg-dark/80 border border-primary/30 rounded-lg font-semibold text-lg hover:bg-primary/10 transition-all transform hover:scale-105">
+                                刷新数据
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- 底部信息栏 -->
+        <footer class="mt-8 py-6 border-t border-primary/30">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="text-primary/70 text-sm mb-4 md:mb-0">
+                    © 2026 物联网数据大屏 - LoRa传感器监控系统
+                </div>
+                <div class="flex space-x-4">
+                    <a href="#" class="text-primary/70 hover:text-primary transition-colors">
+                        <i class="fa fa-question-circle mr-1"></i> 帮助
+                    </a>
+                    <a href="#" class="text-primary/70 hover:text-primary transition-colors">
+                        <i class="fa fa-cog mr-1"></i> 设置
+                    </a>
+                    <a href="#" class="text-primary/70 hover:text-primary transition-colors">
+                        <i class="fa fa-info-circle mr-1"></i> 关于
+                    </a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // 全局变量
+        let temperatureChart, humidityChart, historyChart;
+        let temperatureData = [];
+        let humidityData = [];
+        let timeLabels = [];
+        let queryInterval = 2; // 默认问询周期（秒）
+        let lastTimestamp = 0; // 上次传感器数据的时间戳
+
+        // 初始化图表
+        function initCharts() {
+            console.log('开始初始化图表...');
+            
+            try {
+                // 温度图表
+                console.log('初始化温度图表...');
+                const tempCtx = document.getElementById('temperature-chart').getContext('2d');
+                temperatureChart = new Chart(tempCtx, {
+                    type: 'line',
+                    data: {
+                        labels: Array(10).fill(''),
+                        datasets: [{
+                            label: '温度',
+                            data: Array(10).fill(0),
+                            borderColor: '#0ea5e9',
+                            backgroundColor: 'rgba(14, 165, 233, 0.1)',
+                            borderWidth: 2,
+                            tension: 0.4,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            x: {
+                                display: false
+                            },
+                            y: {
+                                display: false
+                            }
+                        }
+                    }
+                });
+                console.log('温度图表初始化成功');
+
+                // 湿度图表
+                console.log('初始化湿度图表...');
+                const humCtx = document.getElementById('humidity-chart').getContext('2d');
+                humidityChart = new Chart(humCtx, {
+                    type: 'line',
+                    data: {
+                        labels: Array(10).fill(''),
+                        datasets: [{
+                            label: '湿度',
+                            data: Array(10).fill(0),
+                            borderColor: '#3b82f6',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            borderWidth: 2,
+                            tension: 0.4,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            x: {
+                                display: false
+                            },
+                            y: {
+                                display: false
+                            }
+                        }
+                    }
+                });
+                console.log('湿度图表初始化成功');
+
+                // 历史数据图表
+                console.log('初始化历史数据图表...');
+                const historyChartElement = document.getElementById('history-chart');
+                if (historyChartElement) {
+                    const historyCtx = historyChartElement.getContext('2d');
+                    historyChart = new Chart(historyCtx, {
+                        type: 'line',
+                        data: {
+                            labels: Array(5).fill(''),
+                            datasets: [
+                                {
+                                    label: '温度 (°C)',
+                                    data: Array(5).fill(0),
+                                    borderColor: '#0ea5e9',
+                                    backgroundColor: 'rgba(14, 165, 233, 0.2)',
+                                    borderWidth: 3,
+                                    tension: 0.6,
+                                    yAxisID: 'y',
+                                    pointBackgroundColor: '#0ea5e9',
+                                    pointBorderColor: '#fff',
+                                    pointBorderWidth: 2,
+                                    pointRadius: 4,
+                                    pointHoverRadius: 6,
+                                    fill: true,
+                                    gradientColor: true
+                                },
+                                {
+                                    label: '湿度 (%)',
+                                    data: Array(5).fill(0),
+                                    borderColor: '#3b82f6',
+                                    backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                                    borderWidth: 3,
+                                    tension: 0.6,
+                                    yAxisID: 'y1',
+                                    pointBackgroundColor: '#3b82f6',
+                                    pointBorderColor: '#fff',
+                                    pointBorderWidth: 2,
+                                    pointRadius: 4,
+                                    pointHoverRadius: 6,
+                                    fill: true,
+                                    gradientColor: true
+                                }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            animation: {
+                                duration: 1000,
+                                easing: 'easeOutQuart'
+                            },
+                            interaction: {
+                                mode: 'index',
+                                intersect: false
+                            },
+                            plugins: {
+                                legend: {
+                                    position: 'top',
+                                    labels: {
+                                        color: '#f8fafc',
+                                        font: {
+                                            size: 14
+                                        },
+                                        padding: 20
+                                    }
+                                },
+                                tooltip: {
+                                    backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                                    titleColor: '#f8fafc',
+                                    bodyColor: '#f8fafc',
+                                    borderColor: 'rgba(14, 165, 233, 0.5)',
+                                    borderWidth: 1,
+                                    padding: 12,
+                                    cornerRadius: 8,
+                                    displayColors: true,
+                                    boxPadding: 6
+                                }
+                            },
+                            scales: {
+                                x: {
+                                    grid: {
+                                        color: 'rgba(14, 165, 233, 0.1)'
+                                    },
+                                    ticks: {
+                                        color: '#f8fafc',
+                                        font: {
+                                            size: 12
+                                        }
+                                    }
+                                },
+                                y: {
+                                    type: 'linear',
+                                    display: true,
+                                    position: 'left',
+                                    grid: {
+                                        color: 'rgba(14, 165, 233, 0.1)'
+                                    },
+                                    ticks: {
+                                        color: '#f8fafc',
+                                        font: {
+                                            size: 12
+                                        }
+                                    },
+                                    title: {
+                                        display: true,
+                                        text: '温度 (°C)',
+                                        color: '#f8fafc',
+                                        font: {
+                                            size: 12
+                                        }
+                                    }
+                                },
+                                y1: {
+                                    type: 'linear',
+                                    display: true,
+                                    position: 'right',
+                                    grid: {
+                                        drawOnChartArea: false
+                                    },
+                                    ticks: {
+                                        color: '#f8fafc',
+                                        font: {
+                                            size: 12
+                                        }
+                                    },
+                                    title: {
+                                        display: true,
+                                        text: '湿度 (%)',
+                                        color: '#f8fafc',
+                                        font: {
+                                            size: 12
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                    console.log('历史数据图表初始化成功');
+                } else {
+                    console.log('历史数据图表元素不存在，跳过初始化');
+                }
+            } catch (error) {
+                console.error('图表初始化失败:', error);
+            }
+        }
+
+        // 更新传感器数据
+        function updateSensorData(data) {
+            console.log('开始更新传感器数据:', data);
+            try {
+                const { temperature, humidity, timestamp } = data;
+                const date = new Date(timestamp * 1000);
+                const timeStr = date.toLocaleTimeString();
+
+                // 更新温度数据
+                try {
+                    const tempElement = document.getElementById('temperature-value');
+                    const latestTempElement = document.getElementById('latest-temp');
+                    const tempTimeElement = document.getElementById('temp-time');
+                    
+                    // 添加动画效果
+                    if (tempElement) {
+                        tempElement.classList.add('animate-pulse');
+                        setTimeout(() => {
+                            tempElement.classList.remove('animate-pulse');
+                        }, 500);
+                        tempElement.textContent = `${temperature}°C`;
+                    }
+                    
+                    if (latestTempElement) {
+                        latestTempElement.textContent = `${temperature}°C`;
+                    }
+                    
+                    if (tempTimeElement) {
+                        tempTimeElement.textContent = timeStr;
+                    }
+                } catch (error) {
+                    console.error('更新温度数据显示失败:', error);
+                }
+
+                // 更新湿度数据
+                try {
+                    const humElement = document.getElementById('humidity-value');
+                    const latestHumElement = document.getElementById('latest-hum');
+                    const humTimeElement = document.getElementById('hum-time');
+                    
+                    // 添加动画效果
+                    if (humElement) {
+                        humElement.classList.add('animate-pulse');
+                        setTimeout(() => {
+                            humElement.classList.remove('animate-pulse');
+                        }, 500);
+                        humElement.textContent = `${humidity}%`;
+                    }
+                    
+                    if (latestHumElement) {
+                        latestHumElement.textContent = `${humidity}%`;
+                    }
+                    
+                    if (humTimeElement) {
+                        humTimeElement.textContent = timeStr;
+                    }
+                } catch (error) {
+                    console.error('更新湿度数据显示失败:', error);
+                }
+
+                // 更新图表数据（只在收到新数据时更新）
+                try {
+                    // 检查是否是新数据（时间戳大于上次的时间戳）
+                    if (timestamp > lastTimestamp) {
+                        lastTimestamp = timestamp;
+                        
+                        temperatureData.push(temperature);
+                        humidityData.push(humidity);
+                        timeLabels.push(timeStr);
+
+                        // 保持数据点数量
+                        if (temperatureData.length > 30) {
+                            temperatureData.shift();
+                            humidityData.shift();
+                            timeLabels.shift();
+                        }
+
+                        console.log('更新图表数据:', {
+                            temperatureData: temperatureData.length,
+                            humidityData: humidityData.length,
+                            timeLabels: timeLabels.length,
+                            queryInterval: queryInterval
+                        });
+
+                        // 更新小图表
+                        if (temperatureChart) {
+                            temperatureChart.data.datasets[0].data = temperatureData.slice(-10);
+                            temperatureChart.update('active');
+                            console.log('温度图表更新成功');
+                        }
+
+                        if (humidityChart) {
+                            humidityChart.data.datasets[0].data = humidityData.slice(-10);
+                            humidityChart.update('active');
+                            console.log('湿度图表更新成功');
+                        }
+
+                        // 更新历史数据图表
+                        if (historyChart) {
+                            historyChart.data.labels = timeLabels;
+                            historyChart.data.datasets[0].data = temperatureData;
+                            historyChart.data.datasets[1].data = humidityData;
+                            historyChart.update('active');
+                            console.log('历史数据图表更新成功');
+                        }
+                    } else {
+                        console.log('跳过重复数据，不更新图表');
+                    }
+                } catch (error) {
+                    console.error('更新图表数据失败:', error);
+                }
+            } catch (error) {
+                console.error('处理传感器数据失败:', error);
+            }
+        }
+
+        // 获取传感器数据
+        async function fetchSensorData() {
+            try {
+                const response = await fetch('/api/sensor/data');
+                const data = await response.json();
+                updateSensorData(data);
+            } catch (error) {
+                console.error('获取数据失败:', error);
+            }
+        }
+
+        // 打开串口
+        async function openSerial() {
+            const config = {
+                port: document.getElementById('serial-port').value,
+                baudrate: parseInt(document.getElementById('serial-baudrate').value),
+                parity: document.getElementById('serial-parity').value,
+                stopbits: parseInt(document.getElementById('serial-stopbits').value),
+                bytesize: 8
+            };
+
+            try {
+                const response = await fetch('/api/serial/open', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ config })
+                });
+                const result = await response.json();
+                alert(result.message);
+            } catch (error) {
+                console.error('打开串口失败:', error);
+                alert('打开串口失败');
+            }
+        }
+
+        // 启动问询
+        async function startQuery() {
+            try {
+                const response = await fetch('/api/query/start', {
+                    method: 'POST'
+                });
+                const result = await response.json();
+                alert(result.message);
+            } catch (error) {
+                console.error('启动问询失败:', error);
+                alert('启动问询失败');
+            }
+        }
+
+        // 停止问询
+        async function stopQuery() {
+            try {
+                const response = await fetch('/api/query/stop', {
+                    method: 'POST'
+                });
+                const result = await response.json();
+                alert(result.message);
+            } catch (error) {
+                console.error('停止问询失败:', error);
+                alert('停止问询失败');
+            }
+        }
+
+        // 关闭串口
+        async function closeSerial() {
+            try {
+                const response = await fetch('/api/serial/close', {
+                    method: 'POST'
+                });
+                const result = await response.json();
+                alert(result.message);
+            } catch (error) {
+                console.error('关闭串口失败:', error);
+                alert('关闭串口失败');
+            }
+        }
+
+        // 获取问询周期
+        async function fetchQueryInterval() {
+            try {
+                const response = await fetch('/api/query/interval');
+                const result = await response.json();
+                if (result.status === 'success') {
+                    queryInterval = result.interval;
+                    console.log('获取问询周期成功:', queryInterval);
+                    
+                    // 更新数据采集频率显示
+                    const frequencyElement = document.getElementById('query-frequency');
+                    if (frequencyElement) {
+                        frequencyElement.textContent = `${queryInterval}s`;
+                    }
+                }
+            } catch (error) {
+                console.error('获取问询周期失败:', error);
+            }
+        }
+
+        // 更新问询周期
+        async function updateQueryInterval() {
+            const interval = document.getElementById('query-interval').value;
+            try {
+                const response = await fetch('/api/serial/interval', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ interval: parseInt(interval) })
+                });
+                const result = await response.json();
+                alert(result.message);
+                // 更新前端的问询周期变量
+                queryInterval = parseInt(interval);
+                
+                // 更新数据采集频率显示
+                const frequencyElement = document.getElementById('query-frequency');
+                if (frequencyElement) {
+                    frequencyElement.textContent = `${queryInterval}s`;
+                }
+            } catch (error) {
+                console.error('更新问询周期失败:', error);
+                alert('更新问询周期失败');
+            }
+        }
+
+        // 更新帧数据显示
+        function updateFrameDisplay(queryFrame, responseFrame) {
+            const queryFrameElement = document.getElementById('query-frame');
+            const responseFrameElement = document.getElementById('response-frame');
+            
+            if (queryFrameElement) {
+                queryFrameElement.textContent = queryFrame || '未发送';
+            }
+            
+            if (responseFrameElement) {
+                responseFrameElement.textContent = responseFrame || '未接收';
+            }
+        }
+
+        // 获取帧数据
+        async function fetchFrameData() {
+            try {
+                const response = await fetch('/api/serial/frames');
+                const data = await response.json();
+                updateFrameDisplay(data.query, data.response);
+            } catch (error) {
+                console.error('获取帧数据失败:', error);
+            }
+        }
+
+        // 更新当前时间
+        function updateCurrentTime() {
+            const now = new Date();
+            const timeStr = now.toLocaleString();
+            document.getElementById('current-time').textContent = timeStr;
+        }
+
+        // 获取可用串口端口列表
+        async function getSerialPorts() {
+            console.log('开始获取串口端口列表...');
+            const portSelect = document.getElementById('serial-port');
+            try {
+                // 先显示加载中状态
+                portSelect.innerHTML = '<option value="">加载中...</option>';
+                
+                // 发送请求
+                const response = await fetch('/api/serial/ports');
+                console.log('获取串口端口列表响应:', response);
+                
+                // 检查响应状态
+                if (!response.ok) {
+                    throw new Error(`响应状态错误: ${response.status}`);
+                }
+                
+                // 解析响应数据
+                const ports = await response.json();
+                console.log('获取到的串口端口列表:', ports);
+                
+                // 清空现有选项
+                portSelect.innerHTML = '';
+                
+                // 检查数据格式
+                if (!Array.isArray(ports)) {
+                    throw new Error('响应数据格式错误，期望数组');
+                }
+                
+                // 填充选项
+                if (ports.length === 0) {
+                    portSelect.innerHTML = '<option value="">无可用串口</option>';
+                } else {
+                    ports.forEach(port => {
+                        if (port.device) {
+                            const option = document.createElement('option');
+                            option.value = port.device;
+                            option.textContent = `${port.device} - ${port.description || '未知设备'}`;
+                            portSelect.appendChild(option);
+                        }
+                    });
+                }
+            } catch (error) {
+                console.error('获取串口端口失败:', error);
+                portSelect.innerHTML = '<option value="">获取失败</option>';
+            }
+        }
+
+        // 获取历史数据
+        async function fetchHistoryData(rangeType = 'day', startDate = null, endDate = null) {
+            try {
+                let url = `/api/history/data?range=${rangeType}`;
+                if (rangeType === 'custom' && startDate && endDate) {
+                    const startTimestamp = new Date(startDate).getTime() / 1000;
+                    const endTimestamp = new Date(endDate).getTime() / 1000;
+                    url += `&start=${startTimestamp}&end=${endTimestamp}`;
+                }
+                
+                const response = await fetch(url);
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    updateHistoryChart(result.data);
+                }
+            } catch (error) {
+                console.error('获取历史数据失败:', error);
+            }
+        }
+
+        // 更新历史数据图表
+        function updateHistoryChart(historyData) {
+            if (historyChart && historyData && historyData.length > 0) {
+                const labels = historyData.map(item => {
+                    const date = new Date(item.timestamp * 1000);
+                    return date.toLocaleString();
+                });
+                const temperatures = historyData.map(item => item.temperature);
+                const humidities = historyData.map(item => item.humidity);
+                
+                historyChart.data.labels = labels;
+                historyChart.data.datasets[0].data = temperatures;
+                historyChart.data.datasets[1].data = humidities;
+                historyChart.update('active');
+                console.log('历史数据图表更新成功');
+            }
+        }
+
+        // 页面加载完成后执行
+        window.onload = function() {
+            console.log('页面加载完成，开始初始化...');
+            
+            // 等待DOM元素完全加载
+            setTimeout(function() {
+                console.log('DOM元素加载完成，开始执行初始化操作...');
+                
+                // 初始化图表
+                try {
+                    initCharts();
+                    console.log('图表初始化成功');
+                } catch (error) {
+                    console.error('图表初始化失败:', error);
+                }
+
+                // 更新时间
+                try {
+                    updateCurrentTime();
+                    setInterval(updateCurrentTime, 1000);
+                    console.log('时间更新功能初始化成功');
+                } catch (error) {
+                    console.error('时间更新功能初始化失败:', error);
+                }
+
+                // 获取可用串口端口列表
+                try {
+                    console.log('调用getSerialPorts()函数...');
+                    getSerialPorts();
+                } catch (error) {
+                    console.error('获取串口端口列表失败:', error);
+                    const portSelect = document.getElementById('serial-port');
+                    if (portSelect) {
+                        portSelect.innerHTML = '<option value="">初始化失败</option>';
+                    }
+                }
+
+                // 定时获取数据
+                try {
+                    fetchSensorData();
+                    fetchFrameData();
+                    fetchHistoryData(); // 初始化获取历史数据
+                    fetchQueryInterval(); // 初始化获取问询周期
+                    setInterval(fetchSensorData, 2000);
+                    setInterval(fetchFrameData, 2000);
+                    setInterval(fetchQueryInterval, 10000); // 每10秒获取一次问询周期，确保与后端同步
+                    console.log('数据获取功能初始化成功');
+                } catch (error) {
+                    console.error('数据获取功能初始化失败:', error);
+                }
+
+                // 绑定事件
+                try {
+                    const openSerialBtn = document.getElementById('open-serial');
+                    const closeSerialBtn = document.getElementById('close-serial');
+                    const startQueryBtn = document.getElementById('start-query');
+                    const stopQueryBtn = document.getElementById('stop-query');
+                    const refreshDataBtn = document.getElementById('refresh-data');
+                    const updateIntervalBtn = document.getElementById('update-interval');
+                    const timeRangeSelect = document.getElementById('time-range');
+                    const customDateRange = document.getElementById('custom-date-range');
+                    const applyDateBtn = document.getElementById('apply-date');
+                    
+                    if (openSerialBtn) {
+                        openSerialBtn.addEventListener('click', openSerial);
+                    }
+                    if (closeSerialBtn) {
+                        closeSerialBtn.addEventListener('click', closeSerial);
+                    }
+                    if (startQueryBtn) {
+                        startQueryBtn.addEventListener('click', startQuery);
+                    }
+                    if (stopQueryBtn) {
+                        stopQueryBtn.addEventListener('click', stopQuery);
+                    }
+                    if (refreshDataBtn) {
+                        refreshDataBtn.addEventListener('click', fetchSensorData);
+                    }
+                    if (updateIntervalBtn) {
+                        updateIntervalBtn.addEventListener('click', updateQueryInterval);
+                    }
+                    if (timeRangeSelect) {
+                        timeRangeSelect.addEventListener('change', function() {
+                            const rangeType = this.value;
+                            if (rangeType === 'custom') {
+                                customDateRange.classList.remove('hidden');
+                            } else {
+                                customDateRange.classList.add('hidden');
+                                fetchHistoryData(rangeType);
+                            }
+                        });
+                    }
+                    if (applyDateBtn) {
+                        applyDateBtn.addEventListener('click', function() {
+                            const startDate = document.getElementById('start-date').value;
+                            const endDate = document.getElementById('end-date').value;
+                            if (startDate && endDate) {
+                                fetchHistoryData('custom', startDate, endDate);
+                            }
+                        });
+                    }
+                    console.log('事件绑定成功');
+                } catch (error) {
+                    console.error('事件绑定失败:', error);
+                }
+            }, 100);
+        };
+    </script>
+</body>
+</html>
