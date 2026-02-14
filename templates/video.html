@@ -1,0 +1,483 @@
+{% extends "base.html" %}
+
+{% block content %}
+        <!-- 视频监控页面 -->
+        <section id="video" class="mb-16 fade-in-up">
+            <h2 class="text-4xl font-bold mb-8 text-shadow">视频监控</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-6 md:gap-8">
+                <!-- 摄像头1 -->
+                <div class="bg-dark/50 backdrop-blur-sm rounded-2xl border border-primary/30 p-6 glow fade-in-up">
+                    <div class="flex justify-between items-start mb-4">
+                        <h3 class="text-2xl font-semibold">摄像头 1</h3>
+                        <span id="camera-1-status" class="bg-green-500/20 text-green-400 px-4 py-2 rounded-full text-sm font-medium">在线</span>
+                    </div>
+                    <div id="camera-1-feed" class="bg-dark/80 rounded-xl aspect-video flex items-center justify-center mb-4 transform transition-all duration-300 hover:scale-[1.02]">
+                        <i class="fa fa-video-camera text-8xl text-video/30"></i>
+                    </div>
+                    <div class="grid grid-cols-3 gap-4">
+                        <button id="refresh-camera-1" class="px-4 py-3 bg-dark/80 border border-video/30 rounded-lg hover:bg-video/10 transition-all transform hover:scale-105">
+                            <i class="fa fa-refresh mr-2"></i> 刷新
+                        </button>
+                        <button id="fullscreen-camera-1" class="px-4 py-3 bg-dark/80 border border-video/30 rounded-lg hover:bg-video/10 transition-all transform hover:scale-105">
+                            <i class="fa fa-expand mr-2"></i> 全屏
+                        </button>
+                        <button id="settings-camera-1" class="px-4 py-3 bg-dark/80 border border-video/30 rounded-lg hover:bg-video/10 transition-all transform hover:scale-105">
+                            <i class="fa fa-cog mr-2"></i> 设置
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 摄像头2 -->
+                <div class="bg-dark/50 backdrop-blur-sm rounded-2xl border border-primary/30 p-6 glow fade-in-up">
+                    <div class="flex justify-between items-start mb-4">
+                        <h3 class="text-2xl font-semibold">摄像头 2</h3>
+                        <span id="camera-2-status" class="bg-green-500/20 text-green-400 px-4 py-2 rounded-full text-sm font-medium">在线</span>
+                    </div>
+                    <div id="camera-2-feed" class="bg-dark/80 rounded-xl aspect-video flex items-center justify-center mb-4 transform transition-all duration-300 hover:scale-[1.02]">
+                        <i class="fa fa-video-camera text-8xl text-video/30"></i>
+                    </div>
+                    <div class="grid grid-cols-3 gap-4">
+                        <button id="refresh-camera-2" class="px-4 py-3 bg-dark/80 border border-video/30 rounded-lg hover:bg-video/10 transition-all transform hover:scale-105">
+                            <i class="fa fa-refresh mr-2"></i> 刷新
+                        </button>
+                        <button id="fullscreen-camera-2" class="px-4 py-3 bg-dark/80 border border-video/30 rounded-lg hover:bg-video/10 transition-all transform hover:scale-105">
+                            <i class="fa fa-expand mr-2"></i> 全屏
+                        </button>
+                        <button id="settings-camera-2" class="px-4 py-3 bg-dark/80 border border-video/30 rounded-lg hover:bg-video/10 transition-all transform hover:scale-105">
+                            <i class="fa fa-cog mr-2"></i> 设置
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 摄像头3 -->
+                <div class="bg-dark/50 backdrop-blur-sm rounded-2xl border border-primary/30 p-6 glow fade-in-up">
+                    <div class="flex justify-between items-start mb-4">
+                        <h3 class="text-2xl font-semibold">摄像头 3</h3>
+                        <span id="camera-3-status" class="bg-green-500/20 text-green-400 px-4 py-2 rounded-full text-sm font-medium">在线</span>
+                    </div>
+                    <div id="camera-3-feed" class="bg-dark/80 rounded-xl aspect-video flex items-center justify-center mb-4 transform transition-all duration-300 hover:scale-[1.02]">
+                        <i class="fa fa-video-camera text-8xl text-video/30"></i>
+                    </div>
+                    <div class="grid grid-cols-3 gap-4">
+                        <button id="refresh-camera-3" class="px-4 py-3 bg-dark/80 border border-video/30 rounded-lg hover:bg-video/10 transition-all transform hover:scale-105">
+                            <i class="fa fa-refresh mr-2"></i> 刷新
+                        </button>
+                        <button id="fullscreen-camera-3" class="px-4 py-3 bg-dark/80 border border-video/30 rounded-lg hover:bg-video/10 transition-all transform hover:scale-105">
+                            <i class="fa fa-expand mr-2"></i> 全屏
+                        </button>
+                        <button id="settings-camera-3" class="px-4 py-3 bg-dark/80 border border-video/30 rounded-lg hover:bg-video/10 transition-all transform hover:scale-105">
+                            <i class="fa fa-cog mr-2"></i> 设置
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 摄像头4 -->
+                <div class="bg-dark/50 backdrop-blur-sm rounded-2xl border border-primary/30 p-6 glow fade-in-up">
+                    <div class="flex justify-between items-start mb-4">
+                        <h3 class="text-2xl font-semibold">摄像头 4</h3>
+                        <span id="camera-4-status" class="bg-green-500/20 text-green-400 px-4 py-2 rounded-full text-sm font-medium">在线</span>
+                    </div>
+                    <div id="camera-4-feed" class="bg-dark/80 rounded-xl aspect-video flex items-center justify-center mb-4 transform transition-all duration-300 hover:scale-[1.02]">
+                        <i class="fa fa-video-camera text-8xl text-video/30"></i>
+                    </div>
+                    <div class="grid grid-cols-3 gap-4">
+                        <button id="refresh-camera-4" class="px-4 py-3 bg-dark/80 border border-video/30 rounded-lg hover:bg-video/10 transition-all transform hover:scale-105">
+                            <i class="fa fa-refresh mr-2"></i> 刷新
+                        </button>
+                        <button id="fullscreen-camera-4" class="px-4 py-3 bg-dark/80 border border-video/30 rounded-lg hover:bg-video/10 transition-all transform hover:scale-105">
+                            <i class="fa fa-expand mr-2"></i> 全屏
+                        </button>
+                        <button id="settings-camera-4" class="px-4 py-3 bg-dark/80 border border-video/30 rounded-lg hover:bg-video/10 transition-all transform hover:scale-105">
+                            <i class="fa fa-cog mr-2"></i> 设置
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 摄像头配置模态对话框 -->
+        <div id="camera-settings-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 hidden">
+            <div class="bg-dark/95 border border-video/30 rounded-2xl p-8 max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-2xl font-bold text-shadow">摄像头配置</h3>
+                    <button onclick="closeCameraSettingsModal()" class="text-gray-400 hover:text-white transition-all">
+                        <i class="fa fa-times text-2xl"></i>
+                    </button>
+                </div>
+                
+                <div class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm text-video/70 mb-3">摄像头选择</label>
+                            <select id="camera-select" class="w-full bg-dark/80 border border-primary/30 rounded-lg px-6 py-3 text-light focus:outline-none focus:ring-2 focus:ring-primary/50">
+                                <option value="1">摄像头 1</option>
+                                <option value="2">摄像头 2</option>
+                                <option value="3">摄像头 3</option>
+                                <option value="4">摄像头 4</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm text-video/70 mb-3">摄像头状态</label>
+                            <select id="camera-status" class="w-full bg-dark/80 border border-primary/30 rounded-lg px-6 py-3 text-light focus:outline-none focus:ring-2 focus:ring-primary/50">
+                                <option value="online">在线</option>
+                                <option value="offline">离线</option>
+                                <option value="error">故障</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm text-video/70 mb-3">接入接口</label>
+                            <select id="camera-interface" class="w-full bg-dark/80 border border-primary/30 rounded-lg px-6 py-3 text-light focus:outline-none focus:ring-2 focus:ring-primary/50">
+                                <option value="rtsp">RTSP</option>
+                                <option value="http">HTTP</option>
+                                <option value="onvif">ONVIF</option>
+                                <option value="local">本地</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm text-video/70 mb-3">视频地址</label>
+                            <input type="text" id="camera-url" class="w-full bg-dark/80 border border-primary/30 rounded-lg px-6 py-3 text-light focus:outline-none focus:ring-2 focus:ring-primary/50" placeholder="rtsp://username:password@ip:port/stream">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-video/70 mb-3">用户名</label>
+                            <input type="text" id="camera-username" class="w-full bg-dark/80 border border-primary/30 rounded-lg px-6 py-3 text-light focus:outline-none focus:ring-2 focus:ring-primary/50" placeholder="摄像头用户名">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-video/70 mb-3">密码</label>
+                            <input type="password" id="camera-password" class="w-full bg-dark/80 border border-primary/30 rounded-lg px-6 py-3 text-light focus:outline-none focus:ring-2 focus:ring-primary/50" placeholder="摄像头密码">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-video/70 mb-3">分辨率</label>
+                            <select id="camera-resolution" class="w-full bg-dark/80 border border-primary/30 rounded-lg px-6 py-3 text-light focus:outline-none focus:ring-2 focus:ring-primary/50">
+                                <option value="1920x1080">1920x1080 (1080p)</option>
+                                <option value="1280x720">1280x720 (720p)</option>
+                                <option value="800x600">800x600 (SVGA)</option>
+                                <option value="640x480">640x480 (VGA)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm text-video/70 mb-3">帧率</label>
+                            <select id="camera-fps" class="w-full bg-dark/80 border border-primary/30 rounded-lg px-6 py-3 text-light focus:outline-none focus:ring-2 focus:ring-primary/50">
+                                <option value="30">30 FPS</option>
+                                <option value="25">25 FPS</option>
+                                <option value="20">20 FPS</option>
+                                <option value="15">15 FPS</option>
+                                <option value="10">10 FPS</option>
+                                <option value="5">5 FPS</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- 测试视频区域 -->
+                    <div class="mt-8">
+                        <h4 class="text-xl font-medium mb-4">测试视频</h4>
+                        <div id="test-video-container" class="bg-dark/80 rounded-xl aspect-video flex items-center justify-center mb-4">
+                            <i class="fa fa-video-camera text-6xl text-video/30"></i>
+                        </div>
+                        <div class="flex space-x-4">
+                            <button id="test-video-button" class="px-6 py-3 bg-gradient-to-r from-video to-video/80 rounded-lg font-semibold hover:opacity-90 transition-all transform hover:scale-105">
+                                <i class="fa fa-play mr-2"></i> 测试视频
+                            </button>
+                            <button id="stop-test-button" class="px-6 py-3 bg-dark/80 border border-video/30 rounded-lg font-semibold hover:bg-video/10 transition-all transform hover:scale-105" disabled>
+                                <i class="fa fa-stop mr-2"></i> 停止测试
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 操作按钮 -->
+                    <div class="mt-8 flex space-x-4">
+                        <button id="save-camera-config" class="px-8 py-3 bg-gradient-to-r from-video to-video/80 rounded-lg font-semibold hover:opacity-90 transition-all transform hover:scale-105">
+                            保存配置
+                        </button>
+                        <button id="load-camera-config" class="px-8 py-3 bg-dark/80 border border-video/30 rounded-lg font-semibold hover:bg-video/10 transition-all transform hover:scale-105">
+                            加载配置
+                        </button>
+                        <button onclick="closeCameraSettingsModal()" class="px-8 py-3 bg-dark/80 border border-gray-500/30 rounded-lg font-semibold hover:bg-gray-500/10 transition-all transform hover:scale-105">
+                            取消
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+{% endblock %}
+
+{% block scripts %}
+        // 全局变量
+        let cameraConfigs = {};
+
+
+
+        // 刷新摄像头
+        function refreshCamera(cameraId) {
+            console.log('刷新摄像头', cameraId);
+            updateCameraStatus(cameraId);
+            updateCameraFeed(cameraId);
+        }
+
+        // 全屏显示
+        function toggleFullscreen(elementId) {
+            const element = document.getElementById(elementId);
+            if (!element) return;
+
+            if (!document.fullscreenElement) {
+                if (element.requestFullscreen) {
+                    element.requestFullscreen();
+                } else if (element.webkitRequestFullscreen) {
+                    element.webkitRequestFullscreen();
+                } else if (element.msRequestFullscreen) {
+                    element.msRequestFullscreen();
+                }
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
+                }
+            }
+        }
+
+        // 打开摄像头设置模态对话框
+        function openCameraSettings(cameraId) {
+            console.log('打开摄像头设置', cameraId);
+            // 显示模态对话框
+            const modal = document.getElementById('camera-settings-modal');
+            if (modal) {
+                modal.classList.remove('hidden');
+                // 设置当前选中的摄像头
+                const cameraSelect = document.getElementById('camera-select');
+                if (cameraSelect) {
+                    cameraSelect.value = cameraId;
+                    loadCameraConfig(cameraId);
+                }
+            }
+        }
+
+        // 关闭摄像头设置模态对话框
+        function closeCameraSettingsModal() {
+            const modal = document.getElementById('camera-settings-modal');
+            if (modal) {
+                modal.classList.add('hidden');
+                // 停止测试视频
+                stopTestVideo();
+            }
+        }
+
+        // 测试视频
+        function testVideo() {
+            const testContainer = document.getElementById('test-video-container');
+            const testButton = document.getElementById('test-video-button');
+            const stopButton = document.getElementById('stop-test-button');
+            const cameraUrl = document.getElementById('camera-url').value;
+
+            if (!testContainer || !testButton || !stopButton) return;
+
+            // 禁用测试按钮，启用停止按钮
+            testButton.disabled = true;
+            stopButton.disabled = false;
+
+            // 显示测试视频
+            if (cameraUrl) {
+                // 实际项目中，这里应该使用真实的视频流URL
+                // 这里使用占位图像模拟
+                const imgUrl = `https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=security%20camera%20feed%20live%20testing&image_size=landscape_16_9`;
+                testContainer.innerHTML = `<img src="${imgUrl}" class="w-full h-full object-cover rounded-xl animate-pulse">`;
+            } else {
+                // 无URL时显示提示
+                testContainer.innerHTML = '<div class="flex flex-col items-center justify-center h-full"><i class="fa fa-exclamation-circle text-4xl text-yellow-500 mb-4"></i><p class="text-yellow-500">请输入视频地址</p></div>';
+            }
+        }
+
+        // 停止测试视频
+        function stopTestVideo() {
+            const testContainer = document.getElementById('test-video-container');
+            const testButton = document.getElementById('test-video-button');
+            const stopButton = document.getElementById('stop-test-button');
+
+            if (!testContainer || !testButton || !stopButton) return;
+
+            // 启用测试按钮，禁用停止按钮
+            testButton.disabled = false;
+            stopButton.disabled = true;
+
+            // 恢复默认显示
+            testContainer.innerHTML = '<i class="fa fa-video-camera text-6xl text-video/30"></i>';
+        }
+
+        // 更新摄像头状态
+        function updateCameraStatus(cameraId) {
+            const statusElement = document.getElementById(`camera-${cameraId}-status`);
+            if (!statusElement) return;
+
+            // 模拟摄像头状态检测
+            const statuses = ['online', 'offline', 'error'];
+            const status = statuses[Math.floor(Math.random() * statuses.length)];
+            
+            let statusText = '在线';
+            let statusClass = 'bg-green-500/20 text-green-400';
+            
+            if (status === 'offline') {
+                statusText = '离线';
+                statusClass = 'bg-gray-500/20 text-gray-400';
+            } else if (status === 'error') {
+                statusText = '故障';
+                statusClass = 'bg-red-500/20 text-red-400';
+            }
+            
+            statusElement.textContent = statusText;
+            statusElement.className = statusClass + ' px-3 py-1 rounded-full text-sm font-medium';
+        }
+
+        // 更新摄像头画面
+        function updateCameraFeed(cameraId) {
+            const feedElement = document.getElementById(`camera-${cameraId}-feed`);
+            if (!feedElement) return;
+
+            // 获取摄像头配置
+            const config = cameraConfigs[cameraId] || loadCameraConfigFromStorage(cameraId);
+            
+            // 根据配置显示对应图像
+            if (config && config.url) {
+                // 实际项目中，这里应该是一个视频流或图像的URL
+                // 这里使用占位图像模拟
+                const imgUrl = `https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=security%20camera%20feed%20monitoring%20area&image_size=landscape_16_9`;
+                feedElement.innerHTML = `<img src="${imgUrl}" class="w-full h-full object-cover rounded-xl">`;
+            } else {
+                // 默认显示摄像头图标
+                feedElement.innerHTML = '<i class="fa fa-video-camera text-6xl text-video/30"></i>';
+            }
+        }
+
+        // 保存摄像头配置
+        function saveCameraConfig() {
+            const cameraId = document.getElementById('camera-select').value;
+            const config = {
+                status: document.getElementById('camera-status').value,
+                interface: document.getElementById('camera-interface').value,
+                url: document.getElementById('camera-url').value,
+                username: document.getElementById('camera-username').value,
+                password: document.getElementById('camera-password').value,
+                resolution: document.getElementById('camera-resolution').value,
+                fps: document.getElementById('camera-fps').value
+            };
+
+            // 保存到本地存储
+            localStorage.setItem(`camera-${cameraId}-config`, JSON.stringify(config));
+            cameraConfigs[cameraId] = config;
+
+            alert(`摄像头 ${cameraId} 配置已保存`);
+        }
+
+        // 加载摄像头配置
+        function loadCameraConfig(cameraId) {
+            const config = loadCameraConfigFromStorage(cameraId);
+            if (!config) return;
+
+            document.getElementById('camera-status').value = config.status || 'online';
+            document.getElementById('camera-interface').value = config.interface || 'rtsp';
+            document.getElementById('camera-url').value = config.url || '';
+            document.getElementById('camera-username').value = config.username || '';
+            document.getElementById('camera-password').value = config.password || '';
+            document.getElementById('camera-resolution').value = config.resolution || '1920x1080';
+            document.getElementById('camera-fps').value = config.fps || '30';
+        }
+
+        // 从本地存储加载摄像头配置
+        function loadCameraConfigFromStorage(cameraId) {
+            const configStr = localStorage.getItem(`camera-${cameraId}-config`);
+            if (!configStr) return null;
+            
+            try {
+                return JSON.parse(configStr);
+            } catch (e) {
+                console.error('解析摄像头配置失败:', e);
+                return null;
+            }
+        }
+
+
+
+        // 初始化所有摄像头
+        function initCameras() {
+            // 初始化所有摄像头的状态和画面
+            for (let i = 1; i <= 4; i++) {
+                updateCameraStatus(i);
+                updateCameraFeed(i);
+            }
+        }
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化所有摄像头
+            initCameras();
+
+            // 保存摄像头配置按钮事件
+            const saveCameraConfigButton = document.getElementById('save-camera-config');
+            if (saveCameraConfigButton) {
+                saveCameraConfigButton.addEventListener('click', function() {
+                    saveCameraConfig();
+                });
+            }
+
+            // 加载摄像头配置按钮事件
+            const loadCameraConfigButton = document.getElementById('load-camera-config');
+            if (loadCameraConfigButton) {
+                loadCameraConfigButton.addEventListener('click', function() {
+                    const cameraId = document.getElementById('camera-select').value;
+                    loadCameraConfig(cameraId);
+                });
+            }
+
+            // 摄像头选择变更事件
+            const cameraSelect = document.getElementById('camera-select');
+            if (cameraSelect) {
+                cameraSelect.addEventListener('change', function() {
+                    const cameraId = this.value;
+                    loadCameraConfig(cameraId);
+                });
+            }
+
+            // 测试视频按钮事件
+            const testVideoButton = document.getElementById('test-video-button');
+            if (testVideoButton) {
+                testVideoButton.addEventListener('click', function() {
+                    testVideo();
+                });
+            }
+
+            // 停止测试按钮事件
+            const stopTestButton = document.getElementById('stop-test-button');
+            if (stopTestButton) {
+                stopTestButton.addEventListener('click', function() {
+                    stopTestVideo();
+                });
+            }
+
+            // 摄像头按钮事件
+            for (let i = 1; i <= 4; i++) {
+                // 刷新按钮
+                const refreshButton = document.getElementById(`refresh-camera-${i}`);
+                if (refreshButton) {
+                    refreshButton.addEventListener('click', function() {
+                        refreshCamera(i);
+                    });
+                }
+
+                // 全屏按钮
+                const fullscreenButton = document.getElementById(`fullscreen-camera-${i}`);
+                if (fullscreenButton) {
+                    fullscreenButton.addEventListener('click', function() {
+                        toggleFullscreen(`camera-${i}-feed`);
+                    });
+                }
+
+                // 设置按钮
+                const settingsButton = document.getElementById(`settings-camera-${i}`);
+                if (settingsButton) {
+                    settingsButton.addEventListener('click', function() {
+                        openCameraSettings(i);
+                    });
+                }
+            }
+        });
+{% endblock %}

@@ -1,0 +1,1416 @@
+{% extends "base.html" %}
+
+{% block content %}
+        <!-- 温振监控页面 -->
+        <section id="vibration" class="mb-16 fade-in-up">
+            <h2 class="text-4xl font-bold mb-8 text-shadow">温振监控</h2>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-8 xl:gap-10">
+                <!-- 左侧：设备数据卡片 -->
+                <div class="lg:col-span-1 space-y-8">
+                    <!-- 温度卡片 -->
+                    <div class="bg-dark/50 backdrop-blur-sm rounded-2xl border border-primary/30 p-8 glow fade-in-up hover:scale-105 transition-transform duration-300">
+                        <div class="flex justify-between items-start mb-6">
+                            <div>
+                                <h3 class="text-2xl font-semibold">设备温度</h3>
+                                <p class="text-vib/70 text-sm">电机温度监测</p>
+                            </div>
+                            <div class="w-16 h-16 rounded-full bg-vib/20 flex items-center justify-center">
+                                <i class="fa fa-thermometer-half text-3xl text-vib"></i>
+                            </div>
+                        </div>
+                        <div class="mt-6">
+                            <div class="text-8xl font-bold text-shadow-lg" id="vib-temp-value">--</div>
+                            <div class="text-vib/70 text-xl mt-4">
+                                <span>°C</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 频率卡片 -->
+                    <div class="bg-dark/50 backdrop-blur-sm rounded-2xl border border-primary/30 p-8 glow fade-in-up hover:scale-105 transition-transform duration-300">
+                        <div class="flex justify-between items-start mb-6">
+                            <div>
+                                <h3 class="text-2xl font-semibold">振动频率</h3>
+                                <p class="text-vib/70 text-sm">XYZ三轴频率监测</p>
+                            </div>
+                            <div class="w-16 h-16 rounded-full bg-vib/20 flex items-center justify-center">
+                                <i class="fa fa-wave-square text-3xl text-vib"></i>
+                            </div>
+                        </div>
+                        <div class="mt-6 space-y-4">
+                            <div>
+                                <div class="text-sm text-vib/70">X轴</div>
+                                <div class="text-4xl font-bold" id="vib-frequency-x">--</div>
+                                <div class="text-sm text-vib/50">Hz</div>
+                            </div>
+                            <div>
+                                <div class="text-sm text-vib/70">Y轴</div>
+                                <div class="text-4xl font-bold" id="vib-frequency-y">--</div>
+                                <div class="text-sm text-vib/50">Hz</div>
+                            </div>
+                            <div>
+                                <div class="text-sm text-vib/70">Z轴</div>
+                                <div class="text-4xl font-bold" id="vib-frequency-z">--</div>
+                                <div class="text-sm text-vib/50">Hz</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 速度卡片 -->
+                    <div class="bg-dark/50 backdrop-blur-sm rounded-2xl border border-primary/30 p-8 glow fade-in-up hover:scale-105 transition-transform duration-300">
+                        <div class="flex justify-between items-start mb-6">
+                            <div>
+                                <h3 class="text-2xl font-semibold">振动速度</h3>
+                                <p class="text-vib/70 text-sm">XYZ三轴速度监测</p>
+                            </div>
+                            <div class="w-16 h-16 rounded-full bg-vib/20 flex items-center justify-center">
+                                <i class="fa fa-tachometer text-3xl text-vib"></i>
+                            </div>
+                        </div>
+                        <div class="mt-6 space-y-4">
+                            <div>
+                                <div class="text-sm text-vib/70">X轴</div>
+                                <div class="text-4xl font-bold" id="vib-velocity-x">--</div>
+                                <div class="text-sm text-vib/50">mm/s</div>
+                            </div>
+                            <div>
+                                <div class="text-sm text-vib/70">Y轴</div>
+                                <div class="text-4xl font-bold" id="vib-velocity-y">--</div>
+                                <div class="text-sm text-vib/50">mm/s</div>
+                            </div>
+                            <div>
+                                <div class="text-sm text-vib/70">Z轴</div>
+                                <div class="text-4xl font-bold" id="vib-velocity-z">--</div>
+                                <div class="text-sm text-vib/50">mm/s</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 加速度卡片 -->
+                    <div class="bg-dark/50 backdrop-blur-sm rounded-2xl border border-primary/30 p-8 glow fade-in-up hover:scale-105 transition-transform duration-300">
+                        <div class="flex justify-between items-start mb-6">
+                            <div>
+                                <h3 class="text-2xl font-semibold">振动加速度</h3>
+                                <p class="text-vib/70 text-sm">XYZ三轴加速度监测</p>
+                            </div>
+                            <div class="w-16 h-16 rounded-full bg-vib/20 flex items-center justify-center">
+                                <i class="fa fa-arrow-up text-3xl text-vib"></i>
+                            </div>
+                        </div>
+                        <div class="mt-6 space-y-4">
+                            <div>
+                                <div class="text-sm text-vib/70">X轴</div>
+                                <div class="text-4xl font-bold" id="vib-acceleration-x">--</div>
+                                <div class="text-sm text-vib/50">m/s²</div>
+                            </div>
+                            <div>
+                                <div class="text-sm text-vib/70">Y轴</div>
+                                <div class="text-4xl font-bold" id="vib-acceleration-y">--</div>
+                                <div class="text-sm text-vib/50">m/s²</div>
+                            </div>
+                            <div>
+                                <div class="text-sm text-vib/70">Z轴</div>
+                                <div class="text-4xl font-bold" id="vib-acceleration-z">--</div>
+                                <div class="text-sm text-vib/50">m/s²</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 振幅卡片 -->
+                    <div class="bg-dark/50 backdrop-blur-sm rounded-2xl border border-primary/30 p-8 glow fade-in-up hover:scale-105 transition-transform duration-300">
+                        <div class="flex justify-between items-start mb-6">
+                            <div>
+                                <h3 class="text-2xl font-semibold">振动振幅</h3>
+                                <p class="text-vib/70 text-sm">峰值振幅监测</p>
+                            </div>
+                            <div class="w-16 h-16 rounded-full bg-vib/20 flex items-center justify-center">
+                                <i class="fa fa-signal text-3xl text-vib"></i>
+                            </div>
+                        </div>
+                        <div class="mt-6 space-y-4">
+                            <div>
+                                <div class="text-sm text-vib/70">峰值振幅</div>
+                                <div class="text-4xl font-bold" id="vib-amplitude-peak">--</div>
+                                <div class="text-sm text-vib/50">mm</div>
+                            </div>
+                            <div>
+                                <div class="text-sm text-vib/70">均方根值</div>
+                                <div class="text-4xl font-bold" id="vib-amplitude-rms">--</div>
+                                <div class="text-sm text-vib/50">mm</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 右侧：数据详情和趋势图表 -->
+                <div class="lg:col-span-3 space-y-8">
+                    <!-- 数据概览卡片 -->
+                    <div class="bg-dark/50 backdrop-blur-sm rounded-2xl border border-primary/30 p-8 glow fade-in-up">
+                        <h3 class="text-2xl font-semibold mb-8">设备状态概览</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <div class="bg-dark/80 rounded-xl p-6 border border-primary/20 glow hover:scale-105 transition-transform duration-300">
+                                <div class="text-vib/70 text-lg">最新温度</div>
+                                <div class="text-4xl font-bold mt-4" id="vib-latest-temp">--</div>
+                                <div class="text-sm text-vib/50 mt-3">更新时间: <span id="vib-temp-time">--</span></div>
+                            </div>
+                            <div class="bg-dark/80 rounded-xl p-6 border border-primary/20 glow hover:scale-105 transition-transform duration-300">
+                                <div class="text-vib/70 text-lg">振动频率</div>
+                                <div class="text-4xl font-bold mt-4" id="vib-latest-frequency">--</div>
+                                <div class="text-sm text-vib/50 mt-3">X轴频率 (Hz)</div>
+                            </div>
+                            <div class="bg-dark/80 rounded-xl p-6 border border-primary/20 glow hover:scale-105 transition-transform duration-300">
+                                <div class="text-vib/70 text-lg">振动速度</div>
+                                <div class="text-4xl font-bold mt-4" id="vib-latest-velocity">--</div>
+                                <div class="text-sm text-vib/50 mt-3">X轴速度 (mm/s)</div>
+                            </div>
+                            <div class="bg-dark/80 rounded-xl p-6 border border-primary/20 glow hover:scale-105 transition-transform duration-300">
+                                <div class="text-vib/70 text-lg">设备状态</div>
+                                <div class="text-4xl font-bold mt-4 text-green-400" id="vib-status">正常</div>
+                                <div class="text-sm text-vib/50 mt-3">运行时间: <span id="vib-run-time">--</span></div>
+                            </div>
+                            <div class="bg-dark/80 rounded-xl p-6 border border-primary/20 glow hover:scale-105 transition-transform duration-300">
+                                <div class="text-vib/70 text-lg">振动加速度</div>
+                                <div class="text-4xl font-bold mt-4" id="vib-latest-acceleration">--</div>
+                                <div class="text-sm text-vib/50 mt-3">X轴加速度 (m/s²)</div>
+                            </div>
+                            <div class="bg-dark/80 rounded-xl p-6 border border-primary/20 glow hover:scale-105 transition-transform duration-300">
+                                <div class="text-vib/70 text-lg">振动振幅</div>
+                                <div class="text-4xl font-bold mt-4" id="vib-latest-amplitude">--</div>
+                                <div class="text-sm text-vib/50 mt-3">峰值振幅 (mm)</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 历史数据图表 -->
+                    <div class="bg-dark/50 backdrop-blur-sm rounded-2xl border border-primary/30 p-8 glow fade-in-up">
+                        <div class="flex justify-between items-center mb-8 flex-wrap gap-4">
+                            <h3 class="text-2xl font-semibold">温振趋势</h3>
+                            <div class="flex items-center space-x-4 flex-wrap gap-4">
+                                <select id="vib-time-range" class="bg-dark/80 border border-primary/30 rounded-lg px-6 py-3 text-light focus:outline-none focus:ring-2 focus:ring-primary/50">
+                                    <option value="day">当天</option>
+                                    <option value="week">近七日</option>
+                                    <option value="month">近一个月</option>
+                                    <option value="year">近一年</option>
+                                </select>
+                                <select id="vib-parameter-select" class="bg-dark/80 border border-primary/30 rounded-lg px-6 py-3 text-light focus:outline-none focus:ring-2 focus:ring-primary/50">
+                                    <option value="temperature">温度</option>
+                                    <option value="frequency">频率</option>
+                                    <option value="velocity">速度</option>
+                                    <option value="acceleration">加速度</option>
+                                    <option value="amplitude">振幅</option>
+                                </select>
+                                <select id="vib-axis-select" class="bg-dark/80 border border-primary/30 rounded-lg px-6 py-3 text-light focus:outline-none focus:ring-2 focus:ring-primary/50">
+                                    <option value="all">全部轴</option>
+                                    <option value="x">X轴</option>
+                                    <option value="y">Y轴</option>
+                                    <option value="z">Z轴</option>
+                                </select>
+                                <div class="flex items-center space-x-2">
+                                    <input type="checkbox" id="vib-auto-switch" class="rounded border-primary/30 text-vib focus:ring-vib">
+                                    <label for="vib-auto-switch" class="text-light">自动切换</label>
+                                </div>
+                                <select id="vib-switch-interval" class="bg-dark/80 border border-primary/30 rounded-lg px-6 py-3 text-light focus:outline-none focus:ring-2 focus:ring-primary/50" disabled>
+                                    <option value="5">5秒</option>
+                                    <option value="10">10秒</option>
+                                    <option value="15">15秒</option>
+                                    <option value="30">30秒</option>
+                                    <option value="60">60秒</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="relative">
+                            <canvas id="vib-history-chart" height="550"></canvas>
+                            <div class="absolute top-6 right-6 bg-dark/70 backdrop-blur-sm px-6 py-3 rounded-lg border border-primary/30 glow">
+                                <span class="text-vib font-semibold">实时监测</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 系统配置面板 -->
+                    <div class="bg-dark/50 backdrop-blur-sm rounded-2xl border border-primary/30 p-8 glow fade-in-up">
+                        <h3 class="text-2xl font-semibold mb-8">系统配置</h3>
+                        
+                        <!-- 折叠面板 -->
+                        <div class="space-y-6">
+                            <!-- 串口配置折叠面板 -->
+                            <div class="border border-primary/30 rounded-xl overflow-hidden">
+                                <button class="w-full flex justify-between items-center p-6 bg-dark/80 hover:bg-dark/90 transition-all" onclick="toggleCollapse('serial-config')">
+                                    <h4 class="text-xl font-medium">串口配置</h4>
+                                    <i class="fa fa-chevron-down text-vib transition-transform" id="serial-config-icon"></i>
+                                </button>
+                                <div id="serial-config" class="p-6 border-t border-primary/30">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div>
+                                            <label class="block text-sm text-vib/70 mb-3">串口端口</label>
+                                            <select id="serial-port" class="w-full bg-dark/80 border border-primary/30 rounded-lg px-6 py-3 text-light focus:outline-none focus:ring-2 focus:ring-primary/50">
+                                                <option value="">加载中...</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm text-vib/70 mb-3">波特率</label>
+                                            <select id="serial-baudrate" class="w-full bg-dark/80 border border-primary/30 rounded-lg px-6 py-3 text-light focus:outline-none focus:ring-2 focus:ring-primary/50">
+                                                <option value="4800">4800</option>
+                                                <option value="9600" selected>9600</option>
+                                                <option value="19200">19200</option>
+                                                <option value="38400">38400</option>
+                                                <option value="57600">57600</option>
+                                                <option value="115200">115200</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm text-vib/70 mb-3">校验位</label>
+                                            <select id="serial-parity" class="w-full bg-dark/80 border border-primary/30 rounded-lg px-6 py-3 text-light focus:outline-none focus:ring-2 focus:ring-primary/50">
+                                                <option value="N" selected>无</option>
+                                                <option value="E">偶校验</option>
+                                                <option value="O">奇校验</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm text-vib/70 mb-3">停止位</label>
+                                            <select id="serial-stopbits" class="w-full bg-dark/80 border border-primary/30 rounded-lg px-6 py-3 text-light focus:outline-none focus:ring-2 focus:ring-primary/50">
+                                                <option value="1" selected>1</option>
+                                                <option value="2">2</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 问询周期设置折叠面板 -->
+                            <div class="border border-primary/30 rounded-xl overflow-hidden">
+                                <button class="w-full flex justify-between items-center p-6 bg-dark/80 hover:bg-dark/90 transition-all" onclick="toggleCollapse('interval-config')">
+                                    <h4 class="text-xl font-medium">问询周期设置</h4>
+                                    <i class="fa fa-chevron-down text-vib transition-transform" id="interval-config-icon"></i>
+                                </button>
+                                <div id="interval-config" class="p-6 border-t border-primary/30">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div>
+                                            <label class="block text-sm text-vib/70 mb-3">问询周期 (秒)</label>
+                                            <input type="number" id="query-interval" min="1" max="60" value="2" class="w-full bg-dark/80 border border-primary/30 rounded-lg px-6 py-3 text-light focus:outline-none focus:ring-2 focus:ring-primary/50">
+                                        </div>
+                                        <div class="flex items-end">
+                                            <button id="update-interval" class="px-8 py-3 bg-gradient-to-r from-vib to-vib/80 rounded-lg font-semibold hover:opacity-90 transition-all transform hover:scale-105">
+                                                更新周期
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 设备振动标准设置折叠面板 -->
+                            <div class="border border-primary/30 rounded-xl overflow-hidden">
+                                <button class="w-full flex justify-between items-center p-6 bg-dark/80 hover:bg-dark/90 transition-all" onclick="toggleCollapse('vibration-standard')">
+                                    <h4 class="text-xl font-medium">设备振动标准设置</h4>
+                                    <i class="fa fa-chevron-down text-vib transition-transform" id="vibration-standard-icon"></i>
+                                </button>
+                                <div id="vibration-standard" class="p-6 border-t border-primary/30">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div>
+                                            <label class="block text-sm text-vib/70 mb-3">设备分类（ISO2372）</label>
+                                            <select id="device-class" class="w-full bg-dark/80 border border-primary/30 rounded-lg px-6 py-3 text-light focus:outline-none focus:ring-2 focus:ring-primary/50">
+                                                <option value="1" selected>Class I - 15kW以下的小型设备（如小型电机、泵）</option>
+                                                <option value="2">Class II - 15~75kW的中型设备（如中型电机、刚性安装发动机）</option>
+                                                <option value="3">Class III - 装于硬基础上的大型设备（如重型原动机、大型旋转机械）</option>
+                                                <option value="4">Class IV - 转速高于自然频率的高速设备（如透平发电机组、轻型结构基础设备）</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm text-vib/70 mb-3">振动标准限值</label>
+                                            <div id="vibration-limits" class="bg-dark/80 rounded-xl p-4 border border-primary/30">
+                                                <div class="grid grid-cols-2 gap-4">
+                                                    <div>
+                                                        <div class="text-xs text-vib/70">A（良好）</div>
+                                                        <div class="text-sm font-semibold">≤ 0.71 mm/s</div>
+                                                    </div>
+                                                    <div>
+                                                        <div class="text-xs text-vib/70">B（可接受）</div>
+                                                        <div class="text-sm font-semibold">0.71 ~ 1.12 mm/s</div>
+                                                    </div>
+                                                    <div>
+                                                        <div class="text-xs text-vib/70">C（注意）</div>
+                                                        <div class="text-sm font-semibold">1.12 ~ 1.8 mm/s</div>
+                                                    </div>
+                                                    <div>
+                                                        <div class="text-xs text-vib/70">D（不允许）</div>
+                                                        <div class="text-sm font-semibold">＞ 1.8 mm/s</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mt-6">
+                                        <button id="update-device-class" class="px-8 py-3 bg-gradient-to-r from-vib to-vib/80 rounded-lg font-semibold hover:opacity-90 transition-all transform hover:scale-105">
+                                            更新设备分类
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 帧数据显示折叠面板 -->
+                            <div class="border border-primary/30 rounded-xl overflow-hidden">
+                                <button class="w-full flex justify-between items-center p-6 bg-dark/80 hover:bg-dark/90 transition-all" onclick="toggleCollapse('frame-data')">
+                                    <h4 class="text-xl font-medium">Modbus-RTU帧数据</h4>
+                                    <i class="fa fa-chevron-down text-vib transition-transform" id="frame-data-icon"></i>
+                                </button>
+                                <div id="frame-data" class="p-6 border-t border-primary/30">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div class="bg-dark/80 rounded-xl p-6 border border-primary/30 glow">
+                                            <h5 class="text-lg font-semibold mb-4 text-vib">问询帧</h5>
+                                            <div id="query-frame" class="bg-dark/90 rounded-lg p-4 font-mono text-sm overflow-x-auto">
+                                                未发送
+                                            </div>
+                                        </div>
+                                        <div class="bg-dark/80 rounded-xl p-6 border border-primary/30 glow">
+                                            <h5 class="text-lg font-semibold mb-4 text-vib">应答帧</h5>
+                                            <div id="response-frame" class="bg-dark/90 rounded-lg p-4 font-mono text-sm overflow-x-auto">
+                                                未接收
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 操作按钮 -->
+                            <div class="flex space-x-6 pt-4 flex-wrap gap-4">
+                                <button id="open-serial" class="px-8 py-4 bg-gradient-to-r from-vib to-vib/80 rounded-lg font-semibold text-lg hover:opacity-90 transition-all transform hover:scale-105">
+                                    打开串口
+                                </button>
+                                <button id="close-serial" class="px-8 py-4 bg-dark/80 border border-primary/30 rounded-lg font-semibold text-lg hover:bg-primary/10 transition-all transform hover:scale-105">
+                                    关闭串口
+                                </button>
+                                <button id="start-query" class="px-8 py-4 bg-gradient-to-r from-green-500 to-green-600 rounded-lg font-semibold text-lg hover:opacity-90 transition-all transform hover:scale-105">
+                                    启动问询
+                                </button>
+                                <button id="stop-query" class="px-8 py-4 bg-dark/80 border border-red-500/30 rounded-lg font-semibold text-lg hover:bg-red-500/10 transition-all transform hover:scale-105">
+                                    停止问询
+                                </button>
+                                <button id="refresh-data" class="px-8 py-4 bg-dark/80 border border-primary/30 rounded-lg font-semibold text-lg hover:bg-primary/10 transition-all transform hover:scale-105">
+                                    刷新数据
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        // 切换折叠面板
+        function toggleCollapse(id) {
+            const element = document.getElementById(id);
+            const icon = document.getElementById(id + '-icon');
+            if (element && icon) {
+                if (element.style.display === 'none') {
+                    element.style.display = 'block';
+                    icon.style.transform = 'rotate(0deg)';
+                } else {
+                    element.style.display = 'none';
+                    icon.style.transform = 'rotate(-90deg)';
+                }
+            }
+        }
+
+        // 扫描串口
+        function scanSerialPorts() {
+            const serialPortSelect = document.getElementById('serial-port');
+            if (serialPortSelect) {
+                serialPortSelect.innerHTML = '<option value="">扫描中...</option>';
+                
+                fetch('/api/serial/ports')
+                    .then(response => response.json())
+                    .then(ports => {
+                        serialPortSelect.innerHTML = '';
+                        if (ports.length > 0) {
+                            ports.forEach(port => {
+                                const option = document.createElement('option');
+                                option.value = port.device;
+                                option.textContent = port.device + ' - ' + port.description;
+                                serialPortSelect.appendChild(option);
+                            });
+                        } else {
+                            const option = document.createElement('option');
+                            option.value = '';
+                            option.textContent = '无可用串口';
+                            serialPortSelect.appendChild(option);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('扫描串口失败:', error);
+                        serialPortSelect.innerHTML = '<option value="">扫描失败</option>';
+                    });
+            }
+        }
+
+        // 获取当前配置
+        function getCurrentConfig() {
+            // 获取串口配置
+            fetch('/api/serial/config')
+                .then(response => response.json())
+                .then(config => {
+                    // 设置串口端口
+                    const serialPortSelect = document.getElementById('serial-port');
+                    if (serialPortSelect) {
+                        for (let i = 0; i < serialPortSelect.options.length; i++) {
+                            if (serialPortSelect.options[i].value === config.port) {
+                                serialPortSelect.selectedIndex = i;
+                                break;
+                            }
+                        }
+                    }
+
+                    // 设置波特率
+                    const baudrateSelect = document.getElementById('serial-baudrate');
+                    if (baudrateSelect) {
+                        baudrateSelect.value = config.baudrate;
+                    }
+
+                    // 设置校验位
+                    const paritySelect = document.getElementById('serial-parity');
+                    if (paritySelect) {
+                        paritySelect.value = config.parity;
+                    }
+
+                    // 设置停止位
+                    const stopbitsSelect = document.getElementById('serial-stopbits');
+                    if (stopbitsSelect) {
+                        stopbitsSelect.value = config.stopbits;
+                    }
+
+                    // 设置问询周期
+                    const intervalInput = document.getElementById('query-interval');
+                    if (intervalInput) {
+                        fetch('/api/query/interval')
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.status === 'success') {
+                                    intervalInput.value = data.interval;
+                                }
+                            });
+                    }
+                })
+                .catch(error => {
+                    console.error('获取配置失败:', error);
+                });
+        }
+
+        // 获取帧数据
+        function updateFrameData() {
+            fetch('/api/serial/frames')
+                .then(response => response.json())
+                .then(frameData => {
+                    // 更新问询帧显示
+                    const queryFrameElement = document.getElementById('query-frame');
+                    if (queryFrameElement) {
+                        if (frameData.query) {
+                            queryFrameElement.textContent = frameData.query;
+                        } else {
+                            queryFrameElement.textContent = '未发送';
+                        }
+                    }
+
+                    // 更新应答帧显示
+                    const responseFrameElement = document.getElementById('response-frame');
+                    if (responseFrameElement) {
+                        if (frameData.response) {
+                            responseFrameElement.textContent = frameData.response;
+                        } else {
+                            responseFrameElement.textContent = '未接收';
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('获取帧数据失败:', error);
+                });
+        }
+
+        // 打开串口
+        function openSerial() {
+            const serialPortSelect = document.getElementById('serial-port');
+            const baudrateSelect = document.getElementById('serial-baudrate');
+            const paritySelect = document.getElementById('serial-parity');
+            const stopbitsSelect = document.getElementById('serial-stopbits');
+
+            const config = {
+                port: serialPortSelect.value,
+                baudrate: parseInt(baudrateSelect.value),
+                parity: paritySelect.value,
+                stopbits: parseInt(stopbitsSelect.value),
+                bytesize: 8
+            };
+
+            fetch('/api/serial/open', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ config: config })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('打开串口:', data);
+                alert(data.message);
+            })
+            .catch(error => {
+                console.error('打开串口失败:', error);
+                alert('打开串口失败: ' + error.message);
+            });
+        }
+
+        // 关闭串口
+        function closeSerial() {
+            fetch('/api/serial/close', {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('关闭串口:', data);
+                alert(data.message);
+            })
+            .catch(error => {
+                console.error('关闭串口失败:', error);
+                alert('关闭串口失败: ' + error.message);
+            });
+        }
+
+        // 启动问询
+        function startQuery() {
+            fetch('/api/query/start', {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('启动问询:', data);
+                alert(data.message);
+                // 确保数据更新定时器正在运行
+                startDataUpdate();
+            })
+            .catch(error => {
+                console.error('启动问询失败:', error);
+                alert('启动问询失败: ' + error.message);
+            });
+        }
+
+        // 停止问询
+        function stopQuery() {
+            fetch('/api/query/stop', {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('停止问询:', data);
+                alert(data.message);
+                // 停止数据更新定时器
+                stopDataUpdate();
+            })
+            .catch(error => {
+                console.error('停止问询失败:', error);
+                alert('停止问询失败: ' + error.message);
+            });
+        }
+
+        // 更新问询周期
+        function updateQueryInterval(interval) {
+            fetch('/api/serial/interval', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ interval: interval })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('更新问询周期:', data);
+                if (data.status === 'success') {
+                    queryInterval = interval;
+                    stopDataUpdate();
+                    startDataUpdate();
+                    alert(data.message);
+                } else {
+                    alert('更新失败: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('更新问询周期失败:', error);
+                alert('更新问询周期失败: ' + error.message);
+            });
+        }
+
+        // 全局变量
+        let vibHistoryChart;
+        let vibrationData = {
+            temperature: [],
+            frequency_x: [],
+            frequency_y: [],
+            frequency_z: [],
+            velocity_x: [],
+            velocity_y: [],
+            velocity_z: [],
+            acceleration_x: [],
+            acceleration_y: [],
+            acceleration_z: [],
+            amplitude_peak: [],
+            amplitude_rms: []
+        };
+        let timeLabels = [];
+        let queryInterval = 2; // 默认问询周期（秒）
+        let dataUpdateInterval; // 数据更新定时器
+        let currentParameter = 'temperature'; // 当前显示的参数
+        let currentAxis = 'all'; // 当前显示的轴
+        let autoSwitchInterval; // 自动切换定时器
+        let isAutoSwitching = false; // 是否启用自动切换
+        let switchInterval = 5; // 自动切换间隔（秒）
+        let autoSwitchIndex = 0; // 自动切换索引
+        let autoSwitchSequence = [
+            { parameter: 'temperature', axis: 'all' },
+            { parameter: 'frequency', axis: 'all' },
+            { parameter: 'frequency', axis: 'x' },
+            { parameter: 'frequency', axis: 'y' },
+            { parameter: 'frequency', axis: 'z' },
+            { parameter: 'velocity', axis: 'all' },
+            { parameter: 'velocity', axis: 'x' },
+            { parameter: 'velocity', axis: 'y' },
+            { parameter: 'velocity', axis: 'z' },
+            { parameter: 'acceleration', axis: 'all' },
+            { parameter: 'acceleration', axis: 'x' },
+            { parameter: 'acceleration', axis: 'y' },
+            { parameter: 'acceleration', axis: 'z' },
+            { parameter: 'amplitude', axis: 'all' }
+        ]; // 自动切换序列
+        
+        // 设备振动标准配置
+        let deviceClass = 1; // 默认设备分类
+        let vibrationLimits = {
+            1: { // Class I
+                A: 0.71,
+                B: 1.12,
+                C: 1.8,
+                D: 1.8
+            },
+            2: { // Class II
+                A: 1.12,
+                B: 1.8,
+                C: 2.8,
+                D: 2.8
+            },
+            3: { // Class III
+                A: 1.8,
+                B: 2.8,
+                C: 4.5,
+                D: 4.5
+            },
+            4: { // Class IV
+                A: 2.8,
+                B: 4.5,
+                C: 7.1,
+                D: 7.1
+            }
+        }; // ISO2372振动标准限值
+
+        // 获取温振数据
+        function fetchVibrationData() {
+            fetch('/api/vibration/data')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.temperature !== undefined) {
+                        updateVibrationData(data);
+                    }
+                    // 更新帧数据
+                    updateFrameData();
+                })
+                .catch(error => {
+                    console.error('获取温振数据失败:', error);
+                });
+        }
+
+        // 更新温振数据
+        function updateVibrationData(data) {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString();
+            
+            // 更新温度数据
+            const vibTempValue = document.getElementById('vib-temp-value');
+            if (vibTempValue) {
+                // 添加数据变化动画
+                vibTempValue.classList.add('scale-110');
+                setTimeout(() => {
+                    vibTempValue.classList.remove('scale-110');
+                }, 300);
+                if (typeof data.temperature === 'number') {
+                    vibTempValue.textContent = data.temperature.toFixed(1);
+                } else {
+                    vibTempValue.textContent = '--';
+                }
+            }
+            
+            // 更新频率数据（XYZ轴）
+            const vibFrequencyX = document.getElementById('vib-frequency-x');
+            if (vibFrequencyX) {
+                vibFrequencyX.textContent = (data.frequency_x || 0).toFixed(2);
+            }
+            const vibFrequencyY = document.getElementById('vib-frequency-y');
+            if (vibFrequencyY) {
+                vibFrequencyY.textContent = (data.frequency_y || 0).toFixed(2);
+            }
+            const vibFrequencyZ = document.getElementById('vib-frequency-z');
+            if (vibFrequencyZ) {
+                vibFrequencyZ.textContent = (data.frequency_z || 0).toFixed(2);
+            }
+            
+            // 更新速度数据（XYZ轴）
+            const vibVelocityX = document.getElementById('vib-velocity-x');
+            if (vibVelocityX) {
+                vibVelocityX.textContent = (data.velocity_x || 0).toFixed(2);
+            }
+            const vibVelocityY = document.getElementById('vib-velocity-y');
+            if (vibVelocityY) {
+                vibVelocityY.textContent = (data.velocity_y || 0).toFixed(2);
+            }
+            const vibVelocityZ = document.getElementById('vib-velocity-z');
+            if (vibVelocityZ) {
+                vibVelocityZ.textContent = (data.velocity_z || 0).toFixed(2);
+            }
+            
+            // 更新加速度数据（XYZ轴）
+            const vibAccelerationX = document.getElementById('vib-acceleration-x');
+            if (vibAccelerationX) {
+                vibAccelerationX.textContent = (data.acceleration_x || 0).toFixed(2);
+            }
+            const vibAccelerationY = document.getElementById('vib-acceleration-y');
+            if (vibAccelerationY) {
+                vibAccelerationY.textContent = (data.acceleration_y || 0).toFixed(2);
+            }
+            const vibAccelerationZ = document.getElementById('vib-acceleration-z');
+            if (vibAccelerationZ) {
+                vibAccelerationZ.textContent = (data.acceleration_z || 0).toFixed(2);
+            }
+            
+            // 更新振幅数据
+            const vibAmplitudePeak = document.getElementById('vib-amplitude-peak');
+            if (vibAmplitudePeak) {
+                vibAmplitudePeak.textContent = (data.amplitude_peak || 0).toFixed(2);
+            }
+            const vibAmplitudeRms = document.getElementById('vib-amplitude-rms');
+            if (vibAmplitudeRms) {
+                vibAmplitudeRms.textContent = (data.amplitude_rms || 0).toFixed(2);
+            }
+            
+            // 更新数据概览
+            const vibLatestTemp = document.getElementById('vib-latest-temp');
+            if (vibLatestTemp) {
+                if (typeof data.temperature === 'number') {
+                    vibLatestTemp.textContent = data.temperature.toFixed(1) + '°C';
+                } else {
+                    vibLatestTemp.textContent = '--';
+                }
+            }
+            
+            const vibTempTime = document.getElementById('vib-temp-time');
+            if (vibTempTime) {
+                vibTempTime.textContent = timeString;
+            }
+            
+            const vibLatestFrequency = document.getElementById('vib-latest-frequency');
+            if (vibLatestFrequency) {
+                vibLatestFrequency.textContent = (data.frequency_x || 0).toFixed(2) + ' Hz';
+            }
+            
+            const vibLatestVelocity = document.getElementById('vib-latest-velocity');
+            if (vibLatestVelocity) {
+                vibLatestVelocity.textContent = (data.velocity_x || 0).toFixed(2) + ' mm/s';
+            }
+            
+            const vibLatestAcceleration = document.getElementById('vib-latest-acceleration');
+            if (vibLatestAcceleration) {
+                vibLatestAcceleration.textContent = (data.acceleration_x || 0).toFixed(2) + ' m/s²';
+            }
+            
+            const vibLatestAmplitude = document.getElementById('vib-latest-amplitude');
+            if (vibLatestAmplitude) {
+                vibLatestAmplitude.textContent = (data.amplitude_peak || 0).toFixed(2) + ' mm';
+            }
+            
+            // 更新设备状态（基于ISO2372标准）
+            const vibStatus = document.getElementById('vib-status');
+            if (vibStatus) {
+                // 获取振动速度有效值（RMS）的最大值（XYZ三个轴）
+                const velocityRms = Math.max(
+                    data.velocity_x || 0,
+                    data.velocity_y || 0,
+                    data.velocity_z || 0
+                );
+                
+                // 根据设备分类和ISO2372标准评估设备状态
+                const limits = vibrationLimits[deviceClass];
+                let status = '正常';
+                let statusClass = 'text-green-400';
+                
+                if (velocityRms <= limits.A) {
+                    status = 'A（良好）';
+                    statusClass = 'text-green-400';
+                } else if (velocityRms <= limits.B) {
+                    status = 'B（可接受）';
+                    statusClass = 'text-yellow-400';
+                } else if (velocityRms <= limits.C) {
+                    status = 'C（注意）';
+                    statusClass = 'text-orange-400';
+                } else {
+                    status = 'D（不允许）';
+                    statusClass = 'text-red-400';
+                }
+                
+                vibStatus.textContent = status;
+                vibStatus.className = 'text-3xl font-bold mt-4 ' + statusClass;
+            }
+            
+            // 更新历史数据
+            timeLabels.push(timeString);
+            if (timeLabels.length > 50) {
+                timeLabels.shift();
+            }
+            
+            // 更新振动数据数组
+            vibrationData.temperature.push(data.temperature);
+            if (vibrationData.temperature.length > 50) {
+                vibrationData.temperature.shift();
+            }
+            
+            vibrationData.frequency_x.push(data.frequency_x || 0);
+            if (vibrationData.frequency_x.length > 50) {
+                vibrationData.frequency_x.shift();
+            }
+            
+            vibrationData.frequency_y.push(data.frequency_y || 0);
+            if (vibrationData.frequency_y.length > 50) {
+                vibrationData.frequency_y.shift();
+            }
+            
+            vibrationData.frequency_z.push(data.frequency_z || 0);
+            if (vibrationData.frequency_z.length > 50) {
+                vibrationData.frequency_z.shift();
+            }
+            
+            vibrationData.velocity_x.push(data.velocity_x || 0);
+            if (vibrationData.velocity_x.length > 50) {
+                vibrationData.velocity_x.shift();
+            }
+            
+            vibrationData.velocity_y.push(data.velocity_y || 0);
+            if (vibrationData.velocity_y.length > 50) {
+                vibrationData.velocity_y.shift();
+            }
+            
+            vibrationData.velocity_z.push(data.velocity_z || 0);
+            if (vibrationData.velocity_z.length > 50) {
+                vibrationData.velocity_z.shift();
+            }
+            
+            vibrationData.acceleration_x.push(data.acceleration_x || 0);
+            if (vibrationData.acceleration_x.length > 50) {
+                vibrationData.acceleration_x.shift();
+            }
+            
+            vibrationData.acceleration_y.push(data.acceleration_y || 0);
+            if (vibrationData.acceleration_y.length > 50) {
+                vibrationData.acceleration_y.shift();
+            }
+            
+            vibrationData.acceleration_z.push(data.acceleration_z || 0);
+            if (vibrationData.acceleration_z.length > 50) {
+                vibrationData.acceleration_z.shift();
+            }
+            
+            vibrationData.amplitude_peak.push(data.amplitude_peak || 0);
+            if (vibrationData.amplitude_peak.length > 50) {
+                vibrationData.amplitude_peak.shift();
+            }
+            
+            vibrationData.amplitude_rms.push(data.amplitude_rms || 0);
+            if (vibrationData.amplitude_rms.length > 50) {
+                vibrationData.amplitude_rms.shift();
+            }
+            
+            // 更新历史图表
+            updateHistoryChart();
+        }
+
+        // 初始化温振监控图表
+        function initVibrationCharts() {
+            try {
+                // 历史数据图表
+                const vibHistoryCtx = document.getElementById('vib-history-chart');
+                if (vibHistoryCtx) {
+                    vibHistoryChart = new Chart(vibHistoryCtx, {
+                        type: 'line',
+                        data: {
+                            labels: [],
+                            datasets: []
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    display: true,
+                                    labels: {
+                                        color: '#f8fafc'
+                                    }
+                                }
+                            },
+                            scales: {
+                                x: {
+                                    grid: {
+                                        color: 'rgba(139, 92, 246, 0.1)'
+                                    },
+                                    ticks: {
+                                        color: '#f8fafc'
+                                    }
+                                },
+                                y: {
+                                    grid: {
+                                        color: 'rgba(139, 92, 246, 0.1)'
+                                    },
+                                    ticks: {
+                                        color: '#f8fafc'
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+            } catch (error) {
+                console.error('温振图表初始化失败:', error);
+            }
+        }
+
+        // 更新历史图表
+        function updateHistoryChart() {
+            if (!vibHistoryChart) return;
+            
+            const datasets = [];
+            const colors = {
+                x: '#06b6d4',
+                y: '#10b981',
+                z: '#f59e0b'
+            };
+            
+            // 根据选择的参数和轴更新图表
+            if (currentParameter === 'temperature') {
+                // 温度只有一个值，不需要区分轴
+                datasets.push({
+                    label: '温度 (°C)',
+                    data: vibrationData.temperature,
+                    borderColor: '#8b5cf6',
+                    backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                    borderWidth: 2,
+                    tension: 0.4,
+                    fill: true
+                });
+            } else if (currentParameter === 'frequency') {
+                if (currentAxis === 'all' || currentAxis === 'x') {
+                    datasets.push({
+                        label: '频率 X轴 (Hz)',
+                        data: vibrationData.frequency_x,
+                        borderColor: colors.x,
+                        backgroundColor: 'rgba(6, 182, 212, 0.1)',
+                        borderWidth: 2,
+                        tension: 0.4,
+                        fill: true
+                    });
+                }
+                if (currentAxis === 'all' || currentAxis === 'y') {
+                    datasets.push({
+                        label: '频率 Y轴 (Hz)',
+                        data: vibrationData.frequency_y,
+                        borderColor: colors.y,
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        borderWidth: 2,
+                        tension: 0.4,
+                        fill: true
+                    });
+                }
+                if (currentAxis === 'all' || currentAxis === 'z') {
+                    datasets.push({
+                        label: '频率 Z轴 (Hz)',
+                        data: vibrationData.frequency_z,
+                        borderColor: colors.z,
+                        backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                        borderWidth: 2,
+                        tension: 0.4,
+                        fill: true
+                    });
+                }
+            } else if (currentParameter === 'velocity') {
+                if (currentAxis === 'all' || currentAxis === 'x') {
+                    datasets.push({
+                        label: '速度 X轴 (mm/s)',
+                        data: vibrationData.velocity_x,
+                        borderColor: colors.x,
+                        backgroundColor: 'rgba(6, 182, 212, 0.1)',
+                        borderWidth: 2,
+                        tension: 0.4,
+                        fill: true
+                    });
+                }
+                if (currentAxis === 'all' || currentAxis === 'y') {
+                    datasets.push({
+                        label: '速度 Y轴 (mm/s)',
+                        data: vibrationData.velocity_y,
+                        borderColor: colors.y,
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        borderWidth: 2,
+                        tension: 0.4,
+                        fill: true
+                    });
+                }
+                if (currentAxis === 'all' || currentAxis === 'z') {
+                    datasets.push({
+                        label: '速度 Z轴 (mm/s)',
+                        data: vibrationData.velocity_z,
+                        borderColor: colors.z,
+                        backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                        borderWidth: 2,
+                        tension: 0.4,
+                        fill: true
+                    });
+                }
+            } else if (currentParameter === 'acceleration') {
+                if (currentAxis === 'all' || currentAxis === 'x') {
+                    datasets.push({
+                        label: '加速度 X轴 (m/s²)',
+                        data: vibrationData.acceleration_x,
+                        borderColor: colors.x,
+                        backgroundColor: 'rgba(6, 182, 212, 0.1)',
+                        borderWidth: 2,
+                        tension: 0.4,
+                        fill: true
+                    });
+                }
+                if (currentAxis === 'all' || currentAxis === 'y') {
+                    datasets.push({
+                        label: '加速度 Y轴 (m/s²)',
+                        data: vibrationData.acceleration_y,
+                        borderColor: colors.y,
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        borderWidth: 2,
+                        tension: 0.4,
+                        fill: true
+                    });
+                }
+                if (currentAxis === 'all' || currentAxis === 'z') {
+                    datasets.push({
+                        label: '加速度 Z轴 (m/s²)',
+                        data: vibrationData.acceleration_z,
+                        borderColor: colors.z,
+                        backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                        borderWidth: 2,
+                        tension: 0.4,
+                        fill: true
+                    });
+                }
+            } else if (currentParameter === 'amplitude') {
+                datasets.push({
+                    label: '峰值振幅 (mm)',
+                    data: vibrationData.amplitude_peak,
+                    borderColor: '#ef4444',
+                    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                    borderWidth: 2,
+                    tension: 0.4,
+                    fill: true
+                });
+                datasets.push({
+                    label: '均方根值 (mm)',
+                    data: vibrationData.amplitude_rms,
+                    borderColor: '#8b5cf6',
+                    backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                    borderWidth: 2,
+                    tension: 0.4,
+                    fill: true
+                });
+            }
+            
+            vibHistoryChart.data.labels = timeLabels;
+            vibHistoryChart.data.datasets = datasets;
+            vibHistoryChart.update();
+        }
+
+        // 启动自动切换
+        function startAutoSwitch() {
+            if (isAutoSwitching) {
+                stopAutoSwitch();
+            }
+            
+            isAutoSwitching = true;
+            autoSwitchInterval = setInterval(executeAutoSwitch, switchInterval * 1000);
+        }
+
+        // 停止自动切换
+        function stopAutoSwitch() {
+            isAutoSwitching = false;
+            if (autoSwitchInterval) {
+                clearInterval(autoSwitchInterval);
+                autoSwitchInterval = null;
+            }
+        }
+
+        // 执行自动切换
+        function executeAutoSwitch() {
+            const config = autoSwitchSequence[autoSwitchIndex];
+            currentParameter = config.parameter;
+            currentAxis = config.axis;
+            
+            // 更新选择框
+            document.getElementById('vib-parameter-select').value = currentParameter;
+            document.getElementById('vib-axis-select').value = currentAxis;
+            
+            // 更新图表
+            updateHistoryChart();
+            
+            // 增加索引，循环切换
+            autoSwitchIndex = (autoSwitchIndex + 1) % autoSwitchSequence.length;
+        }
+
+        // 启动数据更新
+        function startDataUpdate() {
+            // 立即获取一次数据
+            fetchVibrationData();
+            
+            // 设置定时器，定期获取数据
+            dataUpdateInterval = setInterval(fetchVibrationData, queryInterval * 1000);
+        }
+
+        // 停止数据更新
+        function stopDataUpdate() {
+            if (dataUpdateInterval) {
+                clearInterval(dataUpdateInterval);
+                dataUpdateInterval = null;
+            }
+        }
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化温振监控图表
+            initVibrationCharts();
+            
+            // 扫描串口
+            scanSerialPorts();
+
+            // 获取当前配置
+            getCurrentConfig();
+
+            // 获取帧数据
+            updateFrameData();
+
+            // 启动数据更新
+            startDataUpdate();
+
+            // 时间范围选择事件
+            const timeRangeSelect = document.getElementById('vib-time-range');
+            if (timeRangeSelect) {
+                timeRangeSelect.addEventListener('change', function() {
+                    console.log('选择时间范围:', this.value);
+                });
+            }
+
+            // 参数选择事件
+            const parameterSelect = document.getElementById('vib-parameter-select');
+            if (parameterSelect) {
+                parameterSelect.addEventListener('change', function() {
+                    currentParameter = this.value;
+                    updateHistoryChart();
+                    // 如果正在自动切换，停止自动切换
+                    if (isAutoSwitching) {
+                        stopAutoSwitch();
+                        document.getElementById('vib-auto-switch').checked = false;
+                        document.getElementById('vib-switch-interval').disabled = true;
+                    }
+                });
+            }
+
+            // 轴选择事件
+            const axisSelect = document.getElementById('vib-axis-select');
+            if (axisSelect) {
+                axisSelect.addEventListener('change', function() {
+                    currentAxis = this.value;
+                    updateHistoryChart();
+                    // 如果正在自动切换，停止自动切换
+                    if (isAutoSwitching) {
+                        stopAutoSwitch();
+                        document.getElementById('vib-auto-switch').checked = false;
+                        document.getElementById('vib-switch-interval').disabled = true;
+                    }
+                });
+            }
+
+            // 自动切换开关事件
+            const autoSwitchCheckbox = document.getElementById('vib-auto-switch');
+            if (autoSwitchCheckbox) {
+                autoSwitchCheckbox.addEventListener('change', function() {
+                    if (this.checked) {
+                        isAutoSwitching = true;
+                        document.getElementById('vib-switch-interval').disabled = false;
+                        startAutoSwitch();
+                    } else {
+                        stopAutoSwitch();
+                        document.getElementById('vib-switch-interval').disabled = true;
+                    }
+                });
+            }
+
+            // 自动切换间隔事件
+            const switchIntervalSelect = document.getElementById('vib-switch-interval');
+            if (switchIntervalSelect) {
+                switchIntervalSelect.addEventListener('change', function() {
+                    switchInterval = parseInt(this.value);
+                    if (isAutoSwitching) {
+                        startAutoSwitch();
+                    }
+                });
+            }
+
+            // 更新周期按钮事件
+            const updateIntervalButton = document.getElementById('update-interval');
+            if (updateIntervalButton) {
+                updateIntervalButton.addEventListener('click', function() {
+                    const intervalInput = document.getElementById('query-interval');
+                    const newInterval = parseInt(intervalInput.value);
+                    if (newInterval >= 1 && newInterval <= 60) {
+                        updateQueryInterval(newInterval);
+                    }
+                });
+            }
+
+            // 打开串口按钮事件
+            const openSerialButton = document.getElementById('open-serial');
+            if (openSerialButton) {
+                openSerialButton.addEventListener('click', function() {
+                    openSerial();
+                });
+            }
+
+            // 关闭串口按钮事件
+            const closeSerialButton = document.getElementById('close-serial');
+            if (closeSerialButton) {
+                closeSerialButton.addEventListener('click', function() {
+                    closeSerial();
+                });
+            }
+
+            // 启动问询按钮事件
+            const startQueryButton = document.getElementById('start-query');
+            if (startQueryButton) {
+                startQueryButton.addEventListener('click', function() {
+                    startQuery();
+                });
+            }
+
+            // 停止问询按钮事件
+            const stopQueryButton = document.getElementById('stop-query');
+            if (stopQueryButton) {
+                stopQueryButton.addEventListener('click', function() {
+                    stopQuery();
+                });
+            }
+
+            // 刷新数据按钮事件
+            const refreshDataButton = document.getElementById('refresh-data');
+            if (refreshDataButton) {
+                refreshDataButton.addEventListener('click', function() {
+                    console.log('刷新数据');
+                    fetchVibrationData();
+                });
+            }
+
+            // 更新振动标准限值显示
+            function updateVibrationLimits() {
+                const limits = vibrationLimits[deviceClass];
+                const vibrationLimitsElement = document.getElementById('vibration-limits');
+                if (vibrationLimitsElement) {
+                    vibrationLimitsElement.innerHTML = `
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <div class="text-xs text-vib/70">A（良好）</div>
+                                <div class="text-sm font-semibold">≤ ${limits.A} mm/s</div>
+                            </div>
+                            <div>
+                                <div class="text-xs text-vib/70">B（可接受）</div>
+                                <div class="text-sm font-semibold">${limits.A} ~ ${limits.B} mm/s</div>
+                            </div>
+                            <div>
+                                <div class="text-xs text-vib/70">C（注意）</div>
+                                <div class="text-sm font-semibold">${limits.B} ~ ${limits.C} mm/s</div>
+                            </div>
+                            <div>
+                                <div class="text-xs text-vib/70">D（不允许）</div>
+                                <div class="text-sm font-semibold">＞ ${limits.D} mm/s</div>
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+
+            // 设备分类选择变化事件
+            const deviceClassSelect = document.getElementById('device-class');
+            if (deviceClassSelect) {
+                deviceClassSelect.addEventListener('change', function() {
+                    deviceClass = parseInt(this.value);
+                    updateVibrationLimits();
+                });
+            }
+
+            // 更新设备分类按钮点击事件
+            const updateDeviceClassButton = document.getElementById('update-device-class');
+            if (updateDeviceClassButton) {
+                updateDeviceClassButton.addEventListener('click', function() {
+                    // 调用API来更新设备分类
+                    fetch('/api/vibration/device-class', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ device_class: deviceClass })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            alert(data.message);
+                        } else {
+                            alert('更新设备分类失败: ' + data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('更新设备分类失败:', error);
+                        alert('更新设备分类失败: ' + error.message);
+                    });
+                });
+            }
+
+            // 初始化时获取设备分类
+            function initDeviceClass() {
+                fetch('/api/vibration/device-class')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        deviceClass = data.device_class;
+                        const deviceClassSelect = document.getElementById('device-class');
+                        if (deviceClassSelect) {
+                            deviceClassSelect.value = deviceClass;
+                        }
+                        updateVibrationLimits();
+                    }
+                })
+                .catch(error => {
+                    console.error('获取设备分类失败:', error);
+                });
+            }
+
+            // 初始化设备分类
+            initDeviceClass();
+
+            // 初始化振动标准限值显示
+            updateVibrationLimits();
+        });
+    </script>
+{% endblock %}

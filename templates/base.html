@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>物联网数据大屏 - 综合监控系统</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0ea5e9',
+                        secondary: '#06b6d4',
+                        accent: '#3b82f6',
+                        dark: '#0f172a',
+                        light: '#f8fafc',
+                        temp: '#f97316',
+                        vib: '#8b5cf6',
+                        video: '#10b981',
+                        lightgas: '#f59e0b'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .text-shadow {
+                text-shadow: 0 0 10px rgba(14, 165, 233, 0.5);
+            }
+            .text-shadow-lg {
+                text-shadow: 0 0 20px rgba(14, 165, 233, 0.7);
+            }
+            .glow {
+                box-shadow: 0 0 20px rgba(14, 165, 233, 0.3);
+            }
+            .glow-lg {
+                box-shadow: 0 0 30px rgba(14, 165, 233, 0.5);
+            }
+            .glow-temp {
+                box-shadow: 0 0 20px rgba(249, 115, 22, 0.3);
+            }
+            .glow-vib {
+                box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
+            }
+            .glow-video {
+                box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+            }
+            .glow-air {
+                box-shadow: 0 0 20px rgba(245, 158, 11, 0.3);
+            }
+            .grid-bg {
+                background-image: 
+                    linear-gradient(rgba(14, 165, 233, 0.1) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(14, 165, 233, 0.1) 1px, transparent 1px);
+                background-size: 20px 20px;
+            }
+            .pulse-slow {
+                animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+            }
+            .pulse-fast {
+                animation: pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+            }
+            @keyframes float {
+                0%, 100% {
+                    transform: translateY(0);
+                }
+                50% {
+                    transform: translateY(-10px);
+                }
+            }
+            .float {
+                animation: float 6s ease-in-out infinite;
+            }
+            @keyframes fadeInUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(20px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+            .fade-in-up {
+                animation: fadeInUp 0.5s ease-out;
+            }
+            @keyframes slideInRight {
+                from {
+                    opacity: 0;
+                    transform: translateX(20px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+            }
+            .slide-in-right {
+                animation: slideInRight 0.5s ease-out;
+            }
+            .nav-item {
+                transition: all 0.3s ease;
+            }
+            .nav-item:hover {
+                transform: translateY(-2px);
+            }
+            .nav-item.active {
+                background: linear-gradient(135deg, rgba(14, 165, 233, 0.2), rgba(6, 182, 212, 0.1));
+                border-left: 4px solid #0ea5e9;
+            }
+            .scale-110 {
+                transform: scale(1.1);
+                transition: transform 0.3s ease;
+            }
+        }
+    </style>
+</head>
+<body class="bg-dark text-light min-h-screen grid-bg">
+    <div class="container mx-auto px-6 py-8">
+        <!-- 顶部标题栏 -->
+        <header class="mb-10 fade-in-up">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center">
+                    <div class="w-16 h-16 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center mr-6 glow-lg float">
+                        <i class="fa fa-connectdevelop text-3xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-4xl font-bold text-shadow-lg">物联网数据大屏</h1>
+                        <p class="text-primary/70 text-lg">综合监控系统</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-6">
+                    <div class="bg-dark/50 backdrop-blur-sm px-6 py-3 rounded-lg border border-primary/30 glow">
+                        <span class="text-sm text-primary/70">系统状态:</span>
+                        <span class="ml-3 text-green-400 font-semibold">运行中</span>
+                    </div>
+                    <div class="bg-dark/50 backdrop-blur-sm px-6 py-3 rounded-lg border border-primary/30 glow">
+                        <span id="current-time" class="text-lg"></span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- 导航栏 -->
+        <nav class="mb-10 bg-dark/60 backdrop-blur-sm rounded-2xl border border-primary/30 p-4 glow fade-in-up">
+            <ul class="flex flex-wrap gap-4">
+                <li>
+                    <a href="/overview" class="nav-item {% if active_page == 'overview' %}active{% endif %} px-8 py-4 rounded-xl font-semibold text-lg flex items-center">
+                        <i class="fa fa-dashboard mr-3"></i> 概览
+                    </a>
+                </li>
+                <li>
+                    <a href="/temperature" class="nav-item {% if active_page == 'temperature' %}active{% endif %} px-8 py-4 rounded-xl font-semibold text-lg flex items-center">
+                        <i class="fa fa-thermometer-half mr-3 text-temp"></i> 温湿度监控
+                    </a>
+                </li>
+                <li>
+                    <a href="/vibration" class="nav-item {% if active_page == 'vibration' %}active{% endif %} px-8 py-4 rounded-xl font-semibold text-lg flex items-center">
+                        <i class="fa fa-area-chart mr-3 text-vib"></i> 温振监控
+                    </a>
+                </li>
+                <li>
+                    <a href="/video" class="nav-item {% if active_page == 'video' %}active{% endif %} px-8 py-4 rounded-xl font-semibold text-lg flex items-center">
+                        <i class="fa fa-video-camera mr-3 text-video"></i> 视频监控
+                    </a>
+                </li>
+                <li>
+                    <a href="/light" class="nav-item {% if active_page == 'light' %}active{% endif %} px-8 py-4 rounded-xl font-semibold text-lg flex items-center">
+                        <i class="fa fa-sun-o mr-3 text-lightgas"></i> 光照气体监控
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- 内容区域 -->
+        {% block content %}
+        {% endblock %}
+
+        <!-- 底部信息栏 -->
+        <footer class="mt-8 py-6 border-t border-primary/30">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="text-primary/70 text-sm mb-4 md:mb-0">
+                    © 2026 物联网数据大屏 - 综合监控系统
+                </div>
+                <div class="flex space-x-4">
+                    <a href="#" class="text-primary/70 hover:text-primary transition-colors">
+                        <i class="fa fa-question-circle mr-1"></i> 帮助
+                    </a>
+                    <a href="#" class="text-primary/70 hover:text-primary transition-colors">
+                        <i class="fa fa-cog mr-1"></i> 设置
+                    </a>
+                    <a href="#" class="text-primary/70 hover:text-primary transition-colors">
+                        <i class="fa fa-info-circle mr-1"></i> 关于
+                    </a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // 更新当前时间
+        function updateCurrentTime() {
+            const now = new Date();
+            const timeString = now.toLocaleString('zh-CN', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            const currentTimeElement = document.getElementById('current-time');
+            if (currentTimeElement) {
+                currentTimeElement.textContent = timeString;
+            }
+        }
+        
+        // 立即更新时间
+        updateCurrentTime();
+        
+        // 设置定时器，每秒更新时间
+        setInterval(updateCurrentTime, 1000);
+    </script>
+
+    {% block scripts %}
+    {% endblock %}
+</body>
+</html>

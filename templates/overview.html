@@ -1,0 +1,359 @@
+{% extends "base.html" %}
+
+{% block content %}
+        <!-- 概览页面 -->
+        <section id="overview" class="mb-16 fade-in-up">
+            <h2 class="text-4xl font-bold mb-8 text-shadow">系统概览</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 xl:gap-10">
+                <!-- 温湿度监控卡片 -->
+                <div class="bg-dark/50 backdrop-blur-sm rounded-2xl border border-primary/30 p-8 glow-temp nav-item hover:scale-105 transition-transform duration-300">
+                    <div class="flex justify-between items-start mb-6">
+                        <div>
+                            <h3 class="text-2xl font-semibold">温湿度监控</h3>
+                            <p class="text-temp/70 text-sm">环境温湿度监测</p>
+                        </div>
+                        <div class="w-16 h-16 rounded-full bg-temp/20 flex items-center justify-center">
+                            <i class="fa fa-thermometer-half text-3xl text-temp"></i>
+                        </div>
+                    </div>
+                    <div class="mt-6">
+                        <div class="text-5xl font-bold text-shadow">
+                            <span id="overview-temp">--</span>°C / <span id="overview-hum">--</span>%
+                        </div>
+                        <div class="text-temp/70 text-lg mt-4">
+                            <span>实时监测中</span>
+                        </div>
+                    </div>
+                    <div class="mt-6">
+                        <canvas id="overview-temp-chart" height="180"></canvas>
+                    </div>
+                </div>
+
+                <!-- 温振监控卡片 -->
+                <div class="bg-dark/50 backdrop-blur-sm rounded-2xl border border-primary/30 p-8 glow-vib nav-item hover:scale-105 transition-transform duration-300">
+                    <div class="flex justify-between items-start mb-6">
+                        <div>
+                            <h3 class="text-2xl font-semibold">温振监控</h3>
+                            <p class="text-vib/70 text-sm">设备温度振动监测</p>
+                        </div>
+                        <div class="w-16 h-16 rounded-full bg-vib/20 flex items-center justify-center">
+                            <i class="fa fa-area-chart text-3xl text-vib"></i>
+                        </div>
+                    </div>
+                    <div class="mt-6">
+                        <div class="text-5xl font-bold text-shadow">
+                            <span id="overview-vib-temp">--</span>°C / <span id="overview-vib">--</span>Hz
+                        </div>
+                        <div class="text-vib/70 text-lg mt-4">
+                            <span>设备状态正常</span>
+                        </div>
+                    </div>
+                    <div class="mt-6">
+                        <canvas id="overview-vib-chart" height="180"></canvas>
+                    </div>
+                </div>
+
+                <!-- 视频监控卡片 -->
+                <div class="bg-dark/50 backdrop-blur-sm rounded-2xl border border-primary/30 p-8 glow-video nav-item hover:scale-105 transition-transform duration-300">
+                    <div class="flex justify-between items-start mb-6">
+                        <div>
+                            <h3 class="text-2xl font-semibold">视频监控</h3>
+                            <p class="text-video/70 text-sm">现场视频监控</p>
+                        </div>
+                        <div class="w-16 h-16 rounded-full bg-video/20 flex items-center justify-center">
+                            <i class="fa fa-video-camera text-3xl text-video"></i>
+                        </div>
+                    </div>
+                    <div class="mt-6">
+                        <div class="text-5xl font-bold text-shadow">
+                            <span id="overview-cameras">4</span> 路
+                        </div>
+                        <div class="text-video/70 text-lg mt-4">
+                            <span>全部在线</span>
+                        </div>
+                    </div>
+                    <div class="mt-6 grid grid-cols-2 gap-4">
+                        <div class="bg-dark/80 rounded-lg aspect-video flex items-center justify-center">
+                            <i class="fa fa-video-camera text-4xl text-video/50"></i>
+                        </div>
+                        <div class="bg-dark/80 rounded-lg aspect-video flex items-center justify-center">
+                            <i class="fa fa-video-camera text-4xl text-video/50"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 光照气体监控卡片 -->
+                <div class="bg-dark/50 backdrop-blur-sm rounded-2xl border border-primary/30 p-8 glow-air nav-item hover:scale-105 transition-transform duration-300">
+                    <div class="flex justify-between items-start mb-6">
+                        <div>
+                            <h3 class="text-2xl font-semibold">光照气体监控</h3>
+                            <p class="text-lightgas/70 text-sm">环境光照气体监测</p>
+                        </div>
+                        <div class="w-16 h-16 rounded-full bg-lightgas/20 flex items-center justify-center">
+                            <i class="fa fa-sun-o text-3xl text-lightgas"></i>
+                        </div>
+                    </div>
+                    <div class="mt-6">
+                        <div class="text-5xl font-bold text-shadow">
+                            <span id="overview-light-gas">--</span>
+                        </div>
+                        <div class="text-lightgas/70 text-lg mt-4">
+                            <span id="overview-light-gas-status">良好</span>
+                        </div>
+                    </div>
+                    <div class="mt-6">
+                        <canvas id="overview-light-gas-chart" height="180"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        // 全局变量
+        let overviewTempChart, overviewVibChart, overviewLightGasChart;
+        let temperatureData = [];
+        let humidityData = [];
+        let lightData = [];
+        let timeLabels = [];
+        let queryInterval = 2; // 默认问询周期（秒）
+        let lastTimestamp = 0; // 上次传感器数据的时间戳
+        let dataUpdateInterval; // 数据更新定时器
+
+        // 获取传感器数据
+        function fetchSensorData() {
+            fetch('/api/sensor/data')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.temperature !== undefined && data.humidity !== undefined) {
+                        updateOverviewData(data);
+                    }
+                })
+                .catch(error => {
+                    console.error('获取传感器数据失败:', error);
+                });
+        }
+
+        // 获取光照气体数据
+        function fetchLightGasData() {
+            fetch('/api/light/data')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.light !== undefined) {
+                        updateLightGasData(data);
+                    }
+                })
+                .catch(error => {
+                    console.error('获取光照气体数据失败:', error);
+                });
+        }
+
+        // 更新概览页面数据
+        function updateOverviewData(data) {
+            const overviewTemp = document.getElementById('overview-temp');
+            if (overviewTemp) {
+                // 添加数据变化动画
+                overviewTemp.classList.add('scale-110');
+                setTimeout(() => {
+                    overviewTemp.classList.remove('scale-110');
+                }, 300);
+                overviewTemp.textContent = data.temperature.toFixed(1);
+            }
+            
+            const overviewHum = document.getElementById('overview-hum');
+            if (overviewHum) {
+                // 添加数据变化动画
+                overviewHum.classList.add('scale-110');
+                setTimeout(() => {
+                    overviewHum.classList.remove('scale-110');
+                }, 300);
+                overviewHum.textContent = data.humidity.toFixed(1);
+            }
+            
+            // 更新概览图表
+            if (overviewTempChart) {
+                const currentData = overviewTempChart.data.datasets[0].data;
+                currentData.push(data.temperature);
+                if (currentData.length > 10) {
+                    currentData.shift();
+                }
+                overviewTempChart.data.datasets[0].data = currentData;
+                overviewTempChart.update('none'); // 使用无动画更新，避免性能问题
+            }
+        }
+
+        // 更新光照气体数据
+        function updateLightGasData(data) {
+            const overviewLightGas = document.getElementById('overview-light-gas');
+            if (overviewLightGas) {
+                // 添加数据变化动画
+                overviewLightGas.classList.add('scale-110');
+                setTimeout(() => {
+                    overviewLightGas.classList.remove('scale-110');
+                }, 300);
+                overviewLightGas.textContent = data.light.toFixed(0);
+            }
+            
+            const overviewLightGasStatus = document.getElementById('overview-light-gas-status');
+            if (overviewLightGasStatus) {
+                let status = '良好';
+                if (data.co2 > 1000) {
+                    status = '警告';
+                }
+                overviewLightGasStatus.textContent = status;
+            }
+            
+            // 更新光照气体图表
+            if (overviewLightGasChart) {
+                const currentData = overviewLightGasChart.data.datasets[0].data;
+                currentData.push(data.light);
+                if (currentData.length > 10) {
+                    currentData.shift();
+                }
+                overviewLightGasChart.data.datasets[0].data = currentData;
+                overviewLightGasChart.update('none'); // 使用无动画更新，避免性能问题
+            }
+        }
+
+        // 初始化概览页面图表
+        function initOverviewCharts() {
+            try {
+                // 温湿度概览图表
+                const overviewTempCtx = document.getElementById('overview-temp-chart');
+                if (overviewTempCtx) {
+                    overviewTempChart = new Chart(overviewTempCtx, {
+                        type: 'line',
+                        data: {
+                            labels: Array(10).fill(''),
+                            datasets: [{
+                                label: '温度',
+                                data: Array(10).fill(25),
+                                borderColor: '#f97316',
+                                backgroundColor: 'rgba(249, 115, 22, 0.1)',
+                                borderWidth: 2,
+                                tension: 0.4,
+                                fill: true
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    display: false
+                                }
+                            },
+                            scales: {
+                                x: {
+                                    display: false
+                                },
+                                y: {
+                                    display: false
+                                }
+                            }
+                        }
+                    });
+                }
+
+                // 温振概览图表
+                const overviewVibCtx = document.getElementById('overview-vib-chart');
+                if (overviewVibCtx) {
+                    overviewVibChart = new Chart(overviewVibCtx, {
+                        type: 'line',
+                        data: {
+                            labels: Array(10).fill(''),
+                            datasets: [{
+                                label: '振动',
+                                data: Array(10).fill(50),
+                                borderColor: '#8b5cf6',
+                                backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                                borderWidth: 2,
+                                tension: 0.4,
+                                fill: true
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    display: false
+                                }
+                            },
+                            scales: {
+                                x: {
+                                    display: false
+                                },
+                                y: {
+                                    display: false
+                                }
+                            }
+                        }
+                    });
+                }
+
+                // 光照气体概览图表
+                const overviewLightGasCtx = document.getElementById('overview-light-gas-chart');
+                if (overviewLightGasCtx) {
+                    overviewLightGasChart = new Chart(overviewLightGasCtx, {
+                        type: 'line',
+                        data: {
+                            labels: Array(10).fill(''),
+                            datasets: [{
+                                label: '光照',
+                                data: Array(10).fill(500),
+                                borderColor: '#f59e0b',
+                                backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                                borderWidth: 2,
+                                tension: 0.4,
+                                fill: true
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    display: false
+                                }
+                            },
+                            scales: {
+                                x: {
+                                    display: false
+                                },
+                                y: {
+                                    display: false
+                                }
+                            }
+                        }
+                    });
+                }
+            } catch (error) {
+                console.error('概览图表初始化失败:', error);
+            }
+        }
+
+        // 启动数据更新
+        function startDataUpdate() {
+            // 立即获取一次数据
+            fetchSensorData();
+            fetchLightGasData();
+            
+            // 设置定时器，定期获取数据
+            dataUpdateInterval = setInterval(() => {
+                fetchSensorData();
+                fetchLightGasData();
+            }, queryInterval * 1000);
+        }
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化概览图表
+            initOverviewCharts();
+            
+            // 启动数据更新
+            startDataUpdate();
+        });
+    </script>
+{% endblock %}

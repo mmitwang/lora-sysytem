@@ -1,0 +1,1246 @@
+{% extends "base.html" %}
+
+{% block content %}
+        <!-- 光照气体监控页面 -->
+        <section id="light" class="mb-16 fade-in-up">
+            <h2 class="text-4xl font-bold mb-8 text-shadow">光照气体监控</h2>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-8 xl:gap-10">
+                <!-- 左侧：设备数据卡片 -->
+                <div class="lg:col-span-1 space-y-8">
+                    <!-- 光照强度卡片 -->
+                    <div class="bg-dark/50 backdrop-blur-sm rounded-2xl border border-primary/30 p-8 glow fade-in-up hover:scale-105 transition-transform duration-300">
+                        <div class="flex justify-between items-start mb-6">
+                            <div>
+                                <h3 class="text-2xl font-semibold">光照强度</h3>
+                                <p class="text-lightgas/70 text-sm">环境光照监测</p>
+                            </div>
+                            <div class="w-16 h-16 rounded-full bg-lightgas/20 flex items-center justify-center">
+                                <i class="fa fa-sun-o text-3xl text-lightgas"></i>
+                            </div>
+                        </div>
+                        <div class="mt-6">
+                            <div class="text-8xl font-bold text-shadow-lg" id="light-value">--</div>
+                            <div class="text-lightgas/70 text-xl mt-4">
+                                <span>Lux</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CO2浓度卡片 -->
+                    <div class="bg-dark/50 backdrop-blur-sm rounded-2xl border border-primary/30 p-8 glow fade-in-up hover:scale-105 transition-transform duration-300">
+                        <div class="flex justify-between items-start mb-6">
+                            <div>
+                                <h3 class="text-2xl font-semibold">CO2浓度</h3>
+                                <p class="text-lightgas/70 text-sm">二氧化碳监测</p>
+                            </div>
+                            <div class="w-16 h-16 rounded-full bg-lightgas/20 flex items-center justify-center">
+                                <i class="fa fa-cloud text-3xl text-lightgas"></i>
+                            </div>
+                        </div>
+                        <div class="mt-6">
+                            <div class="text-8xl font-bold text-shadow-lg" id="co2-value">--</div>
+                            <div class="text-lightgas/70 text-xl mt-4">
+                                <span>ppm</span>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                    <!-- 气压卡片 -->
+                    <div class="bg-dark/50 backdrop-blur-sm rounded-2xl border border-primary/30 p-8 glow fade-in-up hover:scale-105 transition-transform duration-300">
+                        <div class="flex justify-between items-start mb-6">
+                            <div>
+                                <h3 class="text-2xl font-semibold">大气压强</h3>
+                                <p class="text-lightgas/70 text-sm">气压监测 (kPa)</p>
+                            </div>
+                            <div class="w-16 h-16 rounded-full bg-lightgas/20 flex items-center justify-center">
+                                <i class="fa fa-dashboard text-3xl text-lightgas"></i>
+                            </div>
+                        </div>
+                        <div class="mt-6">
+                            <div class="text-8xl font-bold text-shadow-lg" id="pressure-value">--</div>
+                            <div class="text-lightgas/70 text-xl mt-4">
+                                <span>kPa</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 温度卡片 -->
+                    <div class="bg-dark/50 backdrop-blur-sm rounded-2xl border border-primary/30 p-8 glow fade-in-up hover:scale-105 transition-transform duration-300">
+                        <div class="flex justify-between items-start mb-6">
+                            <div>
+                                <h3 class="text-2xl font-semibold">环境温度</h3>
+                                <p class="text-lightgas/70 text-sm">温度监测</p>
+                            </div>
+                            <div class="w-16 h-16 rounded-full bg-lightgas/20 flex items-center justify-center">
+                                <i class="fa fa-thermometer-half text-3xl text-lightgas"></i>
+                            </div>
+                        </div>
+                        <div class="mt-6">
+                            <div class="text-8xl font-bold text-shadow-lg" id="temp-value">--</div>
+                            <div class="text-lightgas/70 text-xl mt-4">
+                                <span>°C</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 湿度卡片 -->
+                    <div class="bg-dark/50 backdrop-blur-sm rounded-2xl border border-primary/30 p-8 glow fade-in-up hover:scale-105 transition-transform duration-300">
+                        <div class="flex justify-between items-start mb-6">
+                            <div>
+                                <h3 class="text-2xl font-semibold">环境湿度</h3>
+                                <p class="text-lightgas/70 text-sm">湿度监测</p>
+                            </div>
+                            <div class="w-16 h-16 rounded-full bg-lightgas/20 flex items-center justify-center">
+                                <i class="fa fa-tint text-3xl text-lightgas"></i>
+                            </div>
+                        </div>
+                        <div class="mt-6">
+                            <div class="text-8xl font-bold text-shadow-lg" id="humidity-value">--</div>
+                            <div class="text-lightgas/70 text-xl mt-4">
+                                <span>RH%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 环境状态卡片 -->
+                    <div class="bg-dark/50 backdrop-blur-sm rounded-2xl border border-primary/30 p-8 glow fade-in-up hover:scale-105 transition-transform duration-300">
+                        <div class="flex justify-between items-start mb-6">
+                            <div>
+                                <h3 class="text-2xl font-semibold">环境状态</h3>
+                                <p class="text-lightgas/70 text-sm">系统状态监测</p>
+                            </div>
+                            <div class="w-16 h-16 rounded-full bg-lightgas/20 flex items-center justify-center">
+                                <i class="fa fa-check-circle text-3xl text-lightgas"></i>
+                            </div>
+                        </div>
+                        <div class="mt-6">
+                            <div class="text-4xl font-bold text-shadow-lg text-green-400" id="env-status">正常</div>
+                            <div class="text-lightgas/70 text-xl mt-4">
+                                监测状态: <span id="monitor-status" class="text-green-400">正常</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 右侧：数据详情和趋势图表 -->
+                <div class="lg:col-span-3 space-y-8">
+
+
+                    <!-- 历史数据图表 -->
+                    <div class="bg-dark/50 backdrop-blur-sm rounded-2xl border border-primary/30 p-8 glow fade-in-up">
+                        <div class="flex justify-between items-center mb-8 flex-wrap gap-4">
+                            <h3 class="text-2xl font-semibold">环境参数趋势</h3>
+                            <div class="flex items-center space-x-4 flex-wrap gap-4">
+                                <select id="light-time-range" class="bg-dark/80 border border-primary/30 rounded-lg px-6 py-3 text-light focus:outline-none focus:ring-2 focus:ring-primary/50">
+                                    <option value="day">当天</option>
+                                    <option value="week">近七日</option>
+                                    <option value="month">近一个月</option>
+                                    <option value="year">近一年</option>
+                                </select>
+                                <select id="light-parameter-select" class="bg-dark/80 border border-primary/30 rounded-lg px-6 py-3 text-light focus:outline-none focus:ring-2 focus:ring-primary/50">
+                                    <option value="light">光照强度</option>
+                                    <option value="co2">CO2浓度</option>
+                                    <option value="temperature">温度</option>
+                                    <option value="humidity">湿度</option>
+                                    <option value="pressure">气压</option>
+                                </select>
+                                <div class="flex items-center space-x-2">
+                                    <input type="checkbox" id="light-auto-switch" class="rounded border-primary/30 text-lightgas focus:ring-lightgas">
+                                    <label for="light-auto-switch" class="text-light">自动切换</label>
+                                </div>
+                                <select id="light-switch-interval" class="bg-dark/80 border border-primary/30 rounded-lg px-6 py-3 text-light focus:outline-none focus:ring-2 focus:ring-primary/50" disabled>
+                                    <option value="5">5秒</option>
+                                    <option value="10">10秒</option>
+                                    <option value="15">15秒</option>
+                                    <option value="30">30秒</option>
+                                    <option value="60">60秒</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="relative">
+                            <canvas id="light-history-chart" height="550"></canvas>
+                            <div class="absolute top-6 right-6 bg-dark/70 backdrop-blur-sm px-6 py-3 rounded-lg border border-primary/30 glow">
+                                <span class="text-lightgas font-semibold">实时监测</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 系统配置面板 -->
+                    <div class="bg-dark/50 backdrop-blur-sm rounded-2xl border border-primary/30 p-8 glow fade-in-up">
+                        <h3 class="text-2xl font-semibold mb-8">系统配置</h3>
+                        
+                        <!-- 折叠面板 -->
+                        <div class="space-y-6">
+                            <!-- 串口配置折叠面板 -->
+                            <div class="border border-primary/30 rounded-xl overflow-hidden">
+                                <button class="w-full flex justify-between items-center p-6 bg-dark/80 hover:bg-dark/90 transition-all" onclick="toggleCollapse('serial-config')">
+                                    <h4 class="text-xl font-medium">串口配置</h4>
+                                    <i class="fa fa-chevron-down text-lightgas transition-transform" id="serial-config-icon"></i>
+                                </button>
+                                <div id="serial-config" class="p-6 border-t border-primary/30" style="display: none;">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div>
+                                            <label class="block text-sm text-lightgas/70 mb-3">串口端口</label>
+                                            <select id="serial-port" class="w-full bg-dark/80 border border-primary/30 rounded-lg px-6 py-3 text-light focus:outline-none focus:ring-2 focus:ring-primary/50">
+                                                <option value="">加载中...</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm text-lightgas/70 mb-3">波特率</label>
+                                            <select id="serial-baudrate" class="w-full bg-dark/80 border border-primary/30 rounded-lg px-6 py-3 text-light focus:outline-none focus:ring-2 focus:ring-primary/50">
+                                                <option value="4800">4800</option>
+                                                <option value="9600" selected>9600</option>
+                                                <option value="19200">19200</option>
+                                                <option value="38400">38400</option>
+                                                <option value="57600">57600</option>
+                                                <option value="115200">115200</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm text-lightgas/70 mb-3">校验位</label>
+                                            <select id="serial-parity" class="w-full bg-dark/80 border border-primary/30 rounded-lg px-6 py-3 text-light focus:outline-none focus:ring-2 focus:ring-primary/50">
+                                                <option value="N" selected>无</option>
+                                                <option value="E">偶校验</option>
+                                                <option value="O">奇校验</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm text-lightgas/70 mb-3">停止位</label>
+                                            <select id="serial-stopbits" class="w-full bg-dark/80 border border-primary/30 rounded-lg px-6 py-3 text-light focus:outline-none focus:ring-2 focus:ring-primary/50">
+                                                <option value="1" selected>1</option>
+                                                <option value="2">2</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="mt-4">
+                                        <button onclick="scanSerialPorts()" class="px-6 py-2 bg-dark/80 border border-primary/30 rounded-lg font-semibold hover:bg-primary/10 transition-all">
+                                            重新扫描串口
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 问询周期设置折叠面板 -->
+                            <div class="border border-primary/30 rounded-xl overflow-hidden">
+                                <button class="w-full flex justify-between items-center p-6 bg-dark/80 hover:bg-dark/90 transition-all" onclick="toggleCollapse('interval-config')">
+                                    <h4 class="text-xl font-medium">问询周期设置</h4>
+                                    <i class="fa fa-chevron-down text-lightgas transition-transform" id="interval-config-icon"></i>
+                                </button>
+                                <div id="interval-config" class="p-6 border-t border-primary/30" style="display: none;">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div>
+                                            <label class="block text-sm text-lightgas/70 mb-3">问询周期 (秒)</label>
+                                            <input type="number" id="query-interval" min="1" max="60" value="2" class="w-full bg-dark/80 border border-primary/30 rounded-lg px-6 py-3 text-light focus:outline-none focus:ring-2 focus:ring-primary/50">
+                                        </div>
+                                        <div class="flex items-end">
+                                            <button id="update-interval" class="px-8 py-3 bg-gradient-to-r from-lightgas to-lightgas/80 rounded-lg font-semibold hover:opacity-90 transition-all transform hover:scale-105">
+                                                更新周期
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 监测阈值设置折叠面板 -->
+                            <div class="border border-primary/30 rounded-xl overflow-hidden">
+                                <button class="w-full flex justify-between items-center p-6 bg-dark/80 hover:bg-dark/90 transition-all" onclick="toggleCollapse('threshold-config')">
+                                    <h4 class="text-xl font-medium">监测阈值设置</h4>
+                                    <i class="fa fa-chevron-down text-lightgas transition-transform" id="threshold-config-icon"></i>
+                                </button>
+                                <div id="threshold-config" class="p-6 border-t border-primary/30" style="display: none;">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div>
+                                            <label class="block text-sm text-lightgas/70 mb-3">CO2浓度阈值 (ppm)</label>
+                                            <input type="number" id="co2-threshold" min="500" max="5000" value="1000" class="w-full bg-dark/80 border border-primary/30 rounded-lg px-6 py-3 text-light focus:outline-none focus:ring-2 focus:ring-primary/50">
+                                        </div>
+
+                                        <div>
+                                            <label class="block text-sm text-lightgas/70 mb-3">光照强度阈值 (lux)</label>
+                                            <input type="number" id="light-threshold" min="0" max="100000" value="500" class="w-full bg-dark/80 border border-primary/30 rounded-lg px-6 py-3 text-light focus:outline-none focus:ring-2 focus:ring-primary/50">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm text-lightgas/70 mb-3">气压阈值 (kPa)</label>
+                                            <input type="number" id="pressure-threshold" min="30" max="110" value="100" class="w-full bg-dark/80 border border-primary/30 rounded-lg px-6 py-3 text-light focus:outline-none focus:ring-2 focus:ring-primary/50">
+                                        </div>
+                                    </div>
+                                    <div class="mt-6">
+                                        <button id="update-thresholds" class="px-8 py-3 bg-gradient-to-r from-lightgas to-lightgas/80 rounded-lg font-semibold hover:opacity-90 transition-all transform hover:scale-105">
+                                            更新阈值
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 帧数据显示折叠面板 -->
+                            <div class="border border-primary/30 rounded-xl overflow-hidden">
+                                <button class="w-full flex justify-between items-center p-6 bg-dark/80 hover:bg-dark/90 transition-all" onclick="toggleCollapse('frame-data')">
+                                    <h4 class="text-xl font-medium">Modbus-RTU帧数据</h4>
+                                    <i class="fa fa-chevron-up text-lightgas transition-transform" id="frame-data-icon"></i>
+                                </button>
+                                <div id="frame-data" class="p-6 border-t border-primary/30">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div class="bg-dark/80 rounded-xl p-6 border border-primary/30 glow">
+                                            <h5 class="text-lg font-semibold mb-4 text-lightgas">问询帧</h5>
+                                            <div id="query-frame" class="bg-dark/90 rounded-lg p-4 font-mono text-sm overflow-x-auto">
+                                                未发送
+                                            </div>
+                                        </div>
+                                        <div class="bg-dark/80 rounded-xl p-6 border border-primary/30 glow">
+                                            <h5 class="text-lg font-semibold mb-4 text-lightgas">应答帧</h5>
+                                            <div id="response-frame" class="bg-dark/90 rounded-lg p-4 font-mono text-sm overflow-x-auto">
+                                                未接收
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 帧数据解析说明折叠面板 -->
+                            <div class="border border-primary/30 rounded-xl overflow-hidden">
+                                <button class="w-full flex justify-between items-center p-6 bg-dark/80 hover:bg-dark/90 transition-all" onclick="toggleCollapse('frame-parse')">
+                                    <h4 class="text-xl font-medium">帧数据解析模型</h4>
+                                    <i class="fa fa-chevron-down text-lightgas transition-transform" id="frame-parse-icon"></i>
+                                </button>
+                                <div id="frame-parse" class="p-6 border-t border-primary/30" style="display: none;">
+                                    <div class="space-y-6">
+                                        <!-- 问询帧定义 -->
+                                        <div>
+                                            <h5 class="text-lg font-semibold mb-4 text-lightgas">问询帧定义</h5>
+                                            <div class="bg-dark/80 rounded-xl p-6 border border-primary/30">
+                                                <table class="w-full text-sm">
+                                                    <thead>
+                                                        <tr class="border-b border-primary/30">
+                                                            <th class="py-2 text-left">字段</th>
+                                                            <th class="py-2 text-left">偏移</th>
+                                                            <th class="py-2 text-left">长度</th>
+                                                            <th class="py-2 text-left">数值</th>
+                                                            <th class="py-2 text-left">描述</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr class="border-b border-primary/20">
+                                                            <td class="py-2">地址码</td>
+                                                            <td class="py-2">0</td>
+                                                            <td class="py-2">1</td>
+                                                            <td class="py-2">01H</td>
+                                                            <td class="py-2">从设备地址</td>
+                                                        </tr>
+                                                        <tr class="border-b border-primary/20">
+                                                            <td class="py-2">功能码</td>
+                                                            <td class="py-2">1</td>
+                                                            <td class="py-2">1</td>
+                                                            <td class="py-2">03H</td>
+                                                            <td class="py-2">读取保持寄存器</td>
+                                                        </tr>
+                                                        <tr class="border-b border-primary/20">
+                                                            <td class="py-2">起始寄存器</td>
+                                                            <td class="py-2">2-3</td>
+                                                            <td class="py-2">2</td>
+                                                            <td class="py-2">0000H</td>
+                                                            <td class="py-2">起始寄存器地址</td>
+                                                        </tr>
+                                                        <tr class="border-b border-primary/20">
+                                                            <td class="py-2">寄存器个数</td>
+                                                            <td class="py-2">4-5</td>
+                                                            <td class="py-2">2</td>
+                                                            <td class="py-2">0008H</td>
+                                                            <td class="py-2">读取8个寄存器</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="py-2">校验码</td>
+                                                            <td class="py-2">6-7</td>
+                                                            <td class="py-2">2</td>
+                                                            <td class="py-2">440CH</td>
+                                                            <td class="py-2">CRC16校验码</td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                                <div class="mt-4 font-mono text-sm">
+                                                    完整问询帧：<code class="text-lightgas">01 03 00 00 00 08 44 0C</code>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- 应答帧定义 -->
+                                        <div>
+                                            <h5 class="text-lg font-semibold mb-4 text-lightgas">应答帧定义</h5>
+                                            <div class="bg-dark/80 rounded-xl p-6 border border-primary/30">
+                                                <table class="w-full text-sm">
+                                                    <thead>
+                                                        <tr class="border-b border-primary/30">
+                                                            <th class="py-2 text-left">字段</th>
+                                                            <th class="py-2 text-left">偏移</th>
+                                                            <th class="py-2 text-left">长度</th>
+                                                            <th class="py-2 text-left">数值</th>
+                                                            <th class="py-2 text-left">描述</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr class="border-b border-primary/20">
+                                                            <td class="py-2">地址码</td>
+                                                            <td class="py-2">0</td>
+                                                            <td class="py-2">1</td>
+                                                            <td class="py-2">01H</td>
+                                                            <td class="py-2">从设备地址</td>
+                                                        </tr>
+                                                        <tr class="border-b border-primary/20">
+                                                            <td class="py-2">功能码</td>
+                                                            <td class="py-2">1</td>
+                                                            <td class="py-2">1</td>
+                                                            <td class="py-2">03H</td>
+                                                            <td class="py-2">读取保持寄存器</td>
+                                                        </tr>
+                                                        <tr class="border-b border-primary/20">
+                                                            <td class="py-2">字节数</td>
+                                                            <td class="py-2">2</td>
+                                                            <td class="py-2">1</td>
+                                                            <td class="py-2">10H</td>
+                                                            <td class="py-2">有效数据字节数（16字节）</td>
+                                                        </tr>
+                                                        <tr class="border-b border-primary/20">
+                                                            <td class="py-2">状态</td>
+                                                            <td class="py-2">3-4</td>
+                                                            <td class="py-2">2</td>
+                                                            <td class="py-2">0000H</td>
+                                                            <td class="py-2">传感器状态（0正常，1异常）</td>
+                                                        </tr>
+                                                        <tr class="border-b border-primary/20">
+                                                            <td class="py-2">温度</td>
+                                                            <td class="py-2">5-6</td>
+                                                            <td class="py-2">2</td>
+                                                            <td class="py-2">00DAH</td>
+                                                            <td class="py-2">温度数据（0.1°单位，int16有符号整型）</td>
+                                                        </tr>
+                                                        <tr class="border-b border-primary/20">
+                                                            <td class="py-2">湿度</td>
+                                                            <td class="py-2">7</td>
+                                                            <td class="py-2">2</td>
+                                                            <td class="py-2">0019H</td>
+                                                            <td class="py-2">湿度数据（%单位，uint8无符号整型）</td>
+                                                        </tr>
+                                                        <tr class="border-b border-primary/20">
+                                                            <td class="py-2">CO₂浓度</td>
+                                                            <td class="py-2">8-9</td>
+                                                            <td class="py-2">2</td>
+                                                            <td class="py-2">0300H</td>
+                                                            <td class="py-2">CO₂浓度数据（ppm单位，uint16无符号整型）</td>
+                                                        </tr>
+                                                        <tr class="border-b border-primary/20">
+                                                            <td class="py-2">气压</td>
+                                                            <td class="py-2">10-13</td>
+                                                            <td class="py-2">4</td>
+                                                            <td class="py-2">0001 8417H</td>
+                                                            <td class="py-2">大气压强数据（hPa单位，uint16无符号整型）</td>
+                                                        </tr>
+                                                        <tr class="border-b border-primary/20">
+                                                            <td class="py-2">光感</td>
+                                                            <td class="py-2">14-17</td>
+                                                            <td class="py-2">4</td>
+                                                            <td class="py-2">0000 0047H</td>
+                                                            <td class="py-2">光照强度数据（Lux单位，uint16无符号整型）</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="py-2">校验码</td>
+                                                            <td class="py-2">19-20</td>
+                                                            <td class="py-2">2</td>
+                                                            <td class="py-2">A6D8H</td>
+                                                            <td class="py-2">CRC16校验码</td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                                <div class="mt-4 font-mono text-sm">
+                                                    完整应答帧：<code class="text-lightgas">01 03 10 00 00 00 EC 00 19 03 00 00 01 03 FE 00 00 01 A7 B0 6C</code>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- 解析模型 -->
+                                        <div>
+                                            <h5 class="text-lg font-semibold mb-4 text-lightgas">解析模型</h5>
+                                            <div class="bg-dark/80 rounded-xl p-6 border border-primary/30">
+                                                <ul class="list-disc pl-5 space-y-2">
+                                                    <li>数据提取：按偏移位置提取各个字段的值</li>
+                                                    <li>温度转换：有符号整型，单位转换为0.1°</li>
+                                                    <li>湿度转换：无符号整型，单位为%</li>
+                                                    <li>CO2浓度：无符号整型，单位为ppm</li>
+                                                    <li>气压转换：无符号整型，单位为hPa</li>
+                                                    <li>光照强度：无符号整型，单位为Lux</li>
+                                                    <li>CRC校验：使用除校验码外的所有数据计算CRC16校验码</li>
+                                                    <li>数据验证：检查数据是否在合理范围内</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 操作按钮 -->
+                            <div class="flex space-x-6 pt-4 flex-wrap gap-4">
+                                <button id="open-serial" class="px-8 py-4 bg-gradient-to-r from-lightgas to-lightgas/80 rounded-lg font-semibold text-lg hover:opacity-90 transition-all transform hover:scale-105">
+                                    打开串口
+                                </button>
+                                <button id="close-serial" class="px-8 py-4 bg-dark/80 border border-primary/30 rounded-lg font-semibold text-lg hover:bg-primary/10 transition-all transform hover:scale-105">
+                                    关闭串口
+                                </button>
+                                <button id="start-query" class="px-8 py-4 bg-gradient-to-r from-green-500 to-green-600 rounded-lg font-semibold text-lg hover:opacity-90 transition-all transform hover:scale-105">
+                                    启动问询
+                                </button>
+                                <button id="stop-query" class="px-8 py-4 bg-dark/80 border border-red-500/30 rounded-lg font-semibold text-lg hover:bg-red-500/10 transition-all transform hover:scale-105">
+                                    停止问询
+                                </button>
+                                <button id="refresh-data" class="px-8 py-4 bg-dark/80 border border-primary/30 rounded-lg font-semibold text-lg hover:bg-primary/10 transition-all transform hover:scale-105">
+                                    刷新数据
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        // 切换折叠面板
+        function toggleCollapse(id) {
+            const element = document.getElementById(id);
+            const icon = document.getElementById(id + '-icon');
+            if (element && icon) {
+                if (element.style.display === 'none') {
+                    element.style.display = 'block';
+                    icon.style.transform = 'rotate(0deg)';
+                } else {
+                    element.style.display = 'none';
+                    icon.style.transform = 'rotate(-90deg)';
+                }
+            }
+        }
+
+        // 扫描串口
+        function scanSerialPorts() {
+            console.log('开始扫描串口...');
+            const serialPortSelect = document.getElementById('serial-port');
+            if (serialPortSelect) {
+                serialPortSelect.innerHTML = '<option value="">扫描中...</option>';
+                
+                fetch('/api/serial/ports')
+                    .then(function(response) {
+                        console.log('串口扫描响应状态:', response.status);
+                        return response.json();
+                    })
+                    .then(function(ports) {
+                        console.log('扫描到的串口:', ports);
+                        serialPortSelect.innerHTML = '';
+                        if (ports.length > 0) {
+                            ports.forEach(function(port) {
+                                const option = document.createElement('option');
+                                option.value = port.device;
+                                option.textContent = port.device + ' - ' + port.description;
+                                serialPortSelect.appendChild(option);
+                            });
+                        } else {
+                            const option = document.createElement('option');
+                            option.value = '';
+                            option.textContent = '无可用串口';
+                            serialPortSelect.appendChild(option);
+                        }
+                    })
+                    .catch(function(error) {
+                        console.error('扫描串口失败:', error);
+                        serialPortSelect.innerHTML = '<option value="">扫描失败</option>';
+                    });
+            } else {
+                console.error('找不到serial-port元素');
+            }
+        }
+
+        // 获取当前配置
+        function getCurrentConfig() {
+            // 获取串口配置
+            fetch('/api/serial/config')
+                .then(response => response.json())
+                .then(config => {
+                    // 设置串口端口
+                    const serialPortSelect = document.getElementById('serial-port');
+                    if (serialPortSelect) {
+                        for (let i = 0; i < serialPortSelect.options.length; i++) {
+                            if (serialPortSelect.options[i].value === config.port) {
+                                serialPortSelect.selectedIndex = i;
+                                break;
+                            }
+                        }
+                    }
+
+                    // 设置波特率
+                    const baudrateSelect = document.getElementById('serial-baudrate');
+                    if (baudrateSelect) {
+                        baudrateSelect.value = config.baudrate;
+                    }
+
+                    // 设置校验位
+                    const paritySelect = document.getElementById('serial-parity');
+                    if (paritySelect) {
+                        paritySelect.value = config.parity;
+                    }
+
+                    // 设置停止位
+                    const stopbitsSelect = document.getElementById('serial-stopbits');
+                    if (stopbitsSelect) {
+                        stopbitsSelect.value = config.stopbits;
+                    }
+
+                    // 设置问询周期
+                    const intervalInput = document.getElementById('query-interval');
+                    if (intervalInput) {
+                        fetch('/api/query/interval')
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.status === 'success') {
+                                    intervalInput.value = data.interval;
+                                }
+                            });
+                    }
+                })
+                .catch(error => {
+                    console.error('获取配置失败:', error);
+                });
+        }
+
+        // 获取帧数据
+        function updateFrameData() {
+            console.log('开始获取帧数据...');
+            fetch('/api/serial/frames')
+                .then(response => {
+                    console.log('收到帧数据响应:', response.status);
+                    return response.json();
+                })
+                .then(frameData => {
+                    console.log('获取到帧数据:', frameData);
+                    // 更新问询帧显示
+                    const queryFrameElement = document.getElementById('query-frame');
+                    if (queryFrameElement) {
+                        if (frameData.query) {
+                            queryFrameElement.textContent = frameData.query;
+                        } else {
+                            queryFrameElement.textContent = '未发送';
+                        }
+                    }
+
+                    // 更新应答帧显示
+                    const responseFrameElement = document.getElementById('response-frame');
+                    if (responseFrameElement) {
+                        if (frameData.response) {
+                            responseFrameElement.textContent = frameData.response;
+                        } else {
+                            responseFrameElement.textContent = '未接收';
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('获取帧数据失败:', error);
+                });
+        }
+
+        // 打开串口
+        function openSerial() {
+            const serialPortSelect = document.getElementById('serial-port');
+            const baudrateSelect = document.getElementById('serial-baudrate');
+            const paritySelect = document.getElementById('serial-parity');
+            const stopbitsSelect = document.getElementById('serial-stopbits');
+
+            const config = {
+                port: serialPortSelect.value,
+                baudrate: parseInt(baudrateSelect.value),
+                parity: paritySelect.value,
+                stopbits: parseInt(stopbitsSelect.value),
+                bytesize: 8
+            };
+
+            fetch('/api/serial/open', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ config: config })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('打开串口:', data);
+                alert(data.message);
+            })
+            .catch(error => {
+                console.error('打开串口失败:', error);
+                alert('打开串口失败: ' + error.message);
+            });
+        }
+
+        // 关闭串口
+        function closeSerial() {
+            fetch('/api/serial/close', {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('关闭串口:', data);
+                alert(data.message);
+            })
+            .catch(error => {
+                console.error('关闭串口失败:', error);
+                alert('关闭串口失败: ' + error.message);
+            });
+        }
+
+        // 启动问询
+        function startQuery() {
+            fetch('/api/query/start', {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('启动问询:', data);
+                alert(data.message);
+                // 确保数据更新定时器正在运行
+                startDataUpdate();
+            })
+            .catch(error => {
+                console.error('启动问询失败:', error);
+                alert('启动问询失败: ' + error.message);
+            });
+        }
+
+        // 停止问询
+        function stopQuery() {
+            fetch('/api/query/stop', {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('停止问询:', data);
+                alert(data.message);
+                // 停止数据更新定时器
+                stopDataUpdate();
+            })
+            .catch(error => {
+                console.error('停止问询失败:', error);
+                alert('停止问询失败: ' + error.message);
+            });
+        }
+
+        // 更新问询周期
+        function updateQueryInterval(interval) {
+            fetch('/api/serial/interval', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ interval: interval })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('更新问询周期:', data);
+                if (data.status === 'success') {
+                    queryInterval = interval;
+                    stopDataUpdate();
+                    startDataUpdate();
+                    alert(data.message);
+                } else {
+                    alert('更新失败: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('更新问询周期失败:', error);
+                alert('更新问询周期失败: ' + error.message);
+            });
+        }
+
+        // 全局变量
+        let lightHistoryChart = null;
+        let lightData = {
+            light: [],
+            co2: [],
+            temperature: [],
+            humidity: [],
+            pressure: []
+        };
+        let timeLabels = [];
+        let queryInterval = 2; // 默认问询周期（秒）
+        let dataUpdateInterval = null; // 数据更新定时器
+        let currentParameter = 'light'; // 当前显示的参数
+        let autoSwitchInterval = null; // 自动切换定时器
+        let isAutoSwitching = false; // 是否启用自动切换
+        let switchInterval = 5; // 自动切换间隔（秒）
+        let autoSwitchIndex = 0; // 自动切换索引
+        let autoSwitchSequence = [
+            { parameter: 'light' },
+            { parameter: 'co2' },
+            { parameter: 'temperature' },
+            { parameter: 'humidity' },
+            { parameter: 'pressure' }
+        ]; // 自动切换序列
+
+        // 获取光照气体数据
+        function fetchLightData() {
+            console.log('开始获取光照气体数据...');
+            fetch('/api/sensor/data')
+                .then(response => {
+                    console.log('收到响应:', response.status);
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('获取到光照气体数据:', data);
+                    updateLightData(data);
+                    // 更新帧数据
+                    updateFrameData();
+                })
+                .catch(error => {
+                    console.error('获取光照气体数据失败:', error);
+                    // 不使用模拟数据，保持之前的数据
+                    console.log('获取数据失败，保持之前的数据');
+                });
+        }
+
+        // 更新光照气体数据
+        function updateLightData(data) {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString();
+            
+            // 更新光照数据
+            const lightValue = document.getElementById('light-value');
+            if (lightValue) {
+                // 添加数据变化动画
+                lightValue.classList.add('scale-110');
+                setTimeout(() => {
+                    lightValue.classList.remove('scale-110');
+                }, 300);
+                lightValue.textContent = data.light !== undefined ? data.light : '';
+            }
+            
+            // 更新CO2数据
+            const co2Value = document.getElementById('co2-value');
+            if (co2Value) {
+                co2Value.classList.add('scale-110');
+                setTimeout(() => {
+                    co2Value.classList.remove('scale-110');
+                }, 300);
+                co2Value.textContent = data.co2 !== undefined ? data.co2 : '';
+            }
+            
+            // 更新温度数据
+            const tempValue = document.getElementById('temp-value');
+            if (tempValue) {
+                tempValue.classList.add('scale-110');
+                setTimeout(() => {
+                    tempValue.classList.remove('scale-110');
+                }, 300);
+                tempValue.textContent = data.temperature !== undefined ? data.temperature : '';
+            }
+            
+            // 更新湿度数据
+            const humidityValue = document.getElementById('humidity-value');
+            if (humidityValue) {
+                humidityValue.classList.add('scale-110');
+                setTimeout(() => {
+                    humidityValue.classList.remove('scale-110');
+                }, 300);
+                humidityValue.textContent = data.humidity !== undefined ? data.humidity : '';
+            }
+            
+            // 更新气压数据
+            const pressureValue = document.getElementById('pressure-value');
+            if (pressureValue) {
+                pressureValue.classList.add('scale-110');
+                setTimeout(() => {
+                    pressureValue.classList.remove('scale-110');
+                }, 300);
+                pressureValue.textContent = data.pressure !== undefined ? data.pressure : '';
+            }
+            
+            // 更新环境状态
+            const envStatus = document.getElementById('env-status');
+            if (envStatus) {
+                let status = '';
+                let statusClass = 'text-gray-400';
+                
+                // 只有在有数据时才判断状态
+                if (data.co2 !== undefined || data.temperature !== undefined || data.humidity !== undefined || data.pressure !== undefined || data.light !== undefined) {
+                    status = '正常';
+                    statusClass = 'text-green-400';
+                    
+                    // 简单的状态判断
+                    if (data.co2 && data.co2 > 1000) {
+                        status = '警告';
+                        statusClass = 'text-yellow-400';
+                    } else if (data.temperature && (data.temperature < 10 || data.temperature > 35)) {
+                        status = '警告';
+                        statusClass = 'text-yellow-400';
+                    } else if (data.humidity && (data.humidity < 20 || data.humidity > 80)) {
+                        status = '警告';
+                        statusClass = 'text-yellow-400';
+                    } else if (data.pressure && (data.pressure < 95 || data.pressure > 105)) {
+                        status = '警告';
+                        statusClass = 'text-yellow-400';
+                    } else if (data.light && (data.light < 100 || data.light > 50000)) {
+                        status = '警告';
+                        statusClass = 'text-yellow-400';
+                    }
+                }
+                
+                envStatus.textContent = status;
+                envStatus.className = 'text-4xl font-bold text-shadow-lg ' + statusClass;
+            }
+            
+            // 更新监测状态
+            const monitorStatus = document.getElementById('monitor-status');
+            if (monitorStatus) {
+                // 根据传感器状态判断监测状态
+                if (data.status !== undefined) {
+                    if (data.status === 0) {
+                        monitorStatus.textContent = '正常';
+                        monitorStatus.className = 'text-green-400';
+                    } else {
+                        monitorStatus.textContent = '异常';
+                        monitorStatus.className = 'text-red-400';
+                    }
+                } else {
+                    monitorStatus.textContent = '';
+                    monitorStatus.className = 'text-gray-400';
+                }
+            }
+            
+            // 更新历史数据
+            timeLabels.push(timeString);
+            if (timeLabels.length > 50) {
+                timeLabels.shift();
+            }
+            
+            // 更新光照数据数组
+            lightData.light.push(data.light || 0);
+            if (lightData.light.length > 50) {
+                lightData.light.shift();
+            }
+            
+            lightData.co2.push(data.co2 || 0);
+            if (lightData.co2.length > 50) {
+                lightData.co2.shift();
+            }
+            
+
+            
+            lightData.pressure.push(data.pressure || 0);
+            if (lightData.pressure.length > 50) {
+                lightData.pressure.shift();
+            }
+            
+            lightData.temperature.push(data.temperature || 0);
+            if (lightData.temperature.length > 50) {
+                lightData.temperature.shift();
+            }
+            
+            lightData.humidity.push(data.humidity || 0);
+            if (lightData.humidity.length > 50) {
+                lightData.humidity.shift();
+            }
+            
+            // 更新历史图表
+            updateHistoryChart();
+        }
+
+        // 初始化光照气体监控图表
+        function initLightCharts() {
+            try {
+                // 历史数据图表
+                const lightHistoryCtx = document.getElementById('light-history-chart');
+                if (lightHistoryCtx) {
+                    lightHistoryChart = new Chart(lightHistoryCtx, {
+                        type: 'line',
+                        data: {
+                            labels: [],
+                            datasets: [
+                                {
+                                    label: '光照强度 (lux)',
+                                    data: [],
+                                    borderColor: '#f59e0b',
+                                    backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                                    borderWidth: 2,
+                                    tension: 0.4,
+                                    fill: true
+                                },
+                                {
+                                    label: 'CO2浓度 (ppm)',
+                                    data: [],
+                                    borderColor: '#3b82f6',
+                                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                                    borderWidth: 2,
+                                    tension: 0.4,
+                                    fill: true
+                                },
+
+                                {
+                                    label: '温度 (°C)',
+                                    data: [],
+                                    borderColor: '#8b5cf6',
+                                    backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                                    borderWidth: 2,
+                                    tension: 0.4,
+                                    fill: true
+                                },
+                                {
+                                    label: '湿度 (%)',
+                                    data: [],
+                                    borderColor: '#ec4899',
+                                    backgroundColor: 'rgba(236, 72, 153, 0.1)',
+                                    borderWidth: 2,
+                                    tension: 0.4,
+                                    fill: true
+                                },
+                                {
+                                    label: '气压 (kPa)',
+                                    data: [],
+                                    borderColor: '#6366f1',
+                                    backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                                    borderWidth: 2,
+                                    tension: 0.4,
+                                    fill: true
+                                }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    display: true,
+                                    labels: {
+                                        color: '#f8fafc'
+                                    }
+                                }
+                            },
+                            scales: {
+                                x: {
+                                    grid: {
+                                        color: 'rgba(245, 158, 11, 0.1)'
+                                    },
+                                    ticks: {
+                                        color: '#f8fafc'
+                                    }
+                                },
+                                y: {
+                                    grid: {
+                                        color: 'rgba(245, 158, 11, 0.1)'
+                                    },
+                                    ticks: {
+                                        color: '#f8fafc'
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+            } catch (error) {
+                console.error('光照气体图表初始化失败:', error);
+            }
+        }
+
+        // 更新历史图表
+        function updateHistoryChart() {
+            if (lightHistoryChart) {
+                lightHistoryChart.data.labels = timeLabels;
+                
+                // 根据当前选择的参数显示相应的数据集
+                lightHistoryChart.data.datasets[0].hidden = currentParameter !== 'light';
+                lightHistoryChart.data.datasets[1].hidden = currentParameter !== 'co2';
+                lightHistoryChart.data.datasets[2].hidden = currentParameter !== 'temperature';
+                lightHistoryChart.data.datasets[3].hidden = currentParameter !== 'humidity';
+                lightHistoryChart.data.datasets[4].hidden = currentParameter !== 'pressure';
+                
+                // 更新所有数据集的数据
+                lightHistoryChart.data.datasets[0].data = lightData.light;
+                lightHistoryChart.data.datasets[1].data = lightData.co2;
+                lightHistoryChart.data.datasets[2].data = lightData.temperature;
+                lightHistoryChart.data.datasets[3].data = lightData.humidity;
+                lightHistoryChart.data.datasets[4].data = lightData.pressure;
+                
+                lightHistoryChart.update('none'); // 使用无动画更新，避免性能问题
+            }
+        }
+
+        // 启动数据更新
+        function startDataUpdate() {
+            console.log('启动数据更新，问询周期:', queryInterval, '秒');
+            // 立即获取一次数据
+            fetchLightData();
+            
+            // 清除之前的定时器（如果存在）
+            if (dataUpdateInterval) {
+                clearInterval(dataUpdateInterval);
+                dataUpdateInterval = null;
+            }
+            
+            // 设置定时器，定期获取数据
+            dataUpdateInterval = setInterval(fetchLightData, queryInterval * 1000);
+            console.log('数据更新定时器已设置，ID:', dataUpdateInterval);
+        }
+
+        // 停止数据更新
+        function stopDataUpdate() {
+            if (dataUpdateInterval) {
+                clearInterval(dataUpdateInterval);
+                dataUpdateInterval = null;
+            }
+        }
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('页面加载完成，开始初始化...');
+            
+            // 初始化光照气体监控图表
+            initLightCharts();
+            
+            // 扫描串口
+            scanSerialPorts();
+
+            // 获取当前配置
+            getCurrentConfig();
+
+            // 获取帧数据
+            updateFrameData();
+
+            // 启动数据更新
+            startDataUpdate();
+
+            // 时间范围选择事件
+            const timeRangeSelect = document.getElementById('light-time-range');
+            if (timeRangeSelect) {
+                timeRangeSelect.addEventListener('change', function() {
+                    console.log('选择时间范围:', this.value);
+                });
+            }
+
+            // 参数选择事件
+            const parameterSelect = document.getElementById('light-parameter-select');
+            if (parameterSelect) {
+                parameterSelect.addEventListener('change', function() {
+                    currentParameter = this.value;
+                    console.log('选择参数:', currentParameter);
+                    // 更新图表显示
+                    updateHistoryChart();
+                });
+            }
+
+            // 自动切换事件
+            const autoSwitchCheckbox = document.getElementById('light-auto-switch');
+            if (autoSwitchCheckbox) {
+                autoSwitchCheckbox.addEventListener('change', function() {
+                    isAutoSwitching = this.checked;
+                    const switchIntervalSelect = document.getElementById('light-switch-interval');
+                    if (switchIntervalSelect) {
+                        switchIntervalSelect.disabled = !isAutoSwitching;
+                    }
+                    
+                    if (isAutoSwitching) {
+                        startAutoSwitch();
+                    } else {
+                        stopAutoSwitch();
+                    }
+                });
+            }
+
+            // 自动切换间隔事件
+            const switchIntervalSelect = document.getElementById('light-switch-interval');
+            if (switchIntervalSelect) {
+                switchIntervalSelect.addEventListener('change', function() {
+                    switchInterval = parseInt(this.value);
+                    if (isAutoSwitching) {
+                        stopAutoSwitch();
+                        startAutoSwitch();
+                    }
+                });
+            }
+
+            // 更新周期按钮事件
+            const updateIntervalButton = document.getElementById('update-interval');
+            if (updateIntervalButton) {
+                updateIntervalButton.addEventListener('click', function() {
+                    const intervalInput = document.getElementById('query-interval');
+                    const newInterval = parseInt(intervalInput.value);
+                    if (newInterval >= 1 && newInterval <= 60) {
+                        updateQueryInterval(newInterval);
+                    }
+                });
+            }
+
+            // 打开串口按钮事件
+            const openSerialButton = document.getElementById('open-serial');
+            if (openSerialButton) {
+                openSerialButton.addEventListener('click', function() {
+                    openSerial();
+                });
+            }
+
+            // 关闭串口按钮事件
+            const closeSerialButton = document.getElementById('close-serial');
+            if (closeSerialButton) {
+                closeSerialButton.addEventListener('click', function() {
+                    closeSerial();
+                });
+            }
+
+            // 启动问询按钮事件
+            const startQueryButton = document.getElementById('start-query');
+            if (startQueryButton) {
+                startQueryButton.addEventListener('click', function() {
+                    startQuery();
+                });
+            }
+
+            // 停止问询按钮事件
+            const stopQueryButton = document.getElementById('stop-query');
+            if (stopQueryButton) {
+                stopQueryButton.addEventListener('click', function() {
+                    stopQuery();
+                });
+            }
+
+            // 刷新数据按钮事件
+            const refreshDataButton = document.getElementById('refresh-data');
+            if (refreshDataButton) {
+                refreshDataButton.addEventListener('click', function() {
+                    console.log('刷新数据');
+                    fetchLightData();
+                });
+            }
+        });
+
+        // 启动自动切换
+        function startAutoSwitch() {
+            stopAutoSwitch(); // 先停止之前的定时器
+            autoSwitchInterval = setInterval(function() {
+                const sequence = autoSwitchSequence[autoSwitchIndex];
+                currentParameter = sequence.parameter;
+                
+                // 更新选择框
+                const parameterSelect = document.getElementById('light-parameter-select');
+                if (parameterSelect) {
+                    parameterSelect.value = currentParameter;
+                }
+                
+                // 更新图表显示
+                updateHistoryChart();
+                
+                // 循环切换
+                autoSwitchIndex = (autoSwitchIndex + 1) % autoSwitchSequence.length;
+            }, switchInterval * 1000);
+        }
+
+        // 停止自动切换
+        function stopAutoSwitch() {
+            if (autoSwitchInterval) {
+                clearInterval(autoSwitchInterval);
+                autoSwitchInterval = null;
+            }
+        }
+    </script>
+{% endblock %}
