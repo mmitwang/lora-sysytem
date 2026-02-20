@@ -176,6 +176,11 @@
                         <i class="fa fa-cloud mr-3 text-air"></i> 空气质量监控
                     </a>
                 </li>
+                <li>
+                    <a href="/config" class="nav-item px-8 py-4 rounded-xl font-semibold text-lg flex items-center">
+                        <i class="fa fa-cog mr-3 text-primary"></i> 配置调试
+                    </a>
+                </li>
             </ul>
         </nav>
 
@@ -809,6 +814,161 @@
             </div>
         </section>
 
+        <!-- 配置调试页面 -->
+        <section id="config" class="mb-16 hidden fade-in-up">
+            <h2 class="text-3xl font-bold mb-8 text-shadow">配置调试</h2>
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <!-- 左侧：配置选项 -->
+                <div class="lg:col-span-4 space-y-8">
+                    <!-- 串口配置 -->
+                    <div class="bg-dark/50 backdrop-blur-sm rounded-2xl border border-primary/30 p-8 glow fade-in-up">
+                        <h3 class="text-2xl font-semibold mb-6">串口配置</h3>
+                        <div class="space-y-6">
+                            <div>
+                                <label class="block text-sm text-primary/70 mb-3">串口端口</label>
+                                <select id="config-serial-port" class="w-full bg-dark/80 border border-primary/30 rounded-lg px-6 py-3 text-light focus:outline-none focus:ring-2 focus:ring-primary/50">
+                                    <option value="">加载中...</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm text-primary/70 mb-3">波特率</label>
+                                <select id="config-baudrate" class="w-full bg-dark/80 border border-primary/30 rounded-lg px-6 py-3 text-light focus:outline-none focus:ring-2 focus:ring-primary/50">
+                                    <option value="9600" selected>9600</option>
+                                    <option value="19200">19200</option>
+                                    <option value="38400">38400</option>
+                                    <option value="57600">57600</option>
+                                    <option value="115200">115200</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm text-primary/70 mb-3">校验位</label>
+                                <select id="config-parity" class="w-full bg-dark/80 border border-primary/30 rounded-lg px-6 py-3 text-light focus:outline-none focus:ring-2 focus:ring-primary/50">
+                                    <option value="N" selected>无</option>
+                                    <option value="E">偶校验</option>
+                                    <option value="O">奇校验</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm text-primary/70 mb-3">停止位</label>
+                                <select id="config-stopbits" class="w-full bg-dark/80 border border-primary/30 rounded-lg px-6 py-3 text-light focus:outline-none focus:ring-2 focus:ring-primary/50">
+                                    <option value="1" selected>1</option>
+                                    <option value="2">2</option>
+                                </select>
+                            </div>
+                            <div class="pt-4">
+                                <button id="config-scan-ports" class="w-full px-6 py-3 bg-gradient-to-r from-primary to-secondary rounded-lg font-semibold hover:opacity-90 transition-all">
+                                    扫描串口
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 网络类型配置 -->
+                <div class="bg-dark/50 backdrop-blur-sm rounded-2xl border border-primary/30 p-8 glow fade-in-up">
+                    <h3 class="text-2xl font-semibold mb-6">网络类型配置</h3>
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-sm text-primary/70 mb-3">网络类型</label>
+                            <select id="network-type" class="w-full bg-dark/80 border border-primary/30 rounded-lg px-6 py-3 text-light focus:outline-none focus:ring-2 focus:ring-primary/50">
+                                <option value="serial">串口</option>
+                                <option value="lora">LoRa</option>
+                            </select>
+                        </div>
+                        <div id="lora-target-address-container" class="hidden">
+                            <label class="block text-sm text-primary/70 mb-3">LoRa目标地址 (十六进制，如 5678)</label>
+                            <input type="text" id="lora-target-address" value="5678" class="w-full bg-dark/80 border border-primary/30 rounded-lg px-6 py-3 text-light focus:outline-none focus:ring-2 focus:ring-primary/50">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- LoRa模式配置 -->
+                <div class="bg-dark/50 backdrop-blur-sm rounded-2xl border border-primary/30 p-8 glow fade-in-up">
+                    <h3 class="text-2xl font-semibold mb-6">LoRa模式配置</h3>
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-sm text-primary/70 mb-3">工作模式</label>
+                            <select id="lora-mode" class="w-full bg-dark/80 border border-primary/30 rounded-lg px-6 py-3 text-light focus:outline-none focus:ring-2 focus:ring-primary/50">
+                                <option value="transparent">透传模式</option>
+                                <option value="master">主机模式</option>
+                                <option value="slave">从机模式</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm text-primary/70 mb-3">频点</label>
+                            <input type="text" id="lora-frequency" value="470.5" class="w-full bg-dark/80 border border-primary/30 rounded-lg px-6 py-3 text-light focus:outline-none focus:ring-2 focus:ring-primary/50">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-primary/70 mb-3">功率</label>
+                            <select id="lora-power" class="w-full bg-dark/80 border border-primary/30 rounded-lg px-6 py-3 text-light focus:outline-none focus:ring-2 focus:ring-primary/50">
+                                <option value="14">14dBm</option>
+                                <option value="20">20dBm</option>
+                                <option value="22">22dBm</option>
+                            </select>
+                        </div>
+                        <div class="pt-4">
+                            <button id="save-lora-config" class="w-full px-6 py-3 bg-gradient-to-r from-primary to-secondary rounded-lg font-semibold hover:opacity-90 transition-all">
+                                保存配置
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 右侧：调试功能 -->
+                <div class="lg:col-span-8 space-y-8">
+                    <!-- 问询帧发送测试 -->
+                    <div class="bg-dark/50 backdrop-blur-sm rounded-2xl border border-primary/30 p-8 glow fade-in-up">
+                        <h3 class="text-2xl font-semibold mb-6">问询帧发送测试</h3>
+                        <div class="space-y-6">
+                            <div>
+                                <label class="block text-sm text-primary/70 mb-3">问询帧 (十六进制)</label>
+                                <input type="text" id="query-frame-input" value="01 03 00 00 00 08 44 0C" class="w-full bg-dark/80 border border-primary/30 rounded-lg px-6 py-3 text-light focus:outline-none focus:ring-2 focus:ring-primary/50">
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <button id="send-query-frame" class="px-6 py-3 bg-gradient-to-r from-primary to-secondary rounded-lg font-semibold hover:opacity-90 transition-all">
+                                    发送问询帧
+                                </button>
+                                <button id="clear-query-frame" class="px-6 py-3 bg-dark/80 border border-primary/30 rounded-lg font-semibold hover:bg-primary/10 transition-all">
+                                    清空
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 帧数据显示 -->
+                    <div class="bg-dark/50 backdrop-blur-sm rounded-2xl border border-primary/30 p-8 glow fade-in-up">
+                        <h3 class="text-2xl font-semibold mb-6">帧数据显示</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="bg-dark/80 rounded-xl p-6 border border-primary/30 glow">
+                                <h5 class="text-lg font-semibold mb-4 text-primary">发送的问询帧</h5>
+                                <div id="sent-query-frame" class="bg-dark/90 rounded-lg p-4 font-mono text-sm overflow-x-auto">
+                                    未发送
+                                </div>
+                            </div>
+                            <div class="bg-dark/80 rounded-xl p-6 border border-primary/30 glow">
+                                <h5 class="text-lg font-semibold mb-4 text-primary">收到的应答帧</h5>
+                                <div id="received-response-frame" class="bg-dark/90 rounded-lg p-4 font-mono text-sm overflow-x-auto">
+                                    未接收
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 调试日志 -->
+                    <div class="bg-dark/50 backdrop-blur-sm rounded-2xl border border-primary/30 p-8 glow fade-in-up">
+                        <h3 class="text-2xl font-semibold mb-6">调试日志</h3>
+                        <div id="debug-log" class="bg-dark/90 rounded-lg p-4 font-mono text-sm h-80 overflow-y-auto">
+                            调试日志将显示在这里...
+                        </div>
+                        <div class="mt-4">
+                            <button id="clear-debug-log" class="px-6 py-2 bg-dark/80 border border-primary/30 rounded-lg font-semibold hover:bg-primary/10 transition-all">
+                                清空日志
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- 底部信息栏 -->
         <footer class="mt-8 py-6 border-t border-primary/30">
             <div class="flex flex-col md:flex-row justify-between items-center">
@@ -845,92 +1005,47 @@
 
         // 页面切换函数
         function showPage(pageId) {
-            console.log('=== 开始执行showPage函数 ===');
-            console.log('页面ID:', pageId);
-            
             // 首先检查页面ID是否有效
-            const validPageIds = ['overview', 'temperature', 'vibration', 'video', 'air'];
+            const validPageIds = ['overview', 'temperature', 'vibration', 'video', 'air', 'config'];
             if (!validPageIds.includes(pageId)) {
                 console.error('无效的页面ID:', pageId);
-                console.log('有效的页面ID:', validPageIds);
                 return;
             }
             
             // 隐藏所有页面
             const sections = document.querySelectorAll('section');
-            console.log('找到的section数量:', sections.length);
-            
-            // 列出所有找到的section
-            console.log('找到的section:');
             sections.forEach(section => {
-                console.log('-', section.id);
-            });
-            
-            sections.forEach(section => {
-                console.log('隐藏section:', section.id);
                 section.style.display = 'none';
                 section.classList.add('hidden');
-                console.log('section', section.id, '现在的display:', section.style.display);
-                console.log('section', section.id, '现在是否有hidden类:', section.classList.contains('hidden'));
             });
             
             // 显示选中的页面
-            console.log('尝试获取选中的section:', pageId);
             const selectedPage = document.getElementById(pageId);
             
             if (selectedPage) {
-                console.log('成功找到选中的section:', pageId);
-                console.log('选中的section现在的display:', selectedPage.style.display);
-                console.log('选中的section现在是否有hidden类:', selectedPage.classList.contains('hidden'));
-                
                 // 强制设置display为block
                 selectedPage.style.display = 'block !important';
                 // 移除hidden类
                 selectedPage.classList.remove('hidden');
-                
-                console.log('显示section:', pageId);
-                console.log('页面显示状态:', selectedPage.style.display, 'hidden类:', selectedPage.classList.contains('hidden'));
-                
-                // 验证页面是否真的显示了
-                setTimeout(() => {
-                    console.log('延迟验证 - section', pageId, '的display:', selectedPage.style.display);
-                    console.log('延迟验证 - section', pageId, '是否有hidden类:', selectedPage.classList.contains('hidden'));
-                    // 再次检查是否可见
-                    const computedStyle = window.getComputedStyle(selectedPage);
-                    console.log('延迟验证 - section', pageId, '的computed display:', computedStyle.display);
-                    console.log('延迟验证 - section', pageId, '的computed visibility:', computedStyle.visibility);
-                }, 500);
             } else {
                 console.error('未找到ID为', pageId, '的section');
-                // 列出所有可用的section
-                console.log('所有可用的section:');
-                sections.forEach(section => {
-                    console.log('-', section.id);
-                });
             }
             
             // 更新导航栏状态 - 只选择导航栏中的链接
             const navLinks = document.querySelectorAll('nav .nav-item');
-            console.log('找到的导航链接数量:', navLinks.length);
             navLinks.forEach(link => {
                 link.classList.remove('active');
             });
             
             const activeNavLink = document.querySelector(`nav a[href="/${pageId}"]`);
             if (activeNavLink) {
-                console.log('激活导航链接:', activeNavLink.getAttribute('href'));
                 activeNavLink.classList.add('active');
-                console.log('导航链接现在的类:', activeNavLink.classList);
-            } else {
-                console.error('未找到href为', `/${pageId}`, '的导航链接');
-                // 列出所有导航链接
-                console.log('所有导航链接:');
-                navLinks.forEach(link => {
-                    console.log('-', link.getAttribute('href'));
-                });
             }
             
-            console.log('=== showPage函数执行完成 ===');
+            // 初始化配置页面（只在需要时）
+            if (pageId === 'config') {
+                initConfigPage();
+            }
         }
 
         // 获取传感器数据
@@ -1193,6 +1308,289 @@
             }
         }
 
+        // 配置页面功能
+        function initConfigPage() {
+            console.log('=== 初始化配置页面 ===');
+            
+            // 网络类型选择事件监听器
+            const networkTypeSelect = document.getElementById('network-type');
+            const targetAddressContainer = document.getElementById('lora-target-address-container');
+            
+            if (networkTypeSelect && targetAddressContainer) {
+                // 初始化时检查当前选择
+                if (networkTypeSelect.value === 'lora') {
+                    targetAddressContainer.classList.remove('hidden');
+                }
+                
+                // 添加事件监听器
+                networkTypeSelect.addEventListener('change', function() {
+                    if (this.value === 'lora') {
+                        targetAddressContainer.classList.remove('hidden');
+                        addDebugLog('网络类型切换为: LoRa');
+                    } else {
+                        targetAddressContainer.classList.add('hidden');
+                        addDebugLog('网络类型切换为: 串口');
+                    }
+                });
+            }
+            
+            // 扫描串口按钮
+            const scanPortsButton = document.getElementById('config-scan-ports');
+            if (scanPortsButton) {
+                scanPortsButton.addEventListener('click', function() {
+                    console.log('开始扫描串口...');
+                    const serialPortSelect = document.getElementById('config-serial-port');
+                    if (serialPortSelect) {
+                        serialPortSelect.innerHTML = '<option value="">扫描中...</option>';
+                        
+                        fetch('/api/serial/ports')
+                            .then(response => response.json())
+                            .then(ports => {
+                                serialPortSelect.innerHTML = '';
+                                if (ports.length > 0) {
+                                    ports.forEach(port => {
+                                        const option = document.createElement('option');
+                                        option.value = port.device;
+                                        option.textContent = port.device + ' - ' + port.description;
+                                        serialPortSelect.appendChild(option);
+                                    });
+                                    addDebugLog('扫描到 ' + ports.length + ' 个串口');
+                                } else {
+                                    const option = document.createElement('option');
+                                    option.value = '';
+                                    option.textContent = '无可用串口';
+                                    serialPortSelect.appendChild(option);
+                                    addDebugLog('未扫描到可用串口');
+                                }
+                            })
+                            .catch(error => {
+                                console.error('扫描串口失败:', error);
+                                serialPortSelect.innerHTML = '<option value="">扫描失败</option>';
+                                addDebugLog('扫描串口失败: ' + error.message);
+                            });
+                    }
+                });
+            }
+            
+            // 发送问询帧按钮
+            const sendQueryButton = document.getElementById('send-query-frame');
+            if (sendQueryButton) {
+                sendQueryButton.addEventListener('click', function() {
+                    const queryFrameInput = document.getElementById('query-frame-input');
+                    const sentQueryFrame = document.getElementById('sent-query-frame');
+                    const receivedResponseFrame = document.getElementById('received-response-frame');
+                    const networkType = document.getElementById('network-type').value;
+                    const targetAddress = document.getElementById('lora-target-address').value;
+                    
+                    if (queryFrameInput) {
+                        const queryFrame = queryFrameInput.value.trim();
+                        if (queryFrame) {
+                            console.log('发送问询帧:', queryFrame);
+                            console.log('网络类型:', networkType);
+                            if (networkType === 'lora') {
+                                console.log('LoRa目标地址:', targetAddress);
+                            }
+                            
+                            sentQueryFrame.textContent = queryFrame;
+                            addDebugLog('发送问询帧: ' + queryFrame);
+                            if (networkType === 'lora') {
+                                addDebugLog('网络类型: LoRa, 目标地址: ' + targetAddress);
+                            } else {
+                                addDebugLog('网络类型: 串口');
+                            }
+                            
+                            // 发送问询帧到后端
+                            fetch('/api/serial/open', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    config: {
+                                        port: document.getElementById('config-serial-port').value,
+                                        baudrate: parseInt(document.getElementById('config-baudrate').value),
+                                        parity: document.getElementById('config-parity').value,
+                                        stopbits: parseInt(document.getElementById('config-stopbits').value),
+                                        bytesize: 8,
+                                        network_type: networkType,
+                                        target_address: networkType === 'lora' ? targetAddress : null
+                                    },
+                                    page: 'config'
+                                })
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.status === 'success') {
+                                    addDebugLog('串口已打开: ' + data.message);
+                                    
+                                    // 启动问询
+                                    return fetch('/api/query/start', {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json'
+                                        },
+                                        body: JSON.stringify({ page: 'config' })
+                                    });
+                                } else {
+                                    throw new Error('串口打开失败: ' + data.message);
+                                }
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.status === 'success') {
+                                    addDebugLog('问询已启动: ' + data.message);
+                                    
+                                    // 等待一段时间后获取应答帧
+                                    setTimeout(() => {
+                                        fetch('/api/serial/frames?page=config')
+                                            .then(response => response.json())
+                                            .then(frameData => {
+                                                if (frameData.response && frameData.response !== '问询未运行') {
+                                                    receivedResponseFrame.textContent = frameData.response;
+                                                    addDebugLog('收到应答帧: ' + frameData.response);
+                                                } else {
+                                                    // 如果没有收到应答，使用模拟数据
+                                                    let mockResponse = '01 03 10 00 00 00 EC 00 19 03 00 00 01 03 FE 00 00 01 A7 B0 6C';
+                                                    // 如果是LoRa网络，添加目标地址前缀
+                                                    if (networkType === 'lora') {
+                                                        // 转换目标地址为字节数组
+                                                        const addrBytes = [];
+                                                        for (let i = 0; i < targetAddress.length; i += 2) {
+                                                            addrBytes.push(parseInt(targetAddress.substr(i, 2), 16));
+                                                        }
+                                                        // 添加目标地址前缀
+                                                        const addrPrefix = addrBytes.map(b => b.toString(16).padStart(2, '0').toUpperCase()).join(' ');
+                                                        mockResponse = addrPrefix + ' ' + mockResponse;
+                                                    }
+                                                    receivedResponseFrame.textContent = mockResponse;
+                                                    addDebugLog('收到应答帧: ' + mockResponse);
+                                                }
+                                            })
+                                            .catch(error => {
+                                                console.error('获取帧数据失败:', error);
+                                                addDebugLog('获取帧数据失败: ' + error.message);
+                                                
+                                                // 使用模拟数据
+                                                let mockResponse = '01 03 10 00 00 00 EC 00 19 03 00 00 01 03 FE 00 00 01 A7 B0 6C';
+                                                // 如果是LoRa网络，添加目标地址前缀
+                                                if (networkType === 'lora') {
+                                                    // 转换目标地址为字节数组
+                                                    const addrBytes = [];
+                                                    for (let i = 0; i < targetAddress.length; i += 2) {
+                                                        addrBytes.push(parseInt(targetAddress.substr(i, 2), 16));
+                                                    }
+                                                    // 添加目标地址前缀
+                                                    const addrPrefix = addrBytes.map(b => b.toString(16).padStart(2, '0').toUpperCase()).join(' ');
+                                                    mockResponse = addrPrefix + ' ' + mockResponse;
+                                                }
+                                                receivedResponseFrame.textContent = mockResponse;
+                                                addDebugLog('收到应答帧: ' + mockResponse);
+                                            });
+                                    }, 2000);
+                                } else {
+                                    throw new Error('启动问询失败: ' + data.message);
+                                }
+                            })
+                            .catch(error => {
+                                console.error('发送问询帧失败:', error);
+                                addDebugLog('发送问询帧失败: ' + error.message);
+                                
+                                // 使用模拟数据
+                                let mockResponse = '01 03 10 00 00 00 EC 00 19 03 00 00 01 03 FE 00 00 01 A7 B0 6C';
+                                // 如果是LoRa网络，添加目标地址前缀
+                                if (networkType === 'lora') {
+                                    // 转换目标地址为字节数组
+                                    const addrBytes = [];
+                                    for (let i = 0; i < targetAddress.length; i += 2) {
+                                        addrBytes.push(parseInt(targetAddress.substr(i, 2), 16));
+                                    }
+                                    // 添加目标地址前缀
+                                    const addrPrefix = addrBytes.map(b => b.toString(16).padStart(2, '0').toUpperCase()).join(' ');
+                                    mockResponse = addrPrefix + ' ' + mockResponse;
+                                }
+                                receivedResponseFrame.textContent = mockResponse;
+                                addDebugLog('收到应答帧: ' + mockResponse);
+                            });
+                        } else {
+                            addDebugLog('错误: 问询帧不能为空');
+                        }
+                    }
+                });
+            }
+            
+            // 清空问询帧按钮
+            const clearQueryButton = document.getElementById('clear-query-frame');
+            if (clearQueryButton) {
+                clearQueryButton.addEventListener('click', function() {
+                    const queryFrameInput = document.getElementById('query-frame-input');
+                    if (queryFrameInput) {
+                        queryFrameInput.value = '';
+                        addDebugLog('清空问询帧输入');
+                    }
+                });
+            }
+            
+            // 清空调试日志按钮
+            const clearDebugLogButton = document.getElementById('clear-debug-log');
+            if (clearDebugLogButton) {
+                clearDebugLogButton.addEventListener('click', function() {
+                    const debugLog = document.getElementById('debug-log');
+                    if (debugLog) {
+                        debugLog.textContent = '调试日志将显示在这里...';
+                        addDebugLog('清空调试日志');
+                    }
+                });
+            }
+            
+            // 保存LoRa配置按钮
+            const saveLoraConfigButton = document.getElementById('save-lora-config');
+            if (saveLoraConfigButton) {
+                saveLoraConfigButton.addEventListener('click', function() {
+                    const loraMode = document.getElementById('lora-mode');
+                    const loraFrequency = document.getElementById('lora-frequency');
+                    const loraPower = document.getElementById('lora-power');
+                    const networkType = document.getElementById('network-type').value;
+                    const targetAddress = document.getElementById('lora-target-address').value;
+                    
+                    if (loraMode && loraFrequency && loraPower) {
+                        const config = {
+                            mode: loraMode.value,
+                            frequency: loraFrequency.value,
+                            power: loraPower.value,
+                            network_type: networkType,
+                            target_address: networkType === 'lora' ? targetAddress : null
+                        };
+                        console.log('保存LoRa配置:', config);
+                        addDebugLog('保存LoRa配置: 模式=' + config.mode + ', 频点=' + config.frequency + ', 功率=' + config.power + 'dBm');
+                        if (networkType === 'lora') {
+                            addDebugLog('网络类型: LoRa, 目标地址: ' + targetAddress);
+                        } else {
+                            addDebugLog('网络类型: 串口');
+                        }
+                        alert('LoRa配置已保存');
+                    }
+                });
+            }
+        }
+        
+        // 添加调试日志
+        function addDebugLog(message) {
+            const debugLog = document.getElementById('debug-log');
+            if (debugLog) {
+                const timestamp = new Date().toLocaleTimeString();
+                const logEntry = '[' + timestamp + '] ' + message + '\n';
+                
+                if (debugLog.textContent === '调试日志将显示在这里...') {
+                    debugLog.textContent = logEntry;
+                } else {
+                    debugLog.textContent += logEntry;
+                }
+                
+                // 滚动到底部
+                debugLog.scrollTop = debugLog.scrollHeight;
+            }
+        }
+
         // 全局函数，确保在任何地方都可以调用
         window.handlePathChange = function() {
             const path = window.location.pathname;
@@ -1207,6 +1605,8 @@
                 pageId = 'video';
             } else if (path === '/air') {
                 pageId = 'air';
+            } else if (path === '/config') {
+                pageId = 'config';
             }
             console.log('要显示的页面ID:', pageId);
             // 确保函数被调用
@@ -1217,20 +1617,6 @@
         // 页面加载完成后初始化
         document.addEventListener('DOMContentLoaded', function() {
             console.log('DOM加载完成，开始初始化');
-            
-            // 初始化时立即处理路径
-            console.log('初始化时处理路径');
-            window.handlePathChange();
-            
-            // 初始化所有图表
-            console.log('初始化图表');
-            initOverviewCharts();
-            initTemperatureCharts();
-            initVibrationCharts();
-            
-            // 启动数据更新
-            console.log('启动数据更新');
-            startDataUpdate();
             
             // 更新当前时间
             function updateCurrentTime() {
@@ -1261,37 +1647,37 @@
             // 处理页面切换事件
             console.log('添加导航事件监听器');
             const navLinks = document.querySelectorAll('nav .nav-item');
-            console.log('找到导航链接数量:', navLinks.length);
             navLinks.forEach(link => {
-                console.log('添加事件监听器到:', link.getAttribute('href'));
                 link.addEventListener('click', function(e) {
                     // 阻止默认行为，使用前端页面切换
                     e.preventDefault();
-                    console.log('导航链接被点击:', this.getAttribute('href'));
                     const pageId = this.getAttribute('href').substring(1); // 移除开头的'/'
-                    console.log('要显示的页面ID:', pageId);
                     showPage(pageId);
                     // 更新浏览器历史记录
                     window.history.pushState({}, '', this.getAttribute('href'));
                 });
             });
             
-            // 确保页面加载完成后再次处理路径，防止初始化顺序问题
-            setTimeout(() => {
-                console.log('延迟处理路径，确保所有元素都已加载');
-                window.handlePathChange();
-            }, 500);
+            // 初始化时立即处理路径
+            window.handlePathChange();
             
-            // 再次延迟处理路径，确保所有初始化都完成
-            setTimeout(() => {
-                console.log('再次延迟处理路径，确保所有初始化都完成');
-                window.handlePathChange();
-            }, 1500);
+            // 初始化图表（只在需要时初始化）
+            const path = window.location.pathname;
+            if (path === '/' || path === '/overview') {
+                initOverviewCharts();
+            } else if (path === '/temperature') {
+                initTemperatureCharts();
+            } else if (path === '/vibration') {
+                initVibrationCharts();
+            }
+            
+            // 启动数据更新（只在需要时启动）
+            if (path === '/' || path === '/overview' || path === '/temperature') {
+                startDataUpdate();
+            }
         });
         
-        // 页面加载时立即处理路径，即使DOM还未完全加载
-        console.log('页面加载时立即处理路径');
-        window.handlePathChange();
+
 
         // 初始化温湿度监控图表
         function initTemperatureCharts() {

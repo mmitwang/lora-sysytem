@@ -149,6 +149,20 @@
                 });
         }
 
+        // 获取温振数据
+        function fetchVibrationData() {
+            fetch('/api/vibration/data')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.temperature !== undefined) {
+                        updateVibrationData(data);
+                    }
+                })
+                .catch(error => {
+                    console.error('获取温振数据失败:', error);
+                });
+        }
+
         // 更新概览页面数据
         function updateOverviewData(data) {
             const overviewTemp = document.getElementById('overview-temp');
@@ -213,6 +227,42 @@
                 }
                 overviewLightGasChart.data.datasets[0].data = currentData;
                 overviewLightGasChart.update('none'); // 使用无动画更新，避免性能问题
+            }
+        }
+
+        // 更新温振数据
+        function updateVibrationData(data) {
+            const overviewVibTemp = document.getElementById('overview-vib-temp');
+            if (overviewVibTemp) {
+                // 添加数据变化动画
+                overviewVibTemp.classList.add('scale-110');
+                setTimeout(() => {
+                    overviewVibTemp.classList.remove('scale-110');
+                }, 300);
+                overviewVibTemp.textContent = data.temperature.toFixed(1);
+            }
+            
+            const overviewVib = document.getElementById('overview-vib');
+            if (overviewVib) {
+                // 添加数据变化动画
+                overviewVib.classList.add('scale-110');
+                setTimeout(() => {
+                    overviewVib.classList.remove('scale-110');
+                }, 300);
+                // 使用X轴频率作为显示值
+                overviewVib.textContent = (data.frequency_x || 0).toFixed(1);
+            }
+            
+            // 更新温振图表
+            if (overviewVibChart) {
+                const currentData = overviewVibChart.data.datasets[0].data;
+                // 使用合速度作为图表数据
+                currentData.push(data.resultant_velocity || 0);
+                if (currentData.length > 10) {
+                    currentData.shift();
+                }
+                overviewVibChart.data.datasets[0].data = currentData;
+                overviewVibChart.update('none'); // 使用无动画更新，避免性能问题
             }
         }
 
@@ -339,11 +389,13 @@
             // 立即获取一次数据
             fetchSensorData();
             fetchLightGasData();
+            fetchVibrationData();
             
             // 设置定时器，定期获取数据
             dataUpdateInterval = setInterval(() => {
                 fetchSensorData();
                 fetchLightGasData();
+                fetchVibrationData();
             }, queryInterval * 1000);
         }
 

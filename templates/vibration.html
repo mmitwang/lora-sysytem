@@ -117,27 +117,34 @@
                         </div>
                     </div>
 
-                    <!-- 振幅卡片 -->
+
+
+                    <!-- 位移卡片 -->
                     <div class="bg-dark/50 backdrop-blur-sm rounded-2xl border border-primary/30 p-8 glow fade-in-up hover:scale-105 transition-transform duration-300">
                         <div class="flex justify-between items-start mb-6">
                             <div>
-                                <h3 class="text-2xl font-semibold">振动振幅</h3>
-                                <p class="text-vib/70 text-sm">峰值振幅监测</p>
+                                <h3 class="text-2xl font-semibold">振动位移</h3>
+                                <p class="text-vib/70 text-sm">XYZ三轴位移监测</p>
                             </div>
                             <div class="w-16 h-16 rounded-full bg-vib/20 flex items-center justify-center">
-                                <i class="fa fa-signal text-3xl text-vib"></i>
+                                <i class="fa fa-arrows text-3xl text-vib"></i>
                             </div>
                         </div>
                         <div class="mt-6 space-y-4">
                             <div>
-                                <div class="text-sm text-vib/70">峰值振幅</div>
-                                <div class="text-4xl font-bold" id="vib-amplitude-peak">--</div>
-                                <div class="text-sm text-vib/50">mm</div>
+                                <div class="text-sm text-vib/70">X轴</div>
+                                <div class="text-4xl font-bold" id="vib-displacement-x">--</div>
+                                <div class="text-sm text-vib/50">μm</div>
                             </div>
                             <div>
-                                <div class="text-sm text-vib/70">均方根值</div>
-                                <div class="text-4xl font-bold" id="vib-amplitude-rms">--</div>
-                                <div class="text-sm text-vib/50">mm</div>
+                                <div class="text-sm text-vib/70">Y轴</div>
+                                <div class="text-4xl font-bold" id="vib-displacement-y">--</div>
+                                <div class="text-sm text-vib/50">μm</div>
+                            </div>
+                            <div>
+                                <div class="text-sm text-vib/70">Z轴</div>
+                                <div class="text-4xl font-bold" id="vib-displacement-z">--</div>
+                                <div class="text-sm text-vib/50">μm</div>
                             </div>
                         </div>
                     </div>
@@ -174,10 +181,11 @@
                                 <div class="text-4xl font-bold mt-4" id="vib-latest-acceleration">--</div>
                                 <div class="text-sm text-vib/50 mt-3">X轴加速度 (m/s²)</div>
                             </div>
+
                             <div class="bg-dark/80 rounded-xl p-6 border border-primary/20 glow hover:scale-105 transition-transform duration-300">
-                                <div class="text-vib/70 text-lg">振动振幅</div>
-                                <div class="text-4xl font-bold mt-4" id="vib-latest-amplitude">--</div>
-                                <div class="text-sm text-vib/50 mt-3">峰值振幅 (mm)</div>
+                                <div class="text-vib/70 text-lg">振动位移</div>
+                                <div class="text-4xl font-bold mt-4" id="vib-latest-displacement">--</div>
+                                <div class="text-sm text-vib/50 mt-3">X轴位移 (μm)</div>
                             </div>
                         </div>
                     </div>
@@ -198,7 +206,7 @@
                                     <option value="frequency">频率</option>
                                     <option value="velocity">速度</option>
                                     <option value="acceleration">加速度</option>
-                                    <option value="amplitude">振幅</option>
+                                    <option value="displacement">位移</option>
                                 </select>
                                 <select id="vib-axis-select" class="bg-dark/80 border border-primary/30 rounded-lg px-6 py-3 text-light focus:outline-none focus:ring-2 focus:ring-primary/50">
                                     <option value="all">全部轴</option>
@@ -277,6 +285,34 @@
                                 </div>
                             </div>
 
+                            <!-- LoRa配置折叠面板 -->
+                            <div class="border border-primary/30 rounded-xl overflow-hidden">
+                                <button class="w-full flex justify-between items-center p-6 bg-dark/80 hover:bg-dark/90 transition-all" onclick="toggleCollapse('lora-config')">
+                                    <h4 class="text-xl font-medium">LoRa配置</h4>
+                                    <i class="fa fa-chevron-down text-vib transition-transform" id="lora-config-icon"></i>
+                                </button>
+                                <div id="lora-config" class="p-6 border-t border-primary/30">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div>
+                                            <label class="block text-sm text-vib/70 mb-3">网络类型</label>
+                                            <select id="network-type" class="w-full bg-dark/80 border border-primary/30 rounded-lg px-6 py-3 text-light focus:outline-none focus:ring-2 focus:ring-primary/50">
+                                                <option value="modbus">标准Modbus</option>
+                                                <option value="lora">LoRa</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm text-vib/70 mb-3">LoRa目标地址 (十六进制)</label>
+                                            <input type="text" id="target-address" value="0003" placeholder="例如: 0003" class="w-full bg-dark/80 border border-primary/30 rounded-lg px-6 py-3 text-light focus:outline-none focus:ring-2 focus:ring-primary/50">
+                                        </div>
+                                    </div>
+                                    <div class="mt-6">
+                                        <button id="update-lora-config" class="px-8 py-3 bg-gradient-to-r from-vib to-vib/80 rounded-lg font-semibold hover:opacity-90 transition-all transform hover:scale-105">
+                                            更新LoRa配置
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
                             <!-- 问询周期设置折叠面板 -->
                             <div class="border border-primary/30 rounded-xl overflow-hidden">
                                 <button class="w-full flex justify-between items-center p-6 bg-dark/80 hover:bg-dark/90 transition-all" onclick="toggleCollapse('interval-config')">
@@ -348,28 +384,329 @@
                             </div>
 
                             <!-- 帧数据显示折叠面板 -->
-                            <div class="border border-primary/30 rounded-xl overflow-hidden">
-                                <button class="w-full flex justify-between items-center p-6 bg-dark/80 hover:bg-dark/90 transition-all" onclick="toggleCollapse('frame-data')">
-                                    <h4 class="text-xl font-medium">Modbus-RTU帧数据</h4>
-                                    <i class="fa fa-chevron-down text-vib transition-transform" id="frame-data-icon"></i>
-                                </button>
-                                <div id="frame-data" class="p-6 border-t border-primary/30">
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <div class="bg-dark/80 rounded-xl p-6 border border-primary/30 glow">
-                                            <h5 class="text-lg font-semibold mb-4 text-vib">问询帧</h5>
-                                            <div id="query-frame" class="bg-dark/90 rounded-lg p-4 font-mono text-sm overflow-x-auto">
-                                                未发送
-                                            </div>
-                                        </div>
-                                        <div class="bg-dark/80 rounded-xl p-6 border border-primary/30 glow">
-                                            <h5 class="text-lg font-semibold mb-4 text-vib">应答帧</h5>
-                                            <div id="response-frame" class="bg-dark/90 rounded-lg p-4 font-mono text-sm overflow-x-auto">
-                                                未接收
-                                            </div>
-                                        </div>
-                                    </div>
+            <div class="border border-primary/30 rounded-xl overflow-hidden">
+                <button class="w-full flex justify-between items-center p-6 bg-dark/80 hover:bg-dark/90 transition-all" onclick="toggleCollapse('frame-data')">
+                    <h4 class="text-xl font-medium">Modbus-RTU帧数据</h4>
+                    <i class="fa fa-chevron-down text-vib transition-transform" id="frame-data-icon"></i>
+                </button>
+                <div id="frame-data" class="p-6 border-t border-primary/30">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="bg-dark/80 rounded-xl p-6 border border-primary/30 glow">
+                            <h5 class="text-lg font-semibold mb-4 text-vib">问询帧</h5>
+                            <div id="query-frame" class="bg-dark/90 rounded-lg p-4 font-mono text-sm overflow-x-auto">
+                                未发送
+                            </div>
+                        </div>
+                        <div class="bg-dark/80 rounded-xl p-6 border border-primary/30 glow">
+                            <h5 class="text-lg font-semibold mb-4 text-vib">应答帧</h5>
+                            <div id="response-frame" class="bg-dark/90 rounded-lg p-4 font-mono text-sm overflow-x-auto">
+                                未接收
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 帧数据解析说明折叠面板 -->
+            <div class="border border-primary/30 rounded-xl overflow-hidden">
+                <button class="w-full flex justify-between items-center p-6 bg-dark/80 hover:bg-dark/90 transition-all" onclick="toggleCollapse('frame-parse')">
+                    <h4 class="text-xl font-medium">帧数据解析模型</h4>
+                    <i class="fa fa-chevron-down text-vib transition-transform" id="frame-parse-icon"></i>
+                </button>
+                <div id="frame-parse" class="p-6 border-t border-primary/30" style="display: none;">
+                    <div class="space-y-6">
+                        <!-- 问询帧定义 -->
+                        <div>
+                            <h5 class="text-lg font-semibold mb-4 text-vib">问询帧定义</h5>
+                            <div class="bg-dark/80 rounded-xl p-6 border border-primary/30">
+                                <table class="w-full text-sm">
+                                    <thead>
+                                        <tr class="border-b border-primary/30">
+                                            <th class="py-2 text-left">字段</th>
+                                            <th class="py-2 text-left">偏移</th>
+                                            <th class="py-2 text-left">长度</th>
+                                            <th class="py-2 text-left">数值</th>
+                                            <th class="py-2 text-left">描述</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="border-b border-primary/20">
+                                            <td class="py-2">地址码</td>
+                                            <td class="py-2">0</td>
+                                            <td class="py-2">1</td>
+                                            <td class="py-2">01H</td>
+                                            <td class="py-2">从设备地址</td>
+                                        </tr>
+                                        <tr class="border-b border-primary/20">
+                                            <td class="py-2">功能码</td>
+                                            <td class="py-2">1</td>
+                                            <td class="py-2">1</td>
+                                            <td class="py-2">03H</td>
+                                            <td class="py-2">读取保持寄存器</td>
+                                        </tr>
+                                        <tr class="border-b border-primary/20">
+                                            <td class="py-2">起始寄存器</td>
+                                            <td class="py-2">2-3</td>
+                                            <td class="py-2">2</td>
+                                            <td class="py-2">0000H</td>
+                                            <td class="py-2">起始寄存器地址</td>
+                                        </tr>
+                                        <tr class="border-b border-primary/20">
+                                            <td class="py-2">寄存器个数</td>
+                                            <td class="py-2">4-5</td>
+                                            <td class="py-2">2</td>
+                                            <td class="py-2">000DH</td>
+                                            <td class="py-2">读取13个寄存器（0000-000C）</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="py-2">校验码</td>
+                                            <td class="py-2">6-7</td>
+                                            <td class="py-2">2</td>
+                                            <td class="py-2">CRC16</td>
+                                            <td class="py-2">CRC16校验码</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <div class="mt-4 font-mono text-sm">
+                                    完整问询帧：<code class="text-vib">01 03 00 00 00 0D CRC16</code>
                                 </div>
                             </div>
+                        </div>
+
+                        <!-- 应答帧定义 -->
+                        <div>
+                            <h5 class="text-lg font-semibold mb-4 text-vib">应答帧定义</h5>
+                            <div class="bg-dark/80 rounded-xl p-6 border border-primary/30">
+                                <table class="w-full text-sm">
+                                    <thead>
+                                        <tr class="border-b border-primary/30">
+                                            <th class="py-2 text-left">字段</th>
+                                            <th class="py-2 text-left">偏移</th>
+                                            <th class="py-2 text-left">长度</th>
+                                            <th class="py-2 text-left">数值</th>
+                                            <th class="py-2 text-left">描述</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="border-b border-primary/20">
+                                            <td class="py-2">地址码</td>
+                                            <td class="py-2">0</td>
+                                            <td class="py-2">1</td>
+                                            <td class="py-2">01H</td>
+                                            <td class="py-2">从设备地址</td>
+                                        </tr>
+                                        <tr class="border-b border-primary/20">
+                                            <td class="py-2">功能码</td>
+                                            <td class="py-2">1</td>
+                                            <td class="py-2">1</td>
+                                            <td class="py-2">03H</td>
+                                            <td class="py-2">读取保持寄存器</td>
+                                        </tr>
+                                        <tr class="border-b border-primary/20">
+                                            <td class="py-2">字节数</td>
+                                            <td class="py-2">2</td>
+                                            <td class="py-2">1</td>
+                                            <td class="py-2">1AH</td>
+                                            <td class="py-2">有效数据字节数（26字节）</td>
+                                        </tr>
+                                        <tr class="border-b border-primary/20">
+                                            <td class="py-2">温度</td>
+                                            <td class="py-2">3-4</td>
+                                            <td class="py-2">2</td>
+                                            <td class="py-2">0000H</td>
+                                            <td class="py-2">温度数据（0.1°单位，int16有符号整型）</td>
+                                        </tr>
+                                        <tr class="border-b border-primary/20">
+                                            <td class="py-2">速度X轴</td>
+                                            <td class="py-2">5-6</td>
+                                            <td class="py-2">2</td>
+                                            <td class="py-2">0000H</td>
+                                            <td class="py-2">X轴振动速度（mm/s单位，扩大10倍）</td>
+                                        </tr>
+                                        <tr class="border-b border-primary/20">
+                                            <td class="py-2">速度Y轴</td>
+                                            <td class="py-2">7-8</td>
+                                            <td class="py-2">2</td>
+                                            <td class="py-2">0000H</td>
+                                            <td class="py-2">Y轴振动速度（mm/s单位，扩大10倍）</td>
+                                        </tr>
+                                        <tr class="border-b border-primary/20">
+                                            <td class="py-2">速度Z轴</td>
+                                            <td class="py-2">9-10</td>
+                                            <td class="py-2">2</td>
+                                            <td class="py-2">0000H</td>
+                                            <td class="py-2">Z轴振动速度（mm/s单位，扩大10倍）</td>
+                                        </tr>
+                                        <tr class="border-b border-primary/20">
+                                            <td class="py-2">位移X轴</td>
+                                            <td class="py-2">11-12</td>
+                                            <td class="py-2">2</td>
+                                            <td class="py-2">0000H</td>
+                                            <td class="py-2">X轴振动位移（μm单位，扩大10倍）</td>
+                                        </tr>
+                                        <tr class="border-b border-primary/20">
+                                            <td class="py-2">位移Y轴</td>
+                                            <td class="py-2">13-14</td>
+                                            <td class="py-2">2</td>
+                                            <td class="py-2">0000H</td>
+                                            <td class="py-2">Y轴振动位移（μm单位，扩大10倍）</td>
+                                        </tr>
+                                        <tr class="border-b border-primary/20">
+                                            <td class="py-2">位移Z轴</td>
+                                            <td class="py-2">15-16</td>
+                                            <td class="py-2">2</td>
+                                            <td class="py-2">0000H</td>
+                                            <td class="py-2">Z轴振动位移（μm单位，扩大10倍）</td>
+                                        </tr>
+                                        <tr class="border-b border-primary/20">
+                                            <td class="py-2">加速度X轴</td>
+                                            <td class="py-2">17-18</td>
+                                            <td class="py-2">2</td>
+                                            <td class="py-2">0000H</td>
+                                            <td class="py-2">X轴振动加速度（m/s²单位，扩大10倍）</td>
+                                        </tr>
+                                        <tr class="border-b border-primary/20">
+                                            <td class="py-2">加速度Y轴</td>
+                                            <td class="py-2">19-20</td>
+                                            <td class="py-2">2</td>
+                                            <td class="py-2">0000H</td>
+                                            <td class="py-2">Y轴振动加速度（m/s²单位，扩大10倍）</td>
+                                        </tr>
+                                        <tr class="border-b border-primary/20">
+                                            <td class="py-2">版本号</td>
+                                            <td class="py-2">19-20</td>
+                                            <td class="py-2">2</td>
+                                            <td class="py-2">0000H</td>
+                                            <td class="py-2">设备版本号</td>
+                                        </tr>
+                                        <tr class="border-b border-primary/20">
+                                            <td class="py-2">加速度X轴</td>
+                                            <td class="py-2">21-22</td>
+                                            <td class="py-2">2</td>
+                                            <td class="py-2">0000H</td>
+                                            <td class="py-2">X轴振动加速度（m/s²单位，扩大10倍）</td>
+                                        </tr>
+                                        <tr class="border-b border-primary/20">
+                                            <td class="py-2">加速度Y轴</td>
+                                            <td class="py-2">23-24</td>
+                                            <td class="py-2">2</td>
+                                            <td class="py-2">0000H</td>
+                                            <td class="py-2">Y轴振动加速度（m/s²单位，扩大10倍）</td>
+                                        </tr>
+                                        <tr class="border-b border-primary/20">
+                                            <td class="py-2">加速度Z轴</td>
+                                            <td class="py-2">25-26</td>
+                                            <td class="py-2">2</td>
+                                            <td class="py-2">0000H</td>
+                                            <td class="py-2">Z轴振动加速度（m/s²单位，扩大10倍）</td>
+                                        </tr>
+                                        <tr class="border-b border-primary/20">
+                                            <td class="py-2">校验码</td>
+                                            <td class="py-2">27-28</td>
+                                            <td class="py-2">2</td>
+                                            <td class="py-2">CRC16</td>
+                                            <td class="py-2">CRC16校验码</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <div class="mt-4 font-mono text-sm">
+                                    完整应答帧示例：<code class="text-vib">01 03 1A 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 CRC16</code>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 频率数据应答帧定义 -->
+                        <div>
+                            <h5 class="text-lg font-semibold mb-4 text-vib">频率数据应答帧定义</h5>
+                            <div class="bg-dark/80 rounded-xl p-6 border border-primary/30">
+                                <table class="w-full text-sm">
+                                    <thead>
+                                        <tr class="border-b border-primary/30">
+                                            <th class="py-2 text-left">字段</th>
+                                            <th class="py-2 text-left">偏移</th>
+                                            <th class="py-2 text-left">长度</th>
+                                            <th class="py-2 text-left">数值</th>
+                                            <th class="py-2 text-left">描述</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="border-b border-primary/20">
+                                            <td class="py-2">地址码</td>
+                                            <td class="py-2">0</td>
+                                            <td class="py-2">1</td>
+                                            <td class="py-2">01H</td>
+                                            <td class="py-2">从设备地址</td>
+                                        </tr>
+                                        <tr class="border-b border-primary/20">
+                                            <td class="py-2">功能码</td>
+                                            <td class="py-2">1</td>
+                                            <td class="py-2">1</td>
+                                            <td class="py-2">03H</td>
+                                            <td class="py-2">读取保持寄存器</td>
+                                        </tr>
+                                        <tr class="border-b border-primary/20">
+                                            <td class="py-2">字节数</td>
+                                            <td class="py-2">2</td>
+                                            <td class="py-2">1</td>
+                                            <td class="py-2">0CH</td>
+                                            <td class="py-2">有效数据字节数（12字节）</td>
+                                        </tr>
+                                        <tr class="border-b border-primary/20">
+                                            <td class="py-2">频率X轴</td>
+                                            <td class="py-2">3-6</td>
+                                            <td class="py-2">4</td>
+                                            <td class="py-2">00000000H</td>
+                                            <td class="py-2">X轴振动频率（float类型，Hz单位）</td>
+                                        </tr>
+                                        <tr class="border-b border-primary/20">
+                                            <td class="py-2">频率Y轴</td>
+                                            <td class="py-2">7-10</td>
+                                            <td class="py-2">4</td>
+                                            <td class="py-2">00000000H</td>
+                                            <td class="py-2">Y轴振动频率（float类型，Hz单位）</td>
+                                        </tr>
+                                        <tr class="border-b border-primary/20">
+                                            <td class="py-2">频率Z轴</td>
+                                            <td class="py-2">11-14</td>
+                                            <td class="py-2">4</td>
+                                            <td class="py-2">00000000H</td>
+                                            <td class="py-2">Z轴振动频率（float类型，Hz单位）</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="py-2">校验码</td>
+                                            <td class="py-2">15-16</td>
+                                            <td class="py-2">2</td>
+                                            <td class="py-2">CRC16</td>
+                                            <td class="py-2">CRC16校验码</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <div class="mt-4 font-mono text-sm">
+                                    完整应答帧示例：<code class="text-vib">01 03 0C 00 00 00 00 00 00 00 00 00 00 00 CRC16</code>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 解析模型 -->
+                        <div>
+                            <h5 class="text-lg font-semibold mb-4 text-vib">解析模型</h5>
+                            <div class="bg-dark/80 rounded-xl p-6 border border-primary/30">
+                                <ul class="list-disc pl-5 space-y-2">
+                                    <li>数据提取：按偏移位置提取各个字段的值</li>
+                                    <li>温度转换：有符号整型，单位转换为0.1°</li>
+                                    <li>频率转换：float32类型，单位为Hz</li>
+                                    <li>速度转换：float32类型，单位为mm/s</li>
+                                    <li>加速度转换：float32类型，单位为m/s²</li>
+                                    <li>振幅计算：根据速度和频率计算峰值振幅和均方根值</li>
+                                    <li>CRC校验：使用除校验码外的所有数据计算CRC16校验码</li>
+                                    <li>数据验证：检查数据是否在合理范围内</li>
+                                    <li>状态评估：根据ISO2372标准评估设备振动状态</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
                             <!-- 操作按钮 -->
                             <div class="flex space-x-6 pt-4 flex-wrap gap-4">
@@ -444,10 +781,41 @@
             }
         }
 
+        // 更新LoRa配置
+        function updateLoraConfig() {
+            const networkType = document.getElementById('network-type').value;
+            const targetAddress = document.getElementById('target-address').value;
+
+            fetch('/api/serial/lora-config', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ 
+                    network_type: networkType, 
+                    target_address: targetAddress, 
+                    page: 'vibration' 
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('更新LoRa配置:', data);
+                if (data.status === 'success') {
+                    alert(data.message);
+                } else {
+                    alert('更新失败: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('更新LoRa配置失败:', error);
+                alert('更新LoRa配置失败: ' + error.message);
+            });
+        }
+
         // 获取当前配置
         function getCurrentConfig() {
             // 获取串口配置
-            fetch('/api/serial/config')
+            fetch('/api/serial/config?page=vibration')
                 .then(response => response.json())
                 .then(config => {
                     // 设置串口端口
@@ -482,11 +850,27 @@
                     // 设置问询周期
                     const intervalInput = document.getElementById('query-interval');
                     if (intervalInput) {
-                        fetch('/api/query/interval')
+                        fetch('/api/query/interval?page=vibration')
                             .then(response => response.json())
                             .then(data => {
                                 if (data.status === 'success') {
                                     intervalInput.value = data.interval;
+                                }
+                            });
+                    }
+
+                    // 获取LoRa配置
+                    const networkTypeSelect = document.getElementById('network-type');
+                    const targetAddressInput = document.getElementById('target-address');
+                    if (networkTypeSelect && targetAddressInput) {
+                        fetch('/api/serial/lora-config?page=vibration')
+                            .then(response => response.json())
+                            .then(loraConfig => {
+                                if (loraConfig.network_type) {
+                                    networkTypeSelect.value = loraConfig.network_type;
+                                }
+                                if (loraConfig.target_address) {
+                                    targetAddressInput.value = loraConfig.target_address;
                                 }
                             });
                     }
@@ -498,9 +882,14 @@
 
         // 获取帧数据
         function updateFrameData() {
-            fetch('/api/serial/frames')
-                .then(response => response.json())
+            console.log('开始获取帧数据...');
+            fetch('/api/serial/frames?page=vibration')
+                .then(response => {
+                    console.log('收到帧数据响应:', response.status);
+                    return response.json();
+                })
                 .then(frameData => {
+                    console.log('获取到帧数据:', frameData);
                     // 更新问询帧显示
                     const queryFrameElement = document.getElementById('query-frame');
                     if (queryFrameElement) {
@@ -528,41 +917,59 @@
 
         // 打开串口
         function openSerial() {
-            const serialPortSelect = document.getElementById('serial-port');
-            const baudrateSelect = document.getElementById('serial-baudrate');
-            const paritySelect = document.getElementById('serial-parity');
-            const stopbitsSelect = document.getElementById('serial-stopbits');
+            // 先检查串口状态
+            fetch('/api/serial/status?page=vibration')
+                .then(response => response.json())
+                .then(status => {
+                    if (status.is_open) {
+                        alert('串口已打开');
+                        return;
+                    }
+                    
+                    const serialPortSelect = document.getElementById('serial-port');
+                    const baudrateSelect = document.getElementById('serial-baudrate');
+                    const paritySelect = document.getElementById('serial-parity');
+                    const stopbitsSelect = document.getElementById('serial-stopbits');
 
-            const config = {
-                port: serialPortSelect.value,
-                baudrate: parseInt(baudrateSelect.value),
-                parity: paritySelect.value,
-                stopbits: parseInt(stopbitsSelect.value),
-                bytesize: 8
-            };
+                    const config = {
+                        port: serialPortSelect.value,
+                        baudrate: parseInt(baudrateSelect.value),
+                        parity: paritySelect.value,
+                        stopbits: parseInt(stopbitsSelect.value),
+                        bytesize: 8
+                    };
 
-            fetch('/api/serial/open', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ config: config })
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log('打开串口:', data);
-                alert(data.message);
-            })
-            .catch(error => {
-                console.error('打开串口失败:', error);
-                alert('打开串口失败: ' + error.message);
-            });
+                    return fetch('/api/serial/open', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ config: config, page: 'vibration' })
+                    });
+                })
+                .then(response => {
+                    if (!response) return;
+                    return response.json();
+                })
+                .then(data => {
+                    if (!data) return;
+                    console.log('打开串口:', data);
+                    alert(data.message);
+                })
+                .catch(error => {
+                    console.error('打开串口失败:', error);
+                    alert('打开串口失败: ' + error.message);
+                });
         }
 
         // 关闭串口
         function closeSerial() {
             fetch('/api/serial/close', {
-                method: 'POST'
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ page: 'vibration' })
             })
             .then(response => response.json())
             .then(data => {
@@ -578,7 +985,11 @@
         // 启动问询
         function startQuery() {
             fetch('/api/query/start', {
-                method: 'POST'
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ page: 'vibration' })
             })
             .then(response => response.json())
             .then(data => {
@@ -586,6 +997,8 @@
                 alert(data.message);
                 // 确保数据更新定时器正在运行
                 startDataUpdate();
+                // 立即获取一次帧数据
+                updateFrameData();
             })
             .catch(error => {
                 console.error('启动问询失败:', error);
@@ -596,7 +1009,11 @@
         // 停止问询
         function stopQuery() {
             fetch('/api/query/stop', {
-                method: 'POST'
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ page: 'vibration' })
             })
             .then(response => response.json())
             .then(data => {
@@ -618,7 +1035,7 @@
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ interval: interval })
+                body: JSON.stringify({ interval: interval, page: 'vibration' })
             })
             .then(response => response.json())
             .then(data => {
@@ -651,8 +1068,13 @@
             acceleration_x: [],
             acceleration_y: [],
             acceleration_z: [],
-            amplitude_peak: [],
-            amplitude_rms: []
+            displacement_x: [],
+            displacement_y: [],
+            displacement_z: [],
+            resultant_velocity: [],
+            resultant_displacement: [],
+            resultant_acceleration: [],
+            version: []
         };
         let timeLabels = [];
         let queryInterval = 2; // 默认问询周期（秒）
@@ -677,7 +1099,10 @@
             { parameter: 'acceleration', axis: 'x' },
             { parameter: 'acceleration', axis: 'y' },
             { parameter: 'acceleration', axis: 'z' },
-            { parameter: 'amplitude', axis: 'all' }
+            { parameter: 'displacement', axis: 'all' },
+            { parameter: 'displacement', axis: 'x' },
+            { parameter: 'displacement', axis: 'y' },
+            { parameter: 'displacement', axis: 'z' }
         ]; // 自动切换序列
         
         // 设备振动标准配置
@@ -722,6 +1147,8 @@
                 })
                 .catch(error => {
                     console.error('获取温振数据失败:', error);
+                    // 即使获取数据失败，也要更新帧数据
+                    updateFrameData();
                 });
         }
 
@@ -787,15 +1214,27 @@
                 vibAccelerationZ.textContent = (data.acceleration_z || 0).toFixed(2);
             }
             
-            // 更新振幅数据
-            const vibAmplitudePeak = document.getElementById('vib-amplitude-peak');
-            if (vibAmplitudePeak) {
-                vibAmplitudePeak.textContent = (data.amplitude_peak || 0).toFixed(2);
+
+            
+            // 更新位移数据
+            const vibDisplacementX = document.getElementById('vib-displacement-x');
+            if (vibDisplacementX) {
+                vibDisplacementX.textContent = (data.displacement_x || 0).toFixed(2);
             }
-            const vibAmplitudeRms = document.getElementById('vib-amplitude-rms');
-            if (vibAmplitudeRms) {
-                vibAmplitudeRms.textContent = (data.amplitude_rms || 0).toFixed(2);
+            const vibDisplacementY = document.getElementById('vib-displacement-y');
+            if (vibDisplacementY) {
+                vibDisplacementY.textContent = (data.displacement_y || 0).toFixed(2);
             }
+            const vibDisplacementZ = document.getElementById('vib-displacement-z');
+            if (vibDisplacementZ) {
+                vibDisplacementZ.textContent = (data.displacement_z || 0).toFixed(2);
+            }
+            
+            // 使用后端返回的合速度、合位移、合加速度值
+            const resultantVelocity = data.resultant_velocity || 0;
+            const resultantDisplacement = data.resultant_displacement || 0;
+            const resultantAcceleration = data.resultant_acceleration || 0;
+            const version = data.version || 0;
             
             // 更新数据概览
             const vibLatestTemp = document.getElementById('vib-latest-temp');
@@ -819,28 +1258,26 @@
             
             const vibLatestVelocity = document.getElementById('vib-latest-velocity');
             if (vibLatestVelocity) {
-                vibLatestVelocity.textContent = (data.velocity_x || 0).toFixed(2) + ' mm/s';
+                vibLatestVelocity.textContent = resultantVelocity.toFixed(2) + ' mm/s';
             }
             
             const vibLatestAcceleration = document.getElementById('vib-latest-acceleration');
             if (vibLatestAcceleration) {
-                vibLatestAcceleration.textContent = (data.acceleration_x || 0).toFixed(2) + ' m/s²';
+                vibLatestAcceleration.textContent = resultantAcceleration.toFixed(2) + ' m/s²';
             }
             
-            const vibLatestAmplitude = document.getElementById('vib-latest-amplitude');
-            if (vibLatestAmplitude) {
-                vibLatestAmplitude.textContent = (data.amplitude_peak || 0).toFixed(2) + ' mm';
+
+            
+            const vibLatestDisplacement = document.getElementById('vib-latest-displacement');
+            if (vibLatestDisplacement) {
+                vibLatestDisplacement.textContent = resultantDisplacement.toFixed(2) + ' μm';
             }
             
             // 更新设备状态（基于ISO2372标准）
             const vibStatus = document.getElementById('vib-status');
             if (vibStatus) {
-                // 获取振动速度有效值（RMS）的最大值（XYZ三个轴）
-                const velocityRms = Math.max(
-                    data.velocity_x || 0,
-                    data.velocity_y || 0,
-                    data.velocity_z || 0
-                );
+                // 使用合速度进行设备状态评估
+                const velocityRms = resultantVelocity;
                 
                 // 根据设备分类和ISO2372标准评估设备状态
                 const limits = vibrationLimits[deviceClass];
@@ -922,14 +1359,44 @@
                 vibrationData.acceleration_z.shift();
             }
             
-            vibrationData.amplitude_peak.push(data.amplitude_peak || 0);
-            if (vibrationData.amplitude_peak.length > 50) {
-                vibrationData.amplitude_peak.shift();
+
+            
+            // 更新位移数据历史
+            vibrationData.displacement_x.push(data.displacement_x || 0);
+            if (vibrationData.displacement_x.length > 50) {
+                vibrationData.displacement_x.shift();
             }
             
-            vibrationData.amplitude_rms.push(data.amplitude_rms || 0);
-            if (vibrationData.amplitude_rms.length > 50) {
-                vibrationData.amplitude_rms.shift();
+            vibrationData.displacement_y.push(data.displacement_y || 0);
+            if (vibrationData.displacement_y.length > 50) {
+                vibrationData.displacement_y.shift();
+            }
+            
+            vibrationData.displacement_z.push(data.displacement_z || 0);
+            if (vibrationData.displacement_z.length > 50) {
+                vibrationData.displacement_z.shift();
+            }
+            
+            // 更新合速度、合位移、合加速度历史数据
+            vibrationData.resultant_velocity.push(resultantVelocity);
+            if (vibrationData.resultant_velocity.length > 50) {
+                vibrationData.resultant_velocity.shift();
+            }
+            
+            vibrationData.resultant_displacement.push(resultantDisplacement);
+            if (vibrationData.resultant_displacement.length > 50) {
+                vibrationData.resultant_displacement.shift();
+            }
+            
+            vibrationData.resultant_acceleration.push(resultantAcceleration);
+            if (vibrationData.resultant_acceleration.length > 50) {
+                vibrationData.resultant_acceleration.shift();
+            }
+            
+            // 更新版本号历史数据
+            vibrationData.version.push(version);
+            if (vibrationData.version.length > 50) {
+                vibrationData.version.shift();
             }
             
             // 更新历史图表
@@ -1110,25 +1577,40 @@
                         fill: true
                     });
                 }
-            } else if (currentParameter === 'amplitude') {
-                datasets.push({
-                    label: '峰值振幅 (mm)',
-                    data: vibrationData.amplitude_peak,
-                    borderColor: '#ef4444',
-                    backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                    borderWidth: 2,
-                    tension: 0.4,
-                    fill: true
-                });
-                datasets.push({
-                    label: '均方根值 (mm)',
-                    data: vibrationData.amplitude_rms,
-                    borderColor: '#8b5cf6',
-                    backgroundColor: 'rgba(139, 92, 246, 0.1)',
-                    borderWidth: 2,
-                    tension: 0.4,
-                    fill: true
-                });
+            } else if (currentParameter === 'displacement') {
+                if (currentAxis === 'all' || currentAxis === 'x') {
+                    datasets.push({
+                        label: '位移 X轴 (μm)',
+                        data: vibrationData.displacement_x,
+                        borderColor: colors.x,
+                        backgroundColor: 'rgba(6, 182, 212, 0.1)',
+                        borderWidth: 2,
+                        tension: 0.4,
+                        fill: true
+                    });
+                }
+                if (currentAxis === 'all' || currentAxis === 'y') {
+                    datasets.push({
+                        label: '位移 Y轴 (μm)',
+                        data: vibrationData.displacement_y,
+                        borderColor: colors.y,
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        borderWidth: 2,
+                        tension: 0.4,
+                        fill: true
+                    });
+                }
+                if (currentAxis === 'all' || currentAxis === 'z') {
+                    datasets.push({
+                        label: '位移 Z轴 (μm)',
+                        data: vibrationData.displacement_z,
+                        borderColor: colors.z,
+                        backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                        borderWidth: 2,
+                        tension: 0.4,
+                        fill: true
+                    });
+                }
             }
             
             vibHistoryChart.data.labels = timeLabels;
@@ -1320,6 +1802,14 @@
                 refreshDataButton.addEventListener('click', function() {
                     console.log('刷新数据');
                     fetchVibrationData();
+                });
+            }
+
+            // 更新LoRa配置按钮事件
+            const updateLoraConfigButton = document.getElementById('update-lora-config');
+            if (updateLoraConfigButton) {
+                updateLoraConfigButton.addEventListener('click', function() {
+                    updateLoraConfig();
                 });
             }
 

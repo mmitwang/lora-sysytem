@@ -41,3 +41,9 @@ def video():
 def light():
     """光照气体监控页面"""
     return render_template('light.html', active_page='light')
+
+
+@web_bp.route('/config')
+def config():
+    """配置调试页面"""
+    return render_template('index.html', active_page='config')

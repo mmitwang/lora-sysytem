@@ -223,6 +223,34 @@
                                 </div>
                             </div>
 
+                            <!-- LoRa配置折叠面板 -->
+                            <div class="border border-primary/30 rounded-xl overflow-hidden">
+                                <button class="w-full flex justify-between items-center p-6 bg-dark/80 hover:bg-dark/90 transition-all" onclick="toggleCollapse('lora-config')">
+                                    <h4 class="text-xl font-medium">LoRa配置</h4>
+                                    <i class="fa fa-chevron-down text-lightgas transition-transform" id="lora-config-icon"></i>
+                                </button>
+                                <div id="lora-config" class="p-6 border-t border-primary/30" style="display: none;">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div>
+                                            <label class="block text-sm text-lightgas/70 mb-3">网络类型</label>
+                                            <select id="network-type" class="w-full bg-dark/80 border border-primary/30 rounded-lg px-6 py-3 text-light focus:outline-none focus:ring-2 focus:ring-primary/50">
+                                                <option value="modbus">标准Modbus</option>
+                                                <option value="lora">LoRa</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm text-lightgas/70 mb-3">LoRa目标地址 (十六进制)</label>
+                                            <input type="text" id="target-address" value="5678" placeholder="例如: 5678" class="w-full bg-dark/80 border border-primary/30 rounded-lg px-6 py-3 text-light focus:outline-none focus:ring-2 focus:ring-primary/50">
+                                        </div>
+                                    </div>
+                                    <div class="mt-6">
+                                        <button id="update-lora-config" class="px-8 py-3 bg-gradient-to-r from-lightgas to-lightgas/80 rounded-lg font-semibold hover:opacity-90 transition-all transform hover:scale-105">
+                                            更新LoRa配置
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
                             <!-- 问询周期设置折叠面板 -->
                             <div class="border border-primary/30 rounded-xl overflow-hidden">
                                 <button class="w-full flex justify-between items-center p-6 bg-dark/80 hover:bg-dark/90 transition-all" onclick="toggleCollapse('interval-config')">
@@ -557,10 +585,41 @@
             }
         }
 
+        // 更新LoRa配置
+        function updateLoraConfig() {
+            const networkType = document.getElementById('network-type').value;
+            const targetAddress = document.getElementById('target-address').value;
+
+            fetch('/api/serial/lora-config', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ 
+                    network_type: networkType, 
+                    target_address: targetAddress, 
+                    page: 'light' 
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('更新LoRa配置:', data);
+                if (data.status === 'success') {
+                    alert(data.message);
+                } else {
+                    alert('更新失败: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('更新LoRa配置失败:', error);
+                alert('更新LoRa配置失败: ' + error.message);
+            });
+        }
+
         // 获取当前配置
         function getCurrentConfig() {
             // 获取串口配置
-            fetch('/api/serial/config')
+            fetch('/api/serial/config?page=light')
                 .then(response => response.json())
                 .then(config => {
                     // 设置串口端口
@@ -595,11 +654,27 @@
                     // 设置问询周期
                     const intervalInput = document.getElementById('query-interval');
                     if (intervalInput) {
-                        fetch('/api/query/interval')
+                        fetch('/api/query/interval?page=light')
                             .then(response => response.json())
                             .then(data => {
                                 if (data.status === 'success') {
                                     intervalInput.value = data.interval;
+                                }
+                            });
+                    }
+
+                    // 获取LoRa配置
+                    const networkTypeSelect = document.getElementById('network-type');
+                    const targetAddressInput = document.getElementById('target-address');
+                    if (networkTypeSelect && targetAddressInput) {
+                        fetch('/api/serial/lora-config?page=light')
+                            .then(response => response.json())
+                            .then(loraConfig => {
+                                if (loraConfig.network_type) {
+                                    networkTypeSelect.value = loraConfig.network_type;
+                                }
+                                if (loraConfig.target_address) {
+                                    targetAddressInput.value = loraConfig.target_address;
                                 }
                             });
                     }
@@ -612,7 +687,7 @@
         // 获取帧数据
         function updateFrameData() {
             console.log('开始获取帧数据...');
-            fetch('/api/serial/frames')
+            fetch('/api/serial/frames?page=light')
                 .then(response => {
                     console.log('收到帧数据响应:', response.status);
                     return response.json();
@@ -646,41 +721,59 @@
 
         // 打开串口
         function openSerial() {
-            const serialPortSelect = document.getElementById('serial-port');
-            const baudrateSelect = document.getElementById('serial-baudrate');
-            const paritySelect = document.getElementById('serial-parity');
-            const stopbitsSelect = document.getElementById('serial-stopbits');
+            // 先检查串口状态
+            fetch('/api/serial/status?page=light')
+                .then(response => response.json())
+                .then(status => {
+                    if (status.is_open) {
+                        alert('串口已被占用，可直接在同样串口启动问询');
+                        return;
+                    }
+                    
+                    const serialPortSelect = document.getElementById('serial-port');
+                    const baudrateSelect = document.getElementById('serial-baudrate');
+                    const paritySelect = document.getElementById('serial-parity');
+                    const stopbitsSelect = document.getElementById('serial-stopbits');
 
-            const config = {
-                port: serialPortSelect.value,
-                baudrate: parseInt(baudrateSelect.value),
-                parity: paritySelect.value,
-                stopbits: parseInt(stopbitsSelect.value),
-                bytesize: 8
-            };
+                    const config = {
+                        port: serialPortSelect.value,
+                        baudrate: parseInt(baudrateSelect.value),
+                        parity: paritySelect.value,
+                        stopbits: parseInt(stopbitsSelect.value),
+                        bytesize: 8
+                    };
 
-            fetch('/api/serial/open', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ config: config })
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log('打开串口:', data);
-                alert(data.message);
-            })
-            .catch(error => {
-                console.error('打开串口失败:', error);
-                alert('打开串口失败: ' + error.message);
-            });
+                    return fetch('/api/serial/open', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ config: config, page: 'light' })
+                    });
+                })
+                .then(response => {
+                    if (!response) return;
+                    return response.json();
+                })
+                .then(data => {
+                    if (!data) return;
+                    console.log('打开串口:', data);
+                    alert(data.message);
+                })
+                .catch(error => {
+                    console.error('打开串口失败:', error);
+                    alert('打开串口失败: ' + error.message);
+                });
         }
 
         // 关闭串口
         function closeSerial() {
             fetch('/api/serial/close', {
-                method: 'POST'
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ page: 'light' })
             })
             .then(response => response.json())
             .then(data => {
@@ -696,7 +789,11 @@
         // 启动问询
         function startQuery() {
             fetch('/api/query/start', {
-                method: 'POST'
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ page: 'light' })
             })
             .then(response => response.json())
             .then(data => {
@@ -714,7 +811,11 @@
         // 停止问询
         function stopQuery() {
             fetch('/api/query/stop', {
-                method: 'POST'
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ page: 'light' })
             })
             .then(response => response.json())
             .then(data => {
@@ -736,7 +837,7 @@
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ interval: interval })
+                body: JSON.stringify({ interval: interval, page: 'light' })
             })
             .then(response => response.json())
             .then(data => {
@@ -784,7 +885,7 @@
         // 获取光照气体数据
         function fetchLightData() {
             console.log('开始获取光照气体数据...');
-            fetch('/api/sensor/data')
+            fetch('/api/sensor/data?page=light')
                 .then(response => {
                     console.log('收到响应:', response.status);
                     return response.json();
@@ -1210,6 +1311,14 @@
                 refreshDataButton.addEventListener('click', function() {
                     console.log('刷新数据');
                     fetchLightData();
+                });
+            }
+
+            // 更新LoRa配置按钮事件
+            const updateLoraConfigButton = document.getElementById('update-lora-config');
+            if (updateLoraConfigButton) {
+                updateLoraConfigButton.addEventListener('click', function() {
+                    updateLoraConfig();
                 });
             }
         });
