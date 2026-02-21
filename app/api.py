@@ -35,6 +35,26 @@ def close_serial():
     return jsonify({"status": "success" if success else "error", "message": message})
 
 
+@api_bp.route('/serial/open-tcp', methods=['POST'])
+def open_tcp():
+    """打开TCP通讯"""
+    data = request.json
+    tcp_server_ip = data.get('tcp_server_ip', '127.0.0.1')
+    tcp_server_port = data.get('tcp_server_port', 502)
+    page = data.get('page', 'light')
+    success, message = serial_service.open_tcp(tcp_server_ip, tcp_server_port, page)
+    return jsonify({"status": "success" if success else "error", "message": message})
+
+
+@api_bp.route('/serial/close-tcp', methods=['POST'])
+def close_tcp():
+    """关闭TCP通讯"""
+    data = request.json
+    page = data.get('page', 'light')
+    success, message = serial_service.close_tcp(page)
+    return jsonify({"status": "success" if success else "error", "message": message})
+
+
 @api_bp.route('/serial/config', methods=['GET'])
 def get_serial_config():
     """获取串口配置"""
@@ -233,6 +253,63 @@ def get_system_status():
         "timestamp": time.time()
     }
     return jsonify({"status": "success", "data": system_status})
+
+
+@api_bp.route('/serial/network-config', methods=['GET'])
+def get_network_config():
+    """获取网络配置"""
+    page = request.args.get('page', 'light')
+    status = serial_service.get_serial_status(page)
+    return jsonify({
+        "network_type": status.get('network_type', 'modbus'),
+        "target_address": status.get('target_address', '5678')
+    })
+
+
+@api_bp.route('/serial/network-config', methods=['POST'])
+def update_network_config():
+    """更新网络配置"""
+    data = request.json
+    network_type = data.get('network_type', 'modbus')
+    target_address = data.get('target_address', '5678')
+    page = data.get('page', 'light')
+    success, message = serial_service.update_network_config(network_type, target_address, page)
+    return jsonify({"status": "success" if success else "error", "message": message})
+
+
+@api_bp.route('/serial/tcp-config', methods=['GET'])
+def get_tcp_config():
+    """获取TCP配置"""
+    page = request.args.get('page', 'light')
+    status = serial_service.get_serial_status(page)
+    return jsonify({
+        "tcp_server_ip": status.get('tcp_server_ip', '127.0.0.1'),
+        "tcp_server_port": status.get('tcp_server_port', 502)
+    })
+
+
+@api_bp.route('/serial/tcp-config', methods=['POST'])
+def update_tcp_config():
+    """更新TCP配置"""
+    data = request.json
+    tcp_server_ip = data.get('tcp_server_ip', '127.0.0.1')
+    tcp_server_port = data.get('tcp_server_port', 502)
+    page = data.get('page', 'light')
+    success, message = serial_service.update_tcp_config(tcp_server_ip, tcp_server_port, page)
+    return jsonify({"status": "success" if success else "error", "message": message})
+
+
+@api_bp.route('/serial/communication-config', methods=['POST'])
+def update_communication_config():
+    """更新通讯配置"""
+    data = request.json
+    communication_mode = data.get('communication_mode', 'serial')
+    network_type = data.get('network_type', 'modbus')
+    target_address = data.get('target_address', '5678')
+    config = data.get('config', {})
+    page = data.get('page', 'light')
+    success, message = serial_service.update_communication_config(communication_mode, network_type, target_address, config, page)
+    return jsonify({"status": "success" if success else "error", "message": message})
 
 
 @api_bp.route('/serial/lora-config', methods=['GET'])

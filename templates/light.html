@@ -174,78 +174,103 @@
                         
                         <!-- 折叠面板 -->
                         <div class="space-y-6">
-                            <!-- 串口配置折叠面板 -->
+                            <!-- 通讯配置折叠面板 -->
                             <div class="border border-primary/30 rounded-xl overflow-hidden">
-                                <button class="w-full flex justify-between items-center p-6 bg-dark/80 hover:bg-dark/90 transition-all" onclick="toggleCollapse('serial-config')">
-                                    <h4 class="text-xl font-medium">串口配置</h4>
-                                    <i class="fa fa-chevron-down text-lightgas transition-transform" id="serial-config-icon"></i>
+                                <button class="w-full flex justify-between items-center p-6 bg-dark/80 hover:bg-dark/90 transition-all" onclick="toggleCollapse('communication-config')">
+                                    <h4 class="text-xl font-medium">通讯配置</h4>
+                                    <i class="fa fa-chevron-down text-lightgas transition-transform" id="communication-config-icon"></i>
                                 </button>
-                                <div id="serial-config" class="p-6 border-t border-primary/30" style="display: none;">
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <div>
-                                            <label class="block text-sm text-lightgas/70 mb-3">串口端口</label>
-                                            <select id="serial-port" class="w-full bg-dark/80 border border-primary/30 rounded-lg px-6 py-3 text-light focus:outline-none focus:ring-2 focus:ring-primary/50">
-                                                <option value="">加载中...</option>
-                                            </select>
-                                        </div>
-                                        <div>
-                                            <label class="block text-sm text-lightgas/70 mb-3">波特率</label>
-                                            <select id="serial-baudrate" class="w-full bg-dark/80 border border-primary/30 rounded-lg px-6 py-3 text-light focus:outline-none focus:ring-2 focus:ring-primary/50">
-                                                <option value="4800">4800</option>
-                                                <option value="9600" selected>9600</option>
-                                                <option value="19200">19200</option>
-                                                <option value="38400">38400</option>
-                                                <option value="57600">57600</option>
-                                                <option value="115200">115200</option>
-                                            </select>
-                                        </div>
-                                        <div>
-                                            <label class="block text-sm text-lightgas/70 mb-3">校验位</label>
-                                            <select id="serial-parity" class="w-full bg-dark/80 border border-primary/30 rounded-lg px-6 py-3 text-light focus:outline-none focus:ring-2 focus:ring-primary/50">
-                                                <option value="N" selected>无</option>
-                                                <option value="E">偶校验</option>
-                                                <option value="O">奇校验</option>
-                                            </select>
-                                        </div>
-                                        <div>
-                                            <label class="block text-sm text-lightgas/70 mb-3">停止位</label>
-                                            <select id="serial-stopbits" class="w-full bg-dark/80 border border-primary/30 rounded-lg px-6 py-3 text-light focus:outline-none focus:ring-2 focus:ring-primary/50">
-                                                <option value="1" selected>1</option>
-                                                <option value="2">2</option>
-                                            </select>
-                                        </div>
+                                <div id="communication-config" class="p-6 border-t border-primary/30" style="display: none;">
+                                    <!-- 通讯模式选择 -->
+                                    <div class="mb-6">
+                                        <label class="block text-sm text-lightgas/70 mb-3">通讯模式</label>
+                                        <select id="communication-mode" class="w-full bg-dark/80 border border-primary/30 rounded-lg px-6 py-3 text-light focus:outline-none focus:ring-2 focus:ring-primary/50">
+                                            <option value="serial">串口通讯</option>
+                                            <option value="tcp">TCP网络通讯</option>
+                                        </select>
                                     </div>
-                                    <div class="mt-4">
-                                        <button onclick="scanSerialPorts()" class="px-6 py-2 bg-dark/80 border border-primary/30 rounded-lg font-semibold hover:bg-primary/10 transition-all">
-                                            重新扫描串口
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
 
-                            <!-- LoRa配置折叠面板 -->
-                            <div class="border border-primary/30 rounded-xl overflow-hidden">
-                                <button class="w-full flex justify-between items-center p-6 bg-dark/80 hover:bg-dark/90 transition-all" onclick="toggleCollapse('lora-config')">
-                                    <h4 class="text-xl font-medium">LoRa配置</h4>
-                                    <i class="fa fa-chevron-down text-lightgas transition-transform" id="lora-config-icon"></i>
-                                </button>
-                                <div id="lora-config" class="p-6 border-t border-primary/30" style="display: none;">
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <div>
-                                            <label class="block text-sm text-lightgas/70 mb-3">网络类型</label>
-                                            <select id="network-type" class="w-full bg-dark/80 border border-primary/30 rounded-lg px-6 py-3 text-light focus:outline-none focus:ring-2 focus:ring-primary/50">
-                                                <option value="modbus">标准Modbus</option>
-                                                <option value="lora">LoRa</option>
-                                            </select>
+                                    <!-- 串口配置部分 -->
+                                    <div id="serial-config-section" class="mb-6">
+                                        <h5 class="text-lg font-semibold mb-4 text-lightgas">串口配置</h5>
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <div>
+                                                <label class="block text-sm text-lightgas/70 mb-3">串口端口</label>
+                                                <select id="serial-port" class="w-full bg-dark/80 border border-primary/30 rounded-lg px-6 py-3 text-light focus:outline-none focus:ring-2 focus:ring-primary/50">
+                                                    <option value="">加载中...</option>
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm text-lightgas/70 mb-3">波特率</label>
+                                                <select id="serial-baudrate" class="w-full bg-dark/80 border border-primary/30 rounded-lg px-6 py-3 text-light focus:outline-none focus:ring-2 focus:ring-primary/50">
+                                                    <option value="4800">4800</option>
+                                                    <option value="9600" selected>9600</option>
+                                                    <option value="19200">19200</option>
+                                                    <option value="38400">38400</option>
+                                                    <option value="57600">57600</option>
+                                                    <option value="115200">115200</option>
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm text-lightgas/70 mb-3">校验位</label>
+                                                <select id="serial-parity" class="w-full bg-dark/80 border border-primary/30 rounded-lg px-6 py-3 text-light focus:outline-none focus:ring-2 focus:ring-primary/50">
+                                                    <option value="N" selected>无</option>
+                                                    <option value="E">偶校验</option>
+                                                    <option value="O">奇校验</option>
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm text-lightgas/70 mb-3">停止位</label>
+                                                <select id="serial-stopbits" class="w-full bg-dark/80 border border-primary/30 rounded-lg px-6 py-3 text-light focus:outline-none focus:ring-2 focus:ring-primary/50">
+                                                    <option value="1" selected>1</option>
+                                                    <option value="2">2</option>
+                                                </select>
+                                            </div>
                                         </div>
-                                        <div>
-                                            <label class="block text-sm text-lightgas/70 mb-3">LoRa目标地址 (十六进制)</label>
-                                            <input type="text" id="target-address" value="5678" placeholder="例如: 5678" class="w-full bg-dark/80 border border-primary/30 rounded-lg px-6 py-3 text-light focus:outline-none focus:ring-2 focus:ring-primary/50">
+                                        <div class="mt-4">
+                                            <button onclick="scanSerialPorts()" class="px-6 py-2 bg-dark/80 border border-primary/30 rounded-lg font-semibold hover:bg-primary/10 transition-all">
+                                                重新扫描串口
+                                            </button>
                                         </div>
                                     </div>
+
+                                    <!-- TCP网络配置部分 -->
+                                    <div id="tcp-config-section" class="mb-6" style="display: none;">
+                                        <h5 class="text-lg font-semibold mb-4 text-lightgas">TCP网络配置</h5>
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <div>
+                                                <label class="block text-sm text-lightgas/70 mb-3">TCP Server IP地址</label>
+                                                <input type="text" id="tcp-server-ip" value="192.168.0.80" placeholder="例如: 192.168.0.80" class="w-full bg-dark/80 border border-primary/30 rounded-lg px-6 py-3 text-light focus:outline-none focus:ring-2 focus:ring-primary/50">
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm text-lightgas/70 mb-3">TCP Server端口</label>
+                                                <input type="number" id="tcp-server-port" min="1" max="65535" value="10125" placeholder="例如: 10125" class="w-full bg-dark/80 border border-primary/30 rounded-lg px-6 py-3 text-light focus:outline-none focus:ring-2 focus:ring-primary/50">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- LoRa配置部分 -->
+                                    <div class="mb-6">
+                                        <h5 class="text-lg font-semibold mb-4 text-lightgas">LoRa配置</h5>
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <div>
+                                                <label class="block text-sm text-lightgas/70 mb-3">网络类型</label>
+                                                <select id="network-type" class="w-full bg-dark/80 border border-primary/30 rounded-lg px-6 py-3 text-light focus:outline-none focus:ring-2 focus:ring-primary/50">
+                                                    <option value="modbus">标准Modbus</option>
+                                                    <option value="lora" selected>LoRa</option>
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm text-lightgas/70 mb-3">LoRa目标地址 (十六进制)</label>
+                                                <input type="text" id="target-address" value="5678" placeholder="例如: 5678" class="w-full bg-dark/80 border border-primary/30 rounded-lg px-6 py-3 text-light focus:outline-none focus:ring-2 focus:ring-primary/50">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- 更新按钮 -->
                                     <div class="mt-6">
-                                        <button id="update-lora-config" class="px-8 py-3 bg-gradient-to-r from-lightgas to-lightgas/80 rounded-lg font-semibold hover:opacity-90 transition-all transform hover:scale-105">
-                                            更新LoRa配置
+                                        <button id="update-communication-config" class="px-8 py-3 bg-gradient-to-r from-lightgas to-lightgas/80 rounded-lg font-semibold hover:opacity-90 transition-all transform hover:scale-105">
+                                            更新通讯配置
                                         </button>
                                     </div>
                                 </div>
@@ -321,6 +346,13 @@
                                             <div id="response-frame" class="bg-dark/90 rounded-lg p-4 font-mono text-sm overflow-x-auto">
                                                 未接收
                                             </div>
+                                        </div>
+                                    </div>
+                                    <!-- 帧数据历史记录 -->
+                                    <div class="mt-6 bg-dark/80 rounded-xl p-6 border border-primary/30 glow">
+                                        <h5 class="text-lg font-semibold mb-4 text-lightgas">帧数据历史记录</h5>
+                                        <div id="frame-history" class="bg-dark/90 rounded-lg p-4 font-mono text-sm overflow-y-auto max-h-96">
+                                            <div class="text-gray-500">暂无帧数据</div>
                                         </div>
                                     </div>
                                 </div>
@@ -507,11 +539,11 @@
 
                             <!-- 操作按钮 -->
                             <div class="flex space-x-6 pt-4 flex-wrap gap-4">
-                                <button id="open-serial" class="px-8 py-4 bg-gradient-to-r from-lightgas to-lightgas/80 rounded-lg font-semibold text-lg hover:opacity-90 transition-all transform hover:scale-105">
-                                    打开串口
+                                <button id="open-communication" class="px-8 py-4 bg-gradient-to-r from-lightgas to-lightgas/80 rounded-lg font-semibold text-lg hover:opacity-90 transition-all transform hover:scale-105">
+                                    打开通讯
                                 </button>
-                                <button id="close-serial" class="px-8 py-4 bg-dark/80 border border-primary/30 rounded-lg font-semibold text-lg hover:bg-primary/10 transition-all transform hover:scale-105">
-                                    关闭串口
+                                <button id="close-communication" class="px-8 py-4 bg-dark/80 border border-primary/30 rounded-lg font-semibold text-lg hover:bg-primary/10 transition-all transform hover:scale-105">
+                                    关闭通讯
                                 </button>
                                 <button id="start-query" class="px-8 py-4 bg-gradient-to-r from-green-500 to-green-600 rounded-lg font-semibold text-lg hover:opacity-90 transition-all transform hover:scale-105">
                                     启动问询
@@ -585,12 +617,12 @@
             }
         }
 
-        // 更新LoRa配置
-        function updateLoraConfig() {
+        // 更新网络配置
+        function updateNetworkConfig() {
             const networkType = document.getElementById('network-type').value;
             const targetAddress = document.getElementById('target-address').value;
 
-            fetch('/api/serial/lora-config', {
+            fetch('/api/serial/network-config', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -603,7 +635,7 @@
             })
             .then(response => response.json())
             .then(data => {
-                console.log('更新LoRa配置:', data);
+                console.log('更新网络配置:', data);
                 if (data.status === 'success') {
                     alert(data.message);
                 } else {
@@ -611,44 +643,96 @@
                 }
             })
             .catch(error => {
-                console.error('更新LoRa配置失败:', error);
-                alert('更新LoRa配置失败: ' + error.message);
+                console.error('更新网络配置失败:', error);
+                alert('更新网络配置失败: ' + error.message);
+            });
+        }
+
+        // 更新TCP配置
+        function updateTcpConfig() {
+            const tcpServerIp = document.getElementById('tcp-server-ip').value;
+            const tcpServerPort = document.getElementById('tcp-server-port').value;
+
+            fetch('/api/serial/tcp-config', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ 
+                    tcp_server_ip: tcpServerIp, 
+                    tcp_server_port: tcpServerPort, 
+                    page: 'light' 
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('更新TCP配置:', data);
+                if (data.status === 'success') {
+                    alert(data.message);
+                } else {
+                    alert('更新失败: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('更新TCP配置失败:', error);
+                alert('更新TCP配置失败: ' + error.message);
             });
         }
 
         // 获取当前配置
         function getCurrentConfig() {
-            // 获取串口配置
-            fetch('/api/serial/config?page=light')
+            // 获取串口状态，包含所有配置信息
+            fetch('/api/serial/status?page=light')
                 .then(response => response.json())
-                .then(config => {
-                    // 设置串口端口
+                .then(status => {
+                    // 设置通讯模式
+                    const communicationModeSelect = document.getElementById('communication-mode');
+                    if (communicationModeSelect) {
+                        communicationModeSelect.value = status.communication_mode || 'serial';
+                        // 根据通讯模式切换显示相应的配置部分
+                        switchCommunicationMode();
+                    }
+
+                    // 设置串口配置
                     const serialPortSelect = document.getElementById('serial-port');
                     if (serialPortSelect) {
                         for (let i = 0; i < serialPortSelect.options.length; i++) {
-                            if (serialPortSelect.options[i].value === config.port) {
+                            if (serialPortSelect.options[i].value === status.serial_config.port) {
                                 serialPortSelect.selectedIndex = i;
                                 break;
                             }
                         }
                     }
 
-                    // 设置波特率
                     const baudrateSelect = document.getElementById('serial-baudrate');
                     if (baudrateSelect) {
-                        baudrateSelect.value = config.baudrate;
+                        baudrateSelect.value = status.serial_config.baudrate;
                     }
 
-                    // 设置校验位
                     const paritySelect = document.getElementById('serial-parity');
                     if (paritySelect) {
-                        paritySelect.value = config.parity;
+                        paritySelect.value = status.serial_config.parity;
                     }
 
-                    // 设置停止位
                     const stopbitsSelect = document.getElementById('serial-stopbits');
                     if (stopbitsSelect) {
-                        stopbitsSelect.value = config.stopbits;
+                        stopbitsSelect.value = status.serial_config.stopbits;
+                    }
+
+                    // 设置TCP配置
+                    const tcpServerIpInput = document.getElementById('tcp-server-ip');
+                    const tcpServerPortInput = document.getElementById('tcp-server-port');
+                    if (tcpServerIpInput && tcpServerPortInput) {
+                        tcpServerIpInput.value = status.tcp_server_ip || '192.168.0.80';
+                        tcpServerPortInput.value = status.tcp_server_port || 10125;
+                    }
+
+                    // 设置网络配置
+                    const networkTypeSelect = document.getElementById('network-type');
+                    const targetAddressInput = document.getElementById('target-address');
+                    if (networkTypeSelect && targetAddressInput) {
+                        networkTypeSelect.value = status.network_type || 'lora';
+                        targetAddressInput.value = status.target_address || '5678';
                     }
 
                     // 设置问询周期
@@ -659,22 +743,6 @@
                             .then(data => {
                                 if (data.status === 'success') {
                                     intervalInput.value = data.interval;
-                                }
-                            });
-                    }
-
-                    // 获取LoRa配置
-                    const networkTypeSelect = document.getElementById('network-type');
-                    const targetAddressInput = document.getElementById('target-address');
-                    if (networkTypeSelect && targetAddressInput) {
-                        fetch('/api/serial/lora-config?page=light')
-                            .then(response => response.json())
-                            .then(loraConfig => {
-                                if (loraConfig.network_type) {
-                                    networkTypeSelect.value = loraConfig.network_type;
-                                }
-                                if (loraConfig.target_address) {
-                                    targetAddressInput.value = loraConfig.target_address;
                                 }
                             });
                     }
@@ -694,24 +762,111 @@
                 })
                 .then(frameData => {
                     console.log('获取到帧数据:', frameData);
+                    // 检查frameData是否为空或undefined
+                    if (!frameData) {
+                        console.error('帧数据为空或undefined');
+                        return;
+                    }
                     // 更新问询帧显示
                     const queryFrameElement = document.getElementById('query-frame');
+                    console.log('找到query-frame元素:', !!queryFrameElement);
                     if (queryFrameElement) {
                         if (frameData.query) {
+                            console.log('更新问询帧:', frameData.query);
                             queryFrameElement.textContent = frameData.query;
                         } else {
+                            console.log('问询帧为空，显示"未发送"');
                             queryFrameElement.textContent = '未发送';
                         }
+                    } else {
+                        console.error('未找到query-frame元素');
                     }
 
                     // 更新应答帧显示
                     const responseFrameElement = document.getElementById('response-frame');
+                    console.log('找到response-frame元素:', !!responseFrameElement);
                     if (responseFrameElement) {
                         if (frameData.response) {
+                            console.log('更新应答帧:', frameData.response);
                             responseFrameElement.textContent = frameData.response;
                         } else {
+                            console.log('应答帧为空，显示"未接收"');
                             responseFrameElement.textContent = '未接收';
                         }
+                    } else {
+                        console.error('未找到response-frame元素');
+                    }
+
+                    // 更新帧数据历史记录
+                    const frameHistoryElement = document.getElementById('frame-history');
+                    console.log('找到frame-history元素:', !!frameHistoryElement);
+                    if (frameHistoryElement) {
+                        if (frameData.frames && frameData.frames.length > 0) {
+                            console.log('更新帧数据历史记录，共', frameData.frames.length, '条记录');
+                            // 清空历史记录
+                            frameHistoryElement.innerHTML = '';
+                            // 遍历帧数据，添加到历史记录
+                            frameData.frames.forEach(frame => {
+                                const frameElement = document.createElement('div');
+                                frameElement.className = 'mb-4 p-3 border border-primary/20 rounded-lg';
+                                
+                                // 设置方向颜色
+                                let directionColor = '';
+                                let directionText = '';
+                                if (frame.direction === 'send') {
+                                    directionColor = 'text-green-400';
+                                    directionText = '发送';
+                                } else if (frame.direction === 'recv') {
+                                    directionColor = 'text-blue-400';
+                                    directionText = '接收';
+                                }
+                                
+                                // 设置帧类型
+                                let typeText = '';
+                                if (frame.type === 'query') {
+                                    typeText = '问询帧';
+                                } else if (frame.type === 'response') {
+                                    typeText = '应答帧';
+                                }
+                                
+                                // 构建帧元素内容
+                                frameElement.innerHTML = `
+                                    <div class="flex justify-between items-center mb-2">
+                                        <span class="${directionColor} font-semibold">[${directionText}] ${typeText}</span>
+                                        <span class="text-gray-400 text-xs">${frame.timestamp}</span>
+                                    </div>
+                                    <div class="text-sm">
+                                        <span class="text-gray-400">长度: ${frame.length}字节</span>
+                                        ${frame.ip ? ` | <span class="text-gray-400">IP: ${frame.ip}:${frame.port}</span>` : ''}
+                                    </div>
+                                    ${frame.ip_frame ? `
+                                        <div class="mt-1 text-sm">
+                                            <span class="text-gray-400">封装IP帧:</span>
+                                            <span class="ml-2 text-gray-300">${frame.ip_frame}</span>
+                                        </div>
+                                    ` : ''}
+                                    <div class="mt-2 bg-dark/90 p-2 rounded">
+                                        <div class="text-xs text-gray-400 mb-1">完整帧:</div>
+                                        ${frame.data || '无数据'}
+                                    </div>
+                                    ${frame.data_frame ? `
+                                        <div class="mt-2 bg-dark/90 p-2 rounded">
+                                            <div class="text-xs text-gray-400 mb-1">数据帧:</div>
+                                            ${frame.data_frame || '无数据'}
+                                        </div>
+                                    ` : ''}
+                                `;
+                                
+                                frameHistoryElement.appendChild(frameElement);
+                            });
+                            // 滚动到底部
+                            frameHistoryElement.scrollTop = frameHistoryElement.scrollHeight;
+                        } else {
+                            console.log('帧数据历史记录为空，显示"暂无帧数据"');
+                            frameHistoryElement.innerHTML = '<div class="text-gray-500">暂无帧数据</div>';
+                        }
+                    } else {
+                        console.error('未找到frame-history元素');
                     }
                 })
                 .catch(error => {
@@ -719,71 +874,146 @@
                 });
         }
 
-        // 打开串口
-        function openSerial() {
-            // 先检查串口状态
-            fetch('/api/serial/status?page=light')
+        // 打开通讯
+        function openCommunication() {
+            // 获取当前通讯模式
+            const communicationMode = document.getElementById('communication-mode').value;
+            
+            if (communicationMode === 'tcp') {
+                // TCP网络通讯
+                const tcpServerIp = document.getElementById('tcp-server-ip').value;
+                const tcpServerPort = document.getElementById('tcp-server-port').value;
+                
+                // 验证IP地址格式
+                const ipPattern = /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/;
+                if (!ipPattern.test(tcpServerIp)) {
+                    alert('错误: 无效的IP地址格式');
+                    return;
+                }
+                
+                // 验证端口范围
+                const portNum = parseInt(tcpServerPort);
+                if (isNaN(portNum) || portNum < 1 || portNum > 65535) {
+                    alert('错误: 端口号必须在1-65535之间');
+                    return;
+                }
+                
+                fetch('/api/serial/open-tcp', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ 
+                        tcp_server_ip: tcpServerIp, 
+                        tcp_server_port: tcpServerPort, 
+                        page: 'light' 
+                    })
+                })
                 .then(response => response.json())
-                .then(status => {
-                    if (status.is_open) {
-                        alert('串口已被占用，可直接在同样串口启动问询');
-                        return;
-                    }
-                    
-                    const serialPortSelect = document.getElementById('serial-port');
-                    const baudrateSelect = document.getElementById('serial-baudrate');
-                    const paritySelect = document.getElementById('serial-parity');
-                    const stopbitsSelect = document.getElementById('serial-stopbits');
-
-                    const config = {
-                        port: serialPortSelect.value,
-                        baudrate: parseInt(baudrateSelect.value),
-                        parity: paritySelect.value,
-                        stopbits: parseInt(stopbitsSelect.value),
-                        bytesize: 8
-                    };
-
-                    return fetch('/api/serial/open', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ config: config, page: 'light' })
-                    });
-                })
-                .then(response => {
-                    if (!response) return;
-                    return response.json();
-                })
                 .then(data => {
-                    if (!data) return;
-                    console.log('打开串口:', data);
+                    console.log('打开TCP通讯:', data);
+                    alert(data.message);
+                    // 打开通讯后立即更新帧数据
+                    console.log('打开通讯后立即更新帧数据');
+                    updateFrameData();
+                })
+                .catch(error => {
+                    console.error('打开TCP通讯失败:', error);
+                    alert('打开TCP通讯失败: ' + error.message);
+                });
+            } else {
+                // 串口通讯
+                // 先检查串口状态
+                fetch('/api/serial/status?page=light')
+                    .then(response => response.json())
+                    .then(status => {
+                        if (status.is_open) {
+                            alert('串口已被占用，可直接在同样串口启动问询');
+                            return;
+                        }
+                        
+                        const serialPortSelect = document.getElementById('serial-port');
+                        const baudrateSelect = document.getElementById('serial-baudrate');
+                        const paritySelect = document.getElementById('serial-parity');
+                        const stopbitsSelect = document.getElementById('serial-stopbits');
+
+                        const config = {
+                            port: serialPortSelect.value,
+                            baudrate: parseInt(baudrateSelect.value),
+                            parity: paritySelect.value,
+                            stopbits: parseInt(stopbitsSelect.value),
+                            bytesize: 8
+                        };
+
+                        return fetch('/api/serial/open', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ config: config, page: 'light' })
+                        });
+                    })
+                    .then(response => {
+                        if (!response) return;
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (!data) return;
+                        console.log('打开串口:', data);
+                        alert(data.message);
+                        // 打开通讯后立即更新帧数据
+                        console.log('打开通讯后立即更新帧数据');
+                        updateFrameData();
+                    })
+                    .catch(error => {
+                        console.error('打开串口失败:', error);
+                        alert('打开串口失败: ' + error.message);
+                    });
+            }
+        }
+
+        // 关闭通讯
+        function closeCommunication() {
+            // 获取当前通讯模式
+            const communicationMode = document.getElementById('communication-mode').value;
+            
+            if (communicationMode === 'tcp') {
+                // TCP网络通讯
+                fetch('/api/serial/close-tcp', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ page: 'light' })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('关闭TCP通讯:', data);
                     alert(data.message);
                 })
                 .catch(error => {
-                    console.error('打开串口失败:', error);
-                    alert('打开串口失败: ' + error.message);
+                    console.error('关闭TCP通讯失败:', error);
+                    alert('关闭TCP通讯失败: ' + error.message);
                 });
-        }
-
-        // 关闭串口
-        function closeSerial() {
-            fetch('/api/serial/close', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ page: 'light' })
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log('关闭串口:', data);
-                alert(data.message);
-            })
-            .catch(error => {
-                console.error('关闭串口失败:', error);
-                alert('关闭串口失败: ' + error.message);
-            });
+            } else {
+                // 串口通讯
+                fetch('/api/serial/close', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ page: 'light' })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('关闭串口:', data);
+                    alert(data.message);
+                })
+                .catch(error => {
+                    console.error('关闭串口失败:', error);
+                    alert('关闭串口失败: ' + error.message);
+                });
+            }
         }
 
         // 启动问询
@@ -800,7 +1030,11 @@
                 console.log('启动问询:', data);
                 alert(data.message);
                 // 确保数据更新定时器正在运行
+                console.log('启动数据更新定时器');
                 startDataUpdate();
+                // 立即更新帧数据
+                console.log('立即更新帧数据');
+                updateFrameData();
             })
             .catch(error => {
                 console.error('启动问询失败:', error);
@@ -894,12 +1128,16 @@
                     console.log('获取到光照气体数据:', data);
                     updateLightData(data);
                     // 更新帧数据
+                    console.log('更新帧数据');
                     updateFrameData();
                 })
                 .catch(error => {
                     console.error('获取光照气体数据失败:', error);
                     // 不使用模拟数据，保持之前的数据
                     console.log('获取数据失败，保持之前的数据');
+                    // 即使获取数据失败，也尝试更新帧数据
+                    console.log('获取数据失败，尝试更新帧数据');
+                    updateFrameData();
                 });
         }
 
@@ -1193,6 +1431,105 @@
             }
         }
 
+        // 通讯模式切换
+        function switchCommunicationMode() {
+            const communicationMode = document.getElementById('communication-mode').value;
+            const serialConfigSection = document.getElementById('serial-config-section');
+            const tcpConfigSection = document.getElementById('tcp-config-section');
+
+            if (communicationMode === 'serial') {
+                serialConfigSection.style.display = 'block';
+                tcpConfigSection.style.display = 'none';
+            } else if (communicationMode === 'tcp') {
+                serialConfigSection.style.display = 'none';
+                tcpConfigSection.style.display = 'block';
+            }
+        }
+
+        // 更新通讯配置
+        function updateCommunicationConfig() {
+            const communicationMode = document.getElementById('communication-mode').value;
+            const networkType = document.getElementById('network-type').value;
+            const targetAddress = document.getElementById('target-address').value;
+
+            console.log('开始更新通讯配置:', {
+                communicationMode,
+                networkType,
+                targetAddress
+            });
+
+            // 根据通讯模式获取相应的配置
+            let config = {};
+            if (communicationMode === 'serial') {
+                const serialPortSelect = document.getElementById('serial-port');
+                const baudrateSelect = document.getElementById('serial-baudrate');
+                const paritySelect = document.getElementById('serial-parity');
+                const stopbitsSelect = document.getElementById('serial-stopbits');
+
+                config = {
+                    port: serialPortSelect.value,
+                    baudrate: parseInt(baudrateSelect.value),
+                    parity: paritySelect.value,
+                    stopbits: parseInt(stopbitsSelect.value),
+                    bytesize: 8
+                };
+                console.log('串口配置:', config);
+            } else if (communicationMode === 'tcp') {
+                const tcpServerIp = document.getElementById('tcp-server-ip').value;
+                const tcpServerPort = document.getElementById('tcp-server-port').value;
+
+                // 验证IP地址格式
+                const ipPattern = /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/;
+                if (!ipPattern.test(tcpServerIp)) {
+                    alert('错误: 无效的IP地址格式');
+                    return;
+                }
+                
+                // 验证端口范围
+                const portNum = parseInt(tcpServerPort);
+                if (isNaN(portNum) || portNum < 1 || portNum > 65535) {
+                    alert('错误: 端口号必须在1-65535之间');
+                    return;
+                }
+
+                config = {
+                    tcp_server_ip: tcpServerIp,
+                    tcp_server_port: tcpServerPort
+                };
+                console.log('TCP配置:', config);
+            }
+
+            fetch('/api/serial/communication-config', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ 
+                    communication_mode: communicationMode,
+                    network_type: networkType, 
+                    target_address: targetAddress,
+                    config: config,
+                    page: 'light' 
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('更新通讯配置响应:', data);
+                if (data.status === 'success') {
+                    alert(data.message);
+                    // 配置更新成功后，立即获取一次帧数据
+                    console.log('配置更新成功，获取帧数据');
+                    updateFrameData();
+                } else {
+                    alert('更新失败: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('更新通讯配置失败:', error);
+                alert('更新通讯配置失败: ' + error.message);
+            });
+        }
+
         // 页面加载完成后初始化
         document.addEventListener('DOMContentLoaded', function() {
             console.log('页面加载完成，开始初始化...');
@@ -1211,6 +1548,14 @@
 
             // 启动数据更新
             startDataUpdate();
+
+            // 通讯模式切换事件
+            const communicationModeSelect = document.getElementById('communication-mode');
+            if (communicationModeSelect) {
+                communicationModeSelect.addEventListener('change', function() {
+                    switchCommunicationMode();
+                });
+            }
 
             // 时间范围选择事件
             const timeRangeSelect = document.getElementById('light-time-range');
@@ -1273,19 +1618,19 @@
                 });
             }
 
-            // 打开串口按钮事件
-            const openSerialButton = document.getElementById('open-serial');
-            if (openSerialButton) {
-                openSerialButton.addEventListener('click', function() {
-                    openSerial();
+            // 打开通讯按钮事件
+            const openCommunicationButton = document.getElementById('open-communication');
+            if (openCommunicationButton) {
+                openCommunicationButton.addEventListener('click', function() {
+                    openCommunication();
                 });
             }
 
-            // 关闭串口按钮事件
-            const closeSerialButton = document.getElementById('close-serial');
-            if (closeSerialButton) {
-                closeSerialButton.addEventListener('click', function() {
-                    closeSerial();
+            // 关闭通讯按钮事件
+            const closeCommunicationButton = document.getElementById('close-communication');
+            if (closeCommunicationButton) {
+                closeCommunicationButton.addEventListener('click', function() {
+                    closeCommunication();
                 });
             }
 
@@ -1314,11 +1659,11 @@
                 });
             }
 
-            // 更新LoRa配置按钮事件
-            const updateLoraConfigButton = document.getElementById('update-lora-config');
-            if (updateLoraConfigButton) {
-                updateLoraConfigButton.addEventListener('click', function() {
-                    updateLoraConfig();
+            // 更新通讯配置按钮事件
+            const updateCommunicationConfigButton = document.getElementById('update-communication-config');
+            if (updateCommunicationConfigButton) {
+                updateCommunicationConfigButton.addEventListener('click', function() {
+                    updateCommunicationConfig();
                 });
             }
         });
