@@ -267,6 +267,20 @@
                                         </div>
                                     </div>
 
+                                    <!-- 问询帧配置部分 -->
+                                    <div class="mb-6">
+                                        <h5 class="text-lg font-semibold mb-4 text-lightgas">问询帧配置</h5>
+                                        <div class="space-y-4">
+                                            <div>
+                                                <label class="block text-sm text-lightgas/70 mb-3">问询帧 (十六进制)</label>
+                                                <input type="text" id="query-frame-input" value="01 03 00 00 00 08 44 0C" placeholder="例如: 01 03 00 00 00 08 44 0C" class="w-full bg-dark/80 border border-primary/30 rounded-lg px-6 py-3 text-light focus:outline-none focus:ring-2 focus:ring-primary/50 font-mono">
+                                            </div>
+                                            <div class="text-xs text-lightgas/50">
+                                                提示：如果启用LoRa，问询帧会自动添加LoRa目标地址前缀
+                                            </div>
+                                        </div>
+                                    </div>
+
                                     <!-- 更新按钮 -->
                                     <div class="mt-6">
                                         <button id="update-communication-config" class="px-8 py-3 bg-gradient-to-r from-lightgas to-lightgas/80 rounded-lg font-semibold hover:opacity-90 transition-all transform hover:scale-105">
@@ -730,9 +744,21 @@
                     // 设置网络配置
                     const networkTypeSelect = document.getElementById('network-type');
                     const targetAddressInput = document.getElementById('target-address');
-                    if (networkTypeSelect && targetAddressInput) {
+                    const queryFrameInput = document.getElementById('query-frame-input');
+                    if (networkTypeSelect && targetAddressInput && queryFrameInput) {
                         networkTypeSelect.value = status.network_type || 'lora';
                         targetAddressInput.value = status.target_address || '5678';
+                        // 获取问询帧配置
+                        fetch('/api/serial/frames?page=light')
+                            .then(response => response.json())
+                            .then(frameData => {
+                                if (frameData.query) {
+                                    queryFrameInput.value = frameData.query;
+                                }
+                            })
+                            .catch(error => {
+                                console.error('获取问询帧配置失败:', error);
+                            });
                     }
 
                     // 设置问询周期
@@ -1451,11 +1477,13 @@
             const communicationMode = document.getElementById('communication-mode').value;
             const networkType = document.getElementById('network-type').value;
             const targetAddress = document.getElementById('target-address').value;
+            const queryFrameInput = document.getElementById('query-frame-input');
 
             console.log('开始更新通讯配置:', {
                 communicationMode,
                 networkType,
-                targetAddress
+                targetAddress,
+                queryFrame: queryFrameInput.value
             });
 
             // 根据通讯模式获取相应的配置
@@ -1497,6 +1525,28 @@
                     tcp_server_port: tcpServerPort
                 };
                 console.log('TCP配置:', config);
+            }
+
+            // 处理问询帧配置
+            if (queryFrameInput && queryFrameInput.value.trim()) {
+                const hexFrame = queryFrameInput.value.trim();
+                
+                // 如果启用LoRa，在问询帧前添加LoRa目标地址
+                if (networkType === 'lora' && targetAddress) {
+                    // 将目标地址转换为字节数组
+                    const addressBytes = targetAddress.match(/.{1,2}/g);
+                    if (addressBytes && addressBytes.length === 2) {
+                        const addressPrefix = addressBytes.join(' ');
+                        config.query_frame = addressPrefix + ' ' + hexFrame;
+                        console.log('LoRa模式，添加目标地址前缀:', config.query_frame);
+                    } else {
+                        console.warn('LoRa目标地址格式不正确，使用原始问询帧');
+                        config.query_frame = hexFrame;
+                    }
+                } else {
+                    config.query_frame = hexFrame;
+                    console.log('标准Modbus模式，使用原始问询帧:', config.query_frame);
+                }
             }
 
             fetch('/api/serial/communication-config', {

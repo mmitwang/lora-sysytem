@@ -1,0 +1,1677 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="fade-in-up">
+    <!-- 页面标题 -->
+    <div class="mb-8">
+        <h2 class="text-3xl font-bold text-shadow">SSCOM 模拟器</h2>
+        <p class="text-primary/70">TCP客户端模式测试工具</p>
+    </div>
+
+    <!-- 主内容区域 -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- 左侧：连接设置和发送区域 -->
+        <div class="lg:col-span-1 space-y-6">
+            <!-- 连接设置 -->
+            <div class="bg-dark/60 backdrop-blur-sm rounded-2xl border border-primary/30 p-6 glow">
+                <h3 class="text-xl font-semibold mb-4 flex items-center">
+                    <i class="fa fa-plug mr-3 text-primary"></i> 连接设置
+                </h3>
+                <div class="space-y-4">
+                    <!-- 通讯模式选择 -->
+                    <div>
+                        <label class="block text-sm text-primary/80 mb-2">通讯模式</label>
+                        <select id="communication-mode" class="w-full bg-dark/80 border border-primary/30 rounded-lg px-4 py-3 text-light focus:outline-none focus:ring-2 focus:ring-primary">
+                            <option value="tcp">TCP客户端</option>
+                            <option value="serial">串口</option>
+                        </select>
+                    </div>
+                    
+                    <!-- TCP设置 -->
+                    <div id="tcp-settings" class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm text-primary/80 mb-2">服务器 IP</label>
+                            <input type="text" id="server-ip" class="w-full bg-dark/80 border border-primary/30 rounded-lg px-4 py-3 text-light focus:outline-none focus:ring-2 focus:ring-primary" value="192.168.0.80">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-primary/80 mb-2">端口</label>
+                            <input type="number" id="server-port" class="w-full bg-dark/80 border border-primary/30 rounded-lg px-4 py-3 text-light focus:outline-none focus:ring-2 focus:ring-primary" value="10125" min="1" max="65535">
+                        </div>
+                    </div>
+                    
+                    <!-- 串口设置 -->
+                    <div id="serial-settings" class="space-y-4">
+                        <div>
+                            <label class="block text-sm text-primary/80 mb-2">串口</label>
+                            <select id="serial-port" class="w-full bg-dark/80 border border-primary/30 rounded-lg px-4 py-3 text-light focus:outline-none focus:ring-2 focus:ring-primary">
+                                <option value="">请选择串口</option>
+                            </select>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm text-primary/80 mb-2">波特率</label>
+                                <select id="serial-baudrate" class="w-full bg-dark/80 border border-primary/30 rounded-lg px-4 py-3 text-light focus:outline-none focus:ring-2 focus:ring-primary">
+                                    <option value="9600" selected>9600</option>
+                                    <option value="115200">115200</option>
+                                    <option value="57600">57600</option>
+                                    <option value="38400">38400</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm text-primary/80 mb-2">数据位</label>
+                                <select id="serial-bytesize" class="w-full bg-dark/80 border border-primary/30 rounded-lg px-4 py-3 text-light focus:outline-none focus:ring-2 focus:ring-primary">
+                                    <option value="8" selected>8</option>
+                                    <option value="7">7</option>
+                                    <option value="6">6</option>
+                                    <option value="5">5</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm text-primary/80 mb-2">校验位</label>
+                                <select id="serial-parity" class="w-full bg-dark/80 border border-primary/30 rounded-lg px-4 py-3 text-light focus:outline-none focus:ring-2 focus:ring-primary">
+                                    <option value="N" selected>无</option>
+                                    <option value="E">偶</option>
+                                    <option value="O">奇</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm text-primary/80 mb-2">停止位</label>
+                                <select id="serial-stopbits" class="w-full bg-dark/80 border border-primary/30 rounded-lg px-4 py-3 text-light focus:outline-none focus:ring-2 focus:ring-primary">
+                                    <option value="1" selected>1</option>
+                                    <option value="2">2</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+
+                    
+                    <div class="flex space-x-4">
+                        <button id="connect-btn" class="flex-1 bg-gradient-to-r from-primary to-secondary text-white font-semibold py-3 px-6 rounded-lg hover:opacity-90 transition-opacity flex items-center justify-center">
+                            <i class="fa fa-connectdevelop mr-2"></i> 连接
+                        </button>
+                        <button id="disconnect-btn" class="flex-1 bg-dark/80 border border-red-500/50 text-red-400 font-semibold py-3 px-6 rounded-lg hover:bg-red-500/10 transition-colors flex items-center justify-center" disabled>
+                            <i class="fa fa-times mr-2"></i> 断开
+                        </button>
+                    </div>
+                    <div class="bg-dark/80 rounded-lg p-4 border border-primary/20">
+                        <div class="flex items-center">
+                            <div id="connection-status" class="w-3 h-3 rounded-full bg-red-500 mr-3"></div>
+                            <span id="status-text" class="text-sm">状态: 未连接</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 发送数据 -->
+            <div class="bg-dark/60 backdrop-blur-sm rounded-2xl border border-primary/30 p-6 glow">
+                <h3 class="text-xl font-semibold mb-4 flex items-center">
+                    <i class="fa fa-paper-plane mr-3 text-primary"></i> 发送数据
+                </h3>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm text-primary/80 mb-2">HEX 数据</label>
+                        <input type="text" id="send-data" class="w-full bg-dark/80 border border-primary/30 rounded-lg px-4 py-3 text-light focus:outline-none focus:ring-2 focus:ring-primary" value="56 78 01 03 00 00 00 08 44 0C">
+                    </div>
+                    
+                    <div class="flex space-x-4">
+                        <button id="send-btn" class="flex-1 bg-gradient-to-r from-primary to-secondary text-white font-semibold py-3 px-6 rounded-lg hover:opacity-90 transition-opacity flex items-center justify-center" disabled>
+                            <i class="fa fa-send mr-2"></i> 发送
+                        </button>
+                        <button id="clear-send-btn" class="bg-dark/80 border border-primary/30 text-primary font-semibold py-3 px-6 rounded-lg hover:bg-primary/10 transition-colors flex items-center justify-center">
+                            <i class="fa fa-trash mr-2"></i> 清空
+                        </button>
+                    </div>
+                    
+                    <!-- 轮询设置 -->
+                    <div class="bg-dark/80 rounded-lg p-4 border border-primary/20">
+                        <h4 class="text-sm font-semibold text-primary mb-3">轮询设置</h4>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="flex items-center space-x-2">
+                                    <input type="checkbox" id="enable-polling" class="w-5 h-5 rounded border-primary/30 bg-dark/80 text-primary focus:ring-2 focus:ring-primary">
+                                    <span class="text-sm text-primary/80">启用轮询</span>
+                                </label>
+                            </div>
+                            <div>
+                                <label class="block text-sm text-primary/80 mb-2">轮询时间 (秒)</label>
+                                <input type="number" id="polling-interval" class="w-full bg-dark/80 border border-primary/30 rounded-lg px-4 py-2 text-light focus:outline-none focus:ring-2 focus:ring-primary" value="2" min="1" max="60">
+                            </div>
+                        </div>
+                        <div class="mt-3 flex space-x-4">
+                            <button id="start-polling-btn" class="flex-1 bg-gradient-to-r from-primary to-secondary text-white font-semibold py-2 px-4 rounded-lg hover:opacity-90 transition-opacity flex items-center justify-center" disabled>
+                                <i class="fa fa-play mr-2"></i> 开始轮询
+                            </button>
+                            <button id="stop-polling-btn" class="flex-1 bg-dark/80 border border-red-500/50 text-red-400 font-semibold py-2 px-4 rounded-lg hover:bg-red-500/10 transition-colors flex items-center justify-center" disabled>
+                                <i class="fa fa-stop mr-2"></i> 停止轮询
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- HEX 数据字串设置 -->
+                    <div class="bg-dark/80 rounded-lg p-4 border border-primary/20">
+                        <h4 class="text-sm font-semibold text-primary mb-3">多数据发送</h4>
+                        <div class="space-y-3">
+                            <!-- 光照气体模块 -->
+                            <div class="flex items-center space-x-3">
+                                <input type="checkbox" id="light-gas-checkbox" class="multi-data-checkbox w-5 h-5 rounded border-primary/30 bg-dark/80 text-primary focus:ring-2 focus:ring-primary" data-module="light-gas">
+                                <label class="flex-1 text-sm text-primary/80">光照气体模块</label>
+                                <input type="text" id="light-gas-data" class="multi-data-input w-64 bg-dark/80 border border-primary/30 rounded-lg px-4 py-2 text-light focus:outline-none focus:ring-2 focus:ring-primary" value="56 78 01 03 00 00 00 08 44 0C" data-module="light-gas">
+                            </div>
+                            <!-- 温湿度模块 -->
+                            <div class="flex items-center space-x-3">
+                                <input type="checkbox" id="temp-humidity-checkbox" class="multi-data-checkbox w-5 h-5 rounded border-primary/30 bg-dark/80 text-primary focus:ring-2 focus:ring-primary" data-module="temp-humidity">
+                                <label class="flex-1 text-sm text-primary/80">温湿度模块</label>
+                                <input type="text" id="temp-humidity-data" class="multi-data-input w-64 bg-dark/80 border border-primary/30 rounded-lg px-4 py-2 text-light focus:outline-none focus:ring-2 focus:ring-primary" value="00 02 01 03 00 00 00 02 C4 0B" data-module="temp-humidity">
+                            </div>
+                            <!-- 温振模块 -->
+                            <div class="flex items-center space-x-3">
+                                <input type="checkbox" id="temp-vibration-checkbox" class="multi-data-checkbox w-5 h-5 rounded border-primary/30 bg-dark/80 text-primary focus:ring-2 focus:ring-primary" data-module="temp-vibration">
+                                <label class="flex-1 text-sm text-primary/80">温振模块</label>
+                                <input type="text" id="temp-vibration-data" class="multi-data-input w-64 bg-dark/80 border border-primary/30 rounded-lg px-4 py-2 text-light focus:outline-none focus:ring-2 focus:ring-primary" value="00 03 01 03 00 00 00 26 C4 10" data-module="temp-vibration">
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <button id="send-multi-data-btn" class="w-full bg-gradient-to-r from-primary to-secondary text-white font-semibold py-2 px-4 rounded-lg hover:opacity-90 transition-opacity flex items-center justify-center" disabled>
+                                <i class="fa fa-paper-plane mr-2"></i> 发送选中数据
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 右侧：接收数据和解析区域 -->
+        <div class="lg:col-span-2 space-y-6">
+            <!-- 接收数据 -->
+            <div class="bg-dark/60 backdrop-blur-sm rounded-2xl border border-primary/30 p-6 glow">
+                <h3 class="text-xl font-semibold mb-4 flex items-center">
+                    <i class="fa fa-receipt mr-3 text-primary"></i> 接收数据
+                </h3>
+                <div class="space-y-4">
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm text-primary/80">数据包历史</span>
+                        <button id="clear-receive-btn" class="text-sm text-primary hover:text-primary/80 transition-colors">
+                            <i class="fa fa-trash mr-1"></i> 清空
+                        </button>
+                    </div>
+                    <div class="bg-dark/80 rounded-lg border border-primary/20 p-4 h-96 overflow-y-auto">
+                        <div id="receive-history" class="space-y-4 font-mono text-sm">
+                            <!-- 数据将通过JS动态添加 -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 传感器数据解析 -->
+            <div class="bg-dark/60 backdrop-blur-sm rounded-2xl border border-primary/30 p-6 glow">
+                <h3 class="text-xl font-semibold mb-4 flex items-center">
+                    <i class="fa fa-microchip mr-3 text-primary"></i> 传感器数据解析
+                </h3>
+                
+                <!-- 模块标签页 -->
+                <div class="mb-4">
+                    <div class="flex space-x-4 border-b border-primary/30">
+                        <button class="module-tab px-4 py-2 text-primary border-b-2 border-primary" data-module="light-gas">光照气体模块</button>
+                        <button class="module-tab px-4 py-2 text-primary/60 hover:text-primary" data-module="temp-humidity">温湿度模块</button>
+                        <button class="module-tab px-4 py-2 text-primary/60 hover:text-primary" data-module="temp-vibration">温振模块</button>
+                    </div>
+                </div>
+                
+                <!-- 各模块内容 -->
+                <!-- 光照气体模块 -->
+                <div class="module-content" data-module="light-gas">
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                        <div class="bg-dark/80 rounded-lg p-4 border border-primary/20">
+                            <div class="text-sm text-primary/80 mb-1">状态</div>
+                            <div id="light-gas-status" class="text-lg font-semibold">--</div>
+                        </div>
+                        <div class="bg-dark/80 rounded-lg p-4 border border-primary/20">
+                            <div class="text-sm text-primary/80 mb-1">温度</div>
+                            <div id="light-gas-temp" class="text-lg font-semibold">-- °C</div>
+                        </div>
+                        <div class="bg-dark/80 rounded-lg p-4 border border-primary/20">
+                            <div class="text-sm text-primary/80 mb-1">湿度</div>
+                            <div id="light-gas-humidity" class="text-lg font-semibold">-- %</div>
+                        </div>
+                        <div class="bg-dark/80 rounded-lg p-4 border border-primary/20">
+                            <div class="text-sm text-primary/80 mb-1">CO2 浓度</div>
+                            <div id="light-gas-co2" class="text-lg font-semibold">-- ppm</div>
+                        </div>
+                        <div class="bg-dark/80 rounded-lg p-4 border border-primary/20">
+                            <div class="text-sm text-primary/80 mb-1">气压</div>
+                            <div id="light-gas-pressure" class="text-lg font-semibold">-- hPa</div>
+                        </div>
+                        <div class="bg-dark/80 rounded-lg p-4 border border-primary/20">
+                            <div class="text-sm text-primary/80 mb-1">光照强度</div>
+                            <div id="light-gas-light" class="text-lg font-semibold">-- Lux</div>
+                        </div>
+                    </div>
+                    <div class="mt-4 bg-dark/80 rounded-lg p-4 border border-primary/20">
+                        <h4 class="text-sm font-semibold text-primary mb-2">模块配置</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-sm text-primary/80 mb-2">LoRa目的地址</label>
+                                <input type="text" class="module-lora-address w-full bg-dark/80 border border-primary/30 rounded-lg px-4 py-2 text-light focus:outline-none focus:ring-2 focus:ring-primary" data-module="light-gas" value="5678">
+                            </div>
+                            <div>
+                                <label class="block text-sm text-primary/80 mb-2">问询帧</label>
+                                <input type="text" class="module-query-frame w-full bg-dark/80 border border-primary/30 rounded-lg px-4 py-2 text-light focus:outline-none focus:ring-2 focus:ring-primary" data-module="light-gas" value="01 03 00 00 00 08 44 0C">
+                            </div>
+                            <div>
+                                <label class="block text-sm text-primary/80 mb-2">启用LoRa</label>
+                                <div class="flex items-center space-x-2">
+                                    <input type="checkbox" class="module-lora-enabled w-5 h-5 rounded border-primary/30 bg-dark/80 text-primary focus:ring-2 focus:ring-primary" data-module="light-gas" checked>
+                                    <span class="text-sm text-primary/80">启用LoRa网络</span>
+                                </div>
+                            </div>
+                            <div class="md:col-span-3">
+                                <label class="block text-sm text-primary/80 mb-2">操作</label>
+                                <button class="set-query-frame-btn w-full bg-gradient-to-r from-primary to-secondary text-white font-semibold py-2 px-4 rounded-lg hover:opacity-90 transition-opacity" data-module="light-gas">设置问询帧</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 温湿度模块 -->
+                <div class="module-content hidden" data-module="temp-humidity">
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                        <div class="bg-dark/80 rounded-lg p-4 border border-primary/20">
+                            <div class="text-sm text-primary/80 mb-1">状态</div>
+                            <div id="temp-humidity-status" class="text-lg font-semibold">--</div>
+                        </div>
+                        <div class="bg-dark/80 rounded-lg p-4 border border-primary/20">
+                            <div class="text-sm text-primary/80 mb-1">温度</div>
+                            <div id="temp-humidity-temp" class="text-lg font-semibold">-- °C</div>
+                        </div>
+                        <div class="bg-dark/80 rounded-lg p-4 border border-primary/20">
+                            <div class="text-sm text-primary/80 mb-1">湿度</div>
+                            <div id="temp-humidity-humidity" class="text-lg font-semibold">-- %</div>
+                        </div>
+                    </div>
+                    <div class="mt-4 bg-dark/80 rounded-lg p-4 border border-primary/20">
+                        <h4 class="text-sm font-semibold text-primary mb-2">模块配置</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-sm text-primary/80 mb-2">LoRa目的地址</label>
+                                <input type="text" class="module-lora-address w-full bg-dark/80 border border-primary/30 rounded-lg px-4 py-2 text-light focus:outline-none focus:ring-2 focus:ring-primary" data-module="temp-humidity" value="0002">
+                            </div>
+                            <div>
+                                <label class="block text-sm text-primary/80 mb-2">问询帧</label>
+                                <input type="text" class="module-query-frame w-full bg-dark/80 border border-primary/30 rounded-lg px-4 py-2 text-light focus:outline-none focus:ring-2 focus:ring-primary" data-module="temp-humidity" value="01 03 00 00 00 02 C4 0B">
+                            </div>
+                            <div>
+                                <label class="block text-sm text-primary/80 mb-2">启用LoRa</label>
+                                <div class="flex items-center space-x-2">
+                                    <input type="checkbox" class="module-lora-enabled w-5 h-5 rounded border-primary/30 bg-dark/80 text-primary focus:ring-2 focus:ring-primary" data-module="temp-humidity" checked>
+                                    <span class="text-sm text-primary/80">启用LoRa网络</span>
+                                </div>
+                            </div>
+                            <div class="md:col-span-3">
+                                <label class="block text-sm text-primary/80 mb-2">操作</label>
+                                <button class="set-query-frame-btn w-full bg-gradient-to-r from-primary to-secondary text-white font-semibold py-2 px-4 rounded-lg hover:opacity-90 transition-opacity" data-module="temp-humidity">设置问询帧</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 温振模块 -->
+                <div class="module-content hidden" data-module="temp-vibration">
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                        <div class="bg-dark/80 rounded-lg p-4 border border-primary/20">
+                            <div class="text-sm text-primary/80 mb-1">状态</div>
+                            <div id="temp-vibration-status" class="text-lg font-semibold">--</div>
+                        </div>
+                        <div class="bg-dark/80 rounded-lg p-4 border border-primary/20">
+                            <div class="text-sm text-primary/80 mb-1">温度</div>
+                            <div id="temp-vibration-temp" class="text-lg font-semibold">-- °C</div>
+                        </div>
+                        <div class="bg-dark/80 rounded-lg p-4 border border-primary/20">
+                            <div class="text-sm text-primary/80 mb-1">振动值</div>
+                            <div id="temp-vibration-vibration" class="text-lg font-semibold">-- mm/s</div>
+                        </div>
+                    </div>
+                    <div class="mt-4 grid grid-cols-3 gap-4">
+                        <div class="bg-dark/80 rounded-lg p-4 border border-primary/20">
+                            <div class="text-sm text-primary/80 mb-1">速度X</div>
+                            <div id="temp-vibration-velocity-x" class="text-lg font-semibold">-- mm/s</div>
+                        </div>
+                        <div class="bg-dark/80 rounded-lg p-4 border border-primary/20">
+                            <div class="text-sm text-primary/80 mb-1">速度Y</div>
+                            <div id="temp-vibration-velocity-y" class="text-lg font-semibold">-- mm/s</div>
+                        </div>
+                        <div class="bg-dark/80 rounded-lg p-4 border border-primary/20">
+                            <div class="text-sm text-primary/80 mb-1">速度Z</div>
+                            <div id="temp-vibration-velocity-z" class="text-lg font-semibold">-- mm/s</div>
+                        </div>
+                    </div>
+                    <div class="mt-4 grid grid-cols-3 gap-4">
+                        <div class="bg-dark/80 rounded-lg p-4 border border-primary/20">
+                            <div class="text-sm text-primary/80 mb-1">位移X</div>
+                            <div id="temp-vibration-displacement-x" class="text-lg font-semibold">-- μm</div>
+                        </div>
+                        <div class="bg-dark/80 rounded-lg p-4 border border-primary/20">
+                            <div class="text-sm text-primary/80 mb-1">位移Y</div>
+                            <div id="temp-vibration-displacement-y" class="text-lg font-semibold">-- μm</div>
+                        </div>
+                        <div class="bg-dark/80 rounded-lg p-4 border border-primary/20">
+                            <div class="text-sm text-primary/80 mb-1">位移Z</div>
+                            <div id="temp-vibration-displacement-z" class="text-lg font-semibold">-- μm</div>
+                        </div>
+                    </div>
+                    <div class="mt-4 grid grid-cols-3 gap-4">
+                        <div class="bg-dark/80 rounded-lg p-4 border border-primary/20">
+                            <div class="text-sm text-primary/80 mb-1">加速度X</div>
+                            <div id="temp-vibration-acceleration-x" class="text-lg font-semibold">-- m/s²</div>
+                        </div>
+                        <div class="bg-dark/80 rounded-lg p-4 border border-primary/20">
+                            <div class="text-sm text-primary/80 mb-1">加速度Y</div>
+                            <div id="temp-vibration-acceleration-y" class="text-lg font-semibold">-- m/s²</div>
+                        </div>
+                        <div class="bg-dark/80 rounded-lg p-4 border border-primary/20">
+                            <div class="text-sm text-primary/80 mb-1">加速度Z</div>
+                            <div id="temp-vibration-acceleration-z" class="text-lg font-semibold">-- m/s²</div>
+                        </div>
+                    </div>
+                    <div class="mt-4 bg-dark/80 rounded-lg p-4 border border-primary/20">
+                        <div class="text-sm text-primary/80 mb-1">版本号</div>
+                        <div id="temp-vibration-version" class="text-lg font-semibold">--</div>
+                    </div>
+                    <div class="mt-4 bg-dark/80 rounded-lg p-4 border border-primary/20">
+                        <h4 class="text-sm font-semibold text-primary mb-2">模块配置</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-sm text-primary/80 mb-2">LoRa目的地址</label>
+                                <input type="text" class="module-lora-address w-full bg-dark/80 border border-primary/30 rounded-lg px-4 py-2 text-light focus:outline-none focus:ring-2 focus:ring-primary" data-module="temp-vibration" value="0003">
+                            </div>
+                            <div>
+                                <label class="block text-sm text-primary/80 mb-2">问询帧</label>
+                                <input type="text" class="module-query-frame w-full bg-dark/80 border border-primary/30 rounded-lg px-4 py-2 text-light focus:outline-none focus:ring-2 focus:ring-primary" data-module="temp-vibration" value="01 03 00 00 00 0D 0E 94">
+                            </div>
+                            <div>
+                                <label class="block text-sm text-primary/80 mb-2">启用LoRa</label>
+                                <div class="flex items-center space-x-2">
+                                    <input type="checkbox" class="module-lora-enabled w-5 h-5 rounded border-primary/30 bg-dark/80 text-primary focus:ring-2 focus:ring-primary" data-module="temp-vibration" checked>
+                                    <span class="text-sm text-primary/80">启用LoRa网络</span>
+                                </div>
+                            </div>
+                            <div class="md:col-span-3">
+                                <label class="block text-sm text-primary/80 mb-2">操作</label>
+                                <button class="set-query-frame-btn w-full bg-gradient-to-r from-primary to-secondary text-white font-semibold py-2 px-4 rounded-lg hover:opacity-90 transition-opacity" data-module="temp-vibration">设置问询帧</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // 状态变量
+        let socket = null;
+        let connected = false;
+        let reconnectAttempts = 0;
+        const maxReconnectAttempts = 3;
+        let currentMode = 'tcp'; // 当前通讯模式
+
+        // DOM 元素
+        const connectBtn = document.getElementById('connect-btn');
+        const disconnectBtn = document.getElementById('disconnect-btn');
+        const sendBtn = document.getElementById('send-btn');
+        const clearSendBtn = document.getElementById('clear-send-btn');
+        const clearReceiveBtn = document.getElementById('clear-receive-btn');
+        const serverIpInput = document.getElementById('server-ip');
+        const serverPortInput = document.getElementById('server-port');
+        const sendDataInput = document.getElementById('send-data');
+        const receiveHistory = document.getElementById('receive-history');
+        const rawData = document.getElementById('raw-data');
+        const connectionStatus = document.getElementById('connection-status');
+        const statusText = document.getElementById('status-text');
+        // 轮询设置相关元素
+        const enablePollingCheckbox = document.getElementById('enable-polling');
+        const pollingIntervalInput = document.getElementById('polling-interval');
+        const startPollingBtn = document.getElementById('start-polling-btn');
+        const stopPollingBtn = document.getElementById('stop-polling-btn');
+        // 多数据发送相关元素
+        const multiDataCheckboxes = document.querySelectorAll('.multi-data-checkbox');
+        const multiDataInputs = document.querySelectorAll('.multi-data-input');
+        const sendMultiDataBtn = document.getElementById('send-multi-data-btn');
+        // 传感器数据元素 - 光照气体模块
+        const lightGasStatus = document.getElementById('light-gas-status');
+        const lightGasTemp = document.getElementById('light-gas-temp');
+        const lightGasHumidity = document.getElementById('light-gas-humidity');
+        const lightGasCo2 = document.getElementById('light-gas-co2');
+        const lightGasPressure = document.getElementById('light-gas-pressure');
+        const lightGasLight = document.getElementById('light-gas-light');
+        
+        // 传感器数据元素 - 温湿度模块
+        const tempHumidityStatus = document.getElementById('temp-humidity-status');
+        const tempHumidityTemp = document.getElementById('temp-humidity-temp');
+        const tempHumidityHumidity = document.getElementById('temp-humidity-humidity');
+        
+        // 传感器数据元素 - 温振模块
+        const tempVibrationStatus = document.getElementById('temp-vibration-status');
+        const tempVibrationTemp = document.getElementById('temp-vibration-temp');
+        const tempVibrationVibration = document.getElementById('temp-vibration-vibration');
+        
+        // 模块标签和内容
+        const moduleTabs = document.querySelectorAll('.module-tab');
+        const moduleContents = document.querySelectorAll('.module-content');
+        const moduleQueryFrames = document.querySelectorAll('.module-query-frame');
+        const moduleLoraAddresses = document.querySelectorAll('.module-lora-address');
+        const moduleLoraEnableds = document.querySelectorAll('.module-lora-enabled');
+        const setQueryFrameBtns = document.querySelectorAll('.set-query-frame-btn');
+        const communicationModeSelect = document.getElementById('communication-mode');
+        const tcpSettings = document.getElementById('tcp-settings');
+        const serialSettings = document.getElementById('serial-settings');
+        const serialPortSelect = document.getElementById('serial-port');
+        const serialBaudrateSelect = document.getElementById('serial-baudrate');
+        const serialBytesizeSelect = document.getElementById('serial-bytesize');
+        const serialParitySelect = document.getElementById('serial-parity');
+        const serialStopbitsSelect = document.getElementById('serial-stopbits');
+
+
+        // 初始化通讯模式设置
+        function initCommunicationMode() {
+            // 默认显示TCP设置，隐藏串口设置
+            tcpSettings.style.display = 'grid';
+            serialSettings.style.display = 'none';
+            
+            // 加载串口列表
+            loadSerialPorts();
+        }
+
+        // 加载串口列表
+        function loadSerialPorts() {
+            fetch('/api/serial/ports')
+                .then(response => response.json())
+                .then(ports => {
+                    // 清空现有选项
+                    serialPortSelect.innerHTML = '<option value="">请选择串口</option>';
+                    
+                    // 添加新选项
+                    ports.forEach(port => {
+                        const option = document.createElement('option');
+                        option.value = port.device;
+                        option.textContent = `${port.device} - ${port.description}`;
+                        serialPortSelect.appendChild(option);
+                    });
+                })
+                .catch(error => {
+                    console.error('获取串口列表失败:', error);
+                });
+        }
+
+        // 通讯模式切换事件
+        communicationModeSelect.addEventListener('change', function() {
+            const previousMode = currentMode;
+            currentMode = this.value;
+            
+            // 如果之前已连接，先断开连接
+            if (connected) {
+                disconnect();
+            }
+            
+            if (currentMode === 'tcp') {
+                tcpSettings.style.display = 'grid';
+                serialSettings.style.display = 'none';
+            } else {
+                tcpSettings.style.display = 'none';
+                serialSettings.style.display = 'block';
+                // 重新加载串口列表
+                loadSerialPorts();
+            }
+        });
+
+
+
+        // 获取时间戳
+        function getTimestamp() {
+            return new Date().toLocaleString('zh-CN', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                millisecond: '3-digit'
+            });
+        }
+
+        // 日志消息
+        function logMessage(type, message) {
+            const timestamp = getTimestamp();
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `p-3 rounded-lg ${type === 'send' ? 'bg-primary/10 border border-primary/30' : 'bg-secondary/10 border border-secondary/30'}`;
+            messageDiv.innerHTML = `
+                <div class="flex justify-between items-start mb-2">
+                    <span class="text-xs text-primary/70">${timestamp}</span>
+                    <span class="px-2 py-1 text-xs rounded ${type === 'send' ? 'bg-primary/20 text-primary' : 'bg-secondary/20 text-secondary'}">
+                        ${type === 'send' ? '发送' : '接收'}
+                    </span>
+                </div>
+                <div class="text-sm">${message}</div>
+            `;
+            receiveHistory.appendChild(messageDiv);
+            // 确保滚动条与新数据同步
+            setTimeout(() => {
+                receiveHistory.scrollTop = receiveHistory.scrollHeight;
+            }, 0);
+        }
+
+        // 标签页切换功能
+        function setupModuleTabs() {
+            moduleTabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const module = this.getAttribute('data-module');
+                    
+                    // 更新标签样式
+                    moduleTabs.forEach(t => {
+                        t.classList.remove('text-primary', 'border-b-2', 'border-primary');
+                        t.classList.add('text-primary/60');
+                    });
+                    this.classList.remove('text-primary/60');
+                    this.classList.add('text-primary', 'border-b-2', 'border-primary');
+                    
+                    // 显示对应模块内容
+                    moduleContents.forEach(content => {
+                        if (content.getAttribute('data-module') === module) {
+                            content.classList.remove('hidden');
+                        } else {
+                            content.classList.add('hidden');
+                        }
+                    });
+                });
+            });
+        }
+        
+        // 模块问询帧设置功能
+        function setupModuleQueryFrames() {
+            setQueryFrameBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const module = this.getAttribute('data-module');
+                    const queryFrameInput = document.querySelector(`.module-query-frame[data-module="${module}"]`);
+                    const hexData = queryFrameInput.value.trim();
+                    
+                    if (!hexData) {
+                        alert('请输入问询帧数据');
+                        return;
+                    }
+                    
+                    if (!connected) {
+                        alert('请先连接到服务器');
+                        return;
+                    }
+                    
+                    try {
+                        // 获取模块的LoRa设置
+                        const moduleLoraEnabled = document.querySelector(`.module-lora-enabled[data-module="${module}"]`).checked;
+                        const moduleLoraAddress = document.querySelector(`.module-lora-address[data-module="${module}"]`).value.trim();
+                        
+                        // 直接使用用户输入的完整问询帧（已包含LoRa目的地址）
+                        const finalQueryFrame = hexData;
+                        
+                        // 更新当前模块的问询帧
+                        fetch('/api/serial/communication-config', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                communication_mode: currentMode,
+                                network_type: moduleLoraEnabled ? 'lora' : 'serial',
+                                target_address: moduleLoraEnabled ? moduleLoraAddress : '5678',
+                                config: {
+                                    query_frame: finalQueryFrame
+                                },
+                                page: module
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.status === 'success') {
+                                logMessage('receive', `模块 ${module} 问询帧已更新，数据将通过问询线程发送`);
+                                // 同步到发送数据文本框
+                                sendDataInput.value = finalQueryFrame;
+                                // 保存到本地存储，实现持久化
+                                localStorage.setItem(`sscom_${module}_lora_enabled`, moduleLoraEnabled);
+                                localStorage.setItem(`sscom_${module}_lora_address`, moduleLoraAddress);
+                                localStorage.setItem(`sscom_${module}_query_frame`, hexData);
+                            } else {
+                                logMessage('receive', `更新模块 ${module} 问询帧失败: ${data.message}`);
+                            }
+                        })
+                        .catch(error => {
+                            logMessage('receive', `更新模块 ${module} 问询帧错误: ${error.message}`);
+                        });
+
+                    } catch (error) {
+                        logMessage('send', `错误: ${error.message}`);
+                    }
+                });
+            });
+        }
+
+        // 更新连接状态
+        function updateConnectionStatus(isConnected, message) {
+            connected = isConnected;
+            if (isConnected) {
+                connectionStatus.className = 'w-3 h-3 rounded-full bg-green-500 mr-3';
+                statusText.textContent = `状态: ${message || '已连接'}`;
+                connectBtn.disabled = true;
+                disconnectBtn.disabled = false;
+                sendBtn.disabled = false;
+                sendMultiDataBtn.disabled = false;
+            } else {
+                connectionStatus.className = 'w-3 h-3 rounded-full bg-red-500 mr-3';
+                statusText.textContent = `状态: ${message || '未连接'}`;
+                connectBtn.disabled = false;
+                disconnectBtn.disabled = true;
+                sendBtn.disabled = true;
+                sendMultiDataBtn.disabled = true;
+                // 连接断开时停止轮询
+                if (pollingRunning) {
+                    stopPollingData();
+                }
+            }
+            // 更新轮询按钮状态
+            updatePollingButtonStatus();
+        }
+
+        // 更新光照气体模块数据
+        function updateLightGasData(data) {
+            if (data.status !== undefined) lightGasStatus.textContent = data.status;
+            if (data.temp !== undefined) lightGasTemp.textContent = data.temp;
+            if (data.humidity !== undefined) lightGasHumidity.textContent = data.humidity;
+            if (data.co2 !== undefined) lightGasCo2.textContent = data.co2;
+            if (data.pressure !== undefined) lightGasPressure.textContent = data.pressure;
+            if (data.light !== undefined) lightGasLight.textContent = data.light;
+        }
+
+        // 更新温湿度模块数据
+        function updateTempHumidityData(data) {
+            if (data.status !== undefined) tempHumidityStatus.textContent = data.status;
+            if (data.temp !== undefined) tempHumidityTemp.textContent = data.temp;
+            if (data.humidity !== undefined) tempHumidityHumidity.textContent = data.humidity;
+        }
+
+        // 更新温振模块数据
+        function updateTempVibrationData(data) {
+            if (data.status !== undefined) tempVibrationStatus.textContent = data.status;
+            if (data.temp !== undefined) tempVibrationTemp.textContent = data.temp;
+            if (data.vibration !== undefined) tempVibrationVibration.textContent = data.vibration;
+            if (data.velocity_x !== undefined) {
+                const velocityXElement = document.getElementById('temp-vibration-velocity-x');
+                if (velocityXElement) velocityXElement.textContent = data.velocity_x;
+            }
+            if (data.velocity_y !== undefined) {
+                const velocityYElement = document.getElementById('temp-vibration-velocity-y');
+                if (velocityYElement) velocityYElement.textContent = data.velocity_y;
+            }
+            if (data.velocity_z !== undefined) {
+                const velocityZElement = document.getElementById('temp-vibration-velocity-z');
+                if (velocityZElement) velocityZElement.textContent = data.velocity_z;
+            }
+            if (data.displacement_x !== undefined) {
+                const displacementXElement = document.getElementById('temp-vibration-displacement-x');
+                if (displacementXElement) displacementXElement.textContent = data.displacement_x;
+            }
+            if (data.displacement_y !== undefined) {
+                const displacementYElement = document.getElementById('temp-vibration-displacement-y');
+                if (displacementYElement) displacementYElement.textContent = data.displacement_y;
+            }
+            if (data.displacement_z !== undefined) {
+                const displacementZElement = document.getElementById('temp-vibration-displacement-z');
+                if (displacementZElement) displacementZElement.textContent = data.displacement_z;
+            }
+            if (data.acceleration_x !== undefined) {
+                const accelerationXElement = document.getElementById('temp-vibration-acceleration-x');
+                if (accelerationXElement) accelerationXElement.textContent = data.acceleration_x;
+            }
+            if (data.acceleration_y !== undefined) {
+                const accelerationYElement = document.getElementById('temp-vibration-acceleration-y');
+                if (accelerationYElement) accelerationYElement.textContent = data.acceleration_y;
+            }
+            if (data.acceleration_z !== undefined) {
+                const accelerationZElement = document.getElementById('temp-vibration-acceleration-z');
+                if (accelerationZElement) accelerationZElement.textContent = data.acceleration_z;
+            }
+            if (data.version !== undefined) {
+                const versionElement = document.getElementById('temp-vibration-version');
+                if (versionElement) versionElement.textContent = data.version;
+            }
+        }
+
+        // 重置所有传感器数据
+        function resetSensorData() {
+            // 重置光照气体模块数据
+            updateLightGasData({
+                status: '--',
+                temp: '-- °C',
+                humidity: '-- %',
+                co2: '-- ppm',
+                pressure: '-- hPa',
+                light: '-- Lux'
+            });
+            
+            // 重置温湿度模块数据
+            updateTempHumidityData({
+                status: '--',
+                temp: '-- °C',
+                humidity: '-- %'
+            });
+            
+            // 重置温振模块数据
+            updateTempVibrationData({
+                status: '--',
+                temp: '-- °C',
+                vibration: '-- mm/s',
+                velocity_x: '-- mm/s',
+                velocity_y: '-- mm/s',
+                velocity_z: '-- mm/s',
+                displacement_x: '-- μm',
+                displacement_y: '-- μm',
+                displacement_z: '-- μm',
+                acceleration_x: '-- m/s²',
+                acceleration_y: '-- m/s²',
+                acceleration_z: '-- m/s²',
+                version: '--'
+            });
+        }
+
+        // 解析传感器数据
+        function parseSensorData(data) {
+            try {
+                // 检查是否包含LoRa目标地址前缀
+                let modbusData;
+                let deviceAddress = 0;
+                let loraAddress = null;
+                
+                // 尝试检测LoRa地址前缀（2字节）
+                if (data.length >= 4) {
+                    // 检查是否包含LoRa目标地址前缀
+                    loraAddress = (data[0] << 8) | data[1];
+                    modbusData = data.slice(2);
+                    deviceAddress = modbusData[0];
+                } else if (data.length >= 2) {
+                    // 不包含LoRa目标地址前缀
+                    modbusData = data;
+                    deviceAddress = modbusData[0];
+                } else {
+                    return false;
+                }
+
+                // 根据设备地址和LoRa地址解析不同模块的数据
+                switch (deviceAddress) {
+                    case 0x01: // 所有模块都使用相同的设备地址，根据数据长度和寄存器位置区分
+                        // 光照气体模块数据
+                        if (modbusData.length === 21 && modbusData[1] === 0x03 && modbusData[2] === 0x10) {
+                            // 解析数据
+                            const status = (modbusData[3] << 8) | modbusData[4];
+                            const statusText = status === 0 ? '正常' : '异常';
+                            
+                            let temperature = (modbusData[5] << 8) | modbusData[6];
+                            if (temperature > 32767) {
+                                temperature = (temperature - 65536) / 10.0;
+                            } else {
+                                temperature = temperature / 10.0;
+                            }
+                            
+                            const humidity = (modbusData[7] << 8) | modbusData[8];
+                            const co2 = (modbusData[9] << 8) | modbusData[10];
+                            const pressure = (modbusData[11] << 24) | (modbusData[12] << 16) | (modbusData[13] << 8) | modbusData[14];
+                            const light = (modbusData[15] << 24) | (modbusData[16] << 16) | (modbusData[17] << 8) | modbusData[18];
+
+                            updateLightGasData({
+                                status: `${statusText} (${status.toString(16).toUpperCase().padStart(4, '0')}H)`,
+                                temp: `${temperature.toFixed(1)} °C`,
+                                humidity: `${humidity} %`,
+                                co2: `${co2} ppm`,
+                                pressure: `${pressure} hPa`,
+                                light: `${light} Lux`
+                            });
+
+                            return true;
+                        }
+                        
+                        // 温湿度模块数据
+                        else if ((modbusData.length === 9 || modbusData.length === 11) && modbusData[1] === 0x03 && modbusData[2] === 0x04) {
+                            // 解析数据
+                            const status = (modbusData[3] << 8) | modbusData[4];
+                            const statusText = status === 0 ? '正常' : '异常';
+                            
+                            // 湿度在前，温度在后
+                            const humidity = (modbusData[5] << 8) | modbusData[6];
+                            const humidityValue = humidity / 10.0;
+                            
+                            let temperature = (modbusData[7] << 8) | modbusData[8];
+                            if (temperature > 32767) {
+                                temperature = (temperature - 65536) / 10.0;
+                            } else {
+                                temperature = temperature / 10.0;
+                            }
+
+                            updateTempHumidityData({
+                                status: `${statusText} (${status.toString(16).toUpperCase().padStart(4, '0')}H)`,
+                                temp: `${temperature.toFixed(1)} °C`,
+                                humidity: `${humidityValue.toFixed(1)} %`
+                            });
+
+                            return true;
+                        }
+                        
+                        // 温振模块数据（38个寄存器，0000-0025）
+                        else if ((modbusData.length === 81 || modbusData.length === 83) && modbusData[1] === 0x03 && modbusData[2] === 0x4C) {
+                            // 解析数据（76字节数据，38个寄存器）
+                            // 数据区从偏移3开始
+                            const dataArea = modbusData.slice(3, 3 + 0x4C);
+                            
+                            // 温度数据（有符号16位，除以10）
+                            let temperature_raw = (dataArea[0] << 8) | dataArea[1];
+                            let temperature = temperature_raw > 32767 ? (temperature_raw - 65536) / 10.0 : temperature_raw / 10.0;
+                            
+                            // 振动速度（除以10）
+                            const velocity_x = (dataArea[2] << 8) | dataArea[3];
+                            const velocity_y = (dataArea[4] << 8) | dataArea[5];
+                            const velocity_z = (dataArea[6] << 8) | dataArea[7];
+                            const velocity_x_value = velocity_x / 10.0;
+                            const velocity_y_value = velocity_y / 10.0;
+                            const velocity_z_value = velocity_z / 10.0;
+                            
+                            // 振动位移（除以10）
+                            const displacement_x = (dataArea[8] << 8) | dataArea[9];
+                            const displacement_y = (dataArea[10] << 8) | dataArea[11];
+                            const displacement_z = (dataArea[12] << 8) | dataArea[13];
+                            const displacement_x_value = displacement_x / 10.0;
+                            const displacement_y_value = displacement_y / 10.0;
+                            const displacement_z_value = displacement_z / 10.0;
+                            
+                            // 保留寄存器（0007-0008）
+                            // const reserved1 = (dataArea[14] << 8) | dataArea[15];
+                            // const reserved2 = (dataArea[16] << 8) | dataArea[17];
+                            
+                            // 版本号（0009）
+                            const version = (dataArea[18] << 8) | dataArea[19];
+                            
+                            // 振动加速度（除以10）
+                            const acceleration_x = (dataArea[20] << 8) | dataArea[21];
+                            const acceleration_y = (dataArea[22] << 8) | dataArea[23];
+                            const acceleration_z = (dataArea[24] << 8) | dataArea[25];
+                            const acceleration_x_value = acceleration_x / 10.0;
+                            const acceleration_y_value = acceleration_y / 10.0;
+                            const acceleration_z_value = acceleration_z / 10.0;
+                            
+                            // 000D-0020: 保留 (20个寄存器，40字节)
+                            // 跳过保留区域
+                            
+                            // 0021: X轴振动频率 (float, 4字节，相对于数据区偏移66-69)
+                            let freq_x = 0.0;
+                            if (dataArea.length >= 70) {
+                                const freq_x_bytes = dataArea.slice(66, 70);
+                                freq_x = new DataView(new Uint8Array(freq_x_bytes).buffer).getFloat32(0, false);
+                            }
+                            
+                            // 0022: 保留 (2字节)
+                            // 跳过
+                            
+                            // 0023: Y轴振动频率 (float, 4字节，相对于数据区偏移72-75)
+                            let freq_y = 0.0;
+                            if (dataArea.length >= 76) {
+                                const freq_y_bytes = dataArea.slice(72, 76);
+                                freq_y = new DataView(new Uint8Array(freq_y_bytes).buffer).getFloat32(0, false);
+                            }
+                            
+                            // 0024: 保留 (2字节)
+                            // 跳过
+                            
+                            // 0025: Z轴振动频率 (float, 4字节，相对于数据区偏移78-81)
+                            let freq_z = 0.0;
+                            if (dataArea.length >= 82) {
+                                const freq_z_bytes = dataArea.slice(78, 82);
+                                freq_z = new DataView(new Uint8Array(freq_z_bytes).buffer).getFloat32(0, false);
+                            }
+                            
+                            // 计算合成振动速度
+                            const vibration = Math.sqrt(velocity_x_value**2 + velocity_y_value**2 + velocity_z_value**2);
+
+                            updateTempVibrationData({
+                                temp: `${temperature.toFixed(1)} °C`,
+                                vibration: `${vibration.toFixed(3)} mm/s`,
+                                velocity_x: `${velocity_x_value.toFixed(3)} mm/s`,
+                                velocity_y: `${velocity_y_value.toFixed(3)} mm/s`,
+                                velocity_z: `${velocity_z_value.toFixed(3)} mm/s`,
+                                displacement_x: `${displacement_x_value.toFixed(3)} μm`,
+                                displacement_y: `${displacement_y_value.toFixed(3)} μm`,
+                                displacement_z: `${displacement_z_value.toFixed(3)} μm`,
+                                acceleration_x: `${acceleration_x_value.toFixed(3)} m/s²`,
+                                acceleration_y: `${acceleration_y_value.toFixed(3)} m/s²`,
+                                acceleration_z: `${acceleration_z_value.toFixed(3)} m/s²`,
+                                version: version,
+                                freq_x: `${freq_x.toFixed(2)} Hz`,
+                                freq_y: `${freq_y.toFixed(2)} Hz`,
+                                freq_z: `${freq_z.toFixed(2)} Hz`
+                            });
+
+                            return true;
+                        }
+                        break;
+                }
+            } catch (error) {
+                console.error('解析传感器数据失败:', error);
+            }
+            return false;
+        }
+
+        // 十六进制字符串转字节数组
+        function hexToBytes(hex) {
+            const hexClean = hex.replace(/\s/g, '');
+            if (hexClean.length % 2 !== 0) {
+                throw new Error('十六进制字符串长度必须为偶数');
+            }
+            const bytes = [];
+            for (let i = 0; i < hexClean.length; i += 2) {
+                bytes.push(parseInt(hexClean.substr(i, 2), 16));
+            }
+            return bytes;
+        }
+
+        // 字节数组转十六进制字符串
+        function bytesToHex(bytes) {
+            return bytes.map(b => b.toString(16).toUpperCase().padStart(2, '0')).join(' ');
+        }
+
+        // 连接到服务器
+        function connect() {
+            if (currentMode === 'tcp') {
+                const serverIp = serverIpInput.value.trim();
+                const serverPort = parseInt(serverPortInput.value.trim());
+                // 默认使用lora网络类型和目标地址
+                const networkType = 'lora';
+                const targetAddress = '5678';
+
+                if (!serverIp) {
+                    alert('请输入服务器IP地址');
+                    return;
+                }
+
+                if (isNaN(serverPort) || serverPort < 1 || serverPort > 65535) {
+                    alert('请输入有效的端口号');
+                    return;
+                }
+
+                // 禁用按钮
+                connectBtn.disabled = true;
+                statusText.textContent = '状态: 正在连接...';
+
+                logMessage('send', `正在连接到 ${serverIp}:${serverPort}...`);
+
+                // 使用后端API打开TCP连接
+                fetch('/api/serial/open-tcp', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        tcp_server_ip: serverIp,
+                        tcp_server_port: serverPort,
+                        network_type: networkType,
+                        target_address: targetAddress,
+                        page: 'sscom'
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        updateConnectionStatus(true, `已连接到 ${serverIp}:${serverPort}`);
+                        logMessage('receive', `连接成功！本地地址: ${data.message}`);
+                        resetSensorData();
+                        
+                        // 不自动启动数据轮询，等待用户手动发送或启动轮询
+                    } else {
+                        updateConnectionStatus(false, `连接失败: ${data.message}`);
+                        logMessage('receive', `错误: ${data.message}`);
+                        connectBtn.disabled = false;
+                    }
+                })
+                .catch(error => {
+                    updateConnectionStatus(false, `连接失败: ${error.message}`);
+                    logMessage('receive', `错误: ${error.message}`);
+                    connectBtn.disabled = false;
+                });
+            } else if (currentMode === 'serial') {
+                const serialPort = serialPortSelect.value;
+                const baudrate = parseInt(serialBaudrateSelect.value);
+                const bytesize = parseInt(serialBytesizeSelect.value);
+                const parity = serialParitySelect.value;
+                const stopbits = parseInt(serialStopbitsSelect.value);
+                // 默认使用lora网络类型和目标地址
+                const networkType = 'lora';
+                const targetAddress = '5678';
+
+                if (!serialPort) {
+                    alert('请选择串口');
+                    return;
+                }
+
+                // 禁用按钮
+                connectBtn.disabled = true;
+                statusText.textContent = '状态: 正在连接...';
+
+                logMessage('send', `正在连接到串口 ${serialPort}...`);
+
+                // 使用后端API打开串口连接
+                fetch('/api/serial/open', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        config: {
+                            port: serialPort,
+                            baudrate: baudrate,
+                            bytesize: bytesize,
+                            parity: parity,
+                            stopbits: stopbits,
+                            network_type: networkType,
+                            target_address: targetAddress
+                        },
+                        page: 'sscom'
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        updateConnectionStatus(true, `已连接到串口 ${serialPort}`);
+                        logMessage('receive', `连接成功！${data.message}`);
+                        resetSensorData();
+                        
+                        // 启动数据轮询
+                        startPolling();
+                    } else {
+                        updateConnectionStatus(false, `连接失败: ${data.message}`);
+                        logMessage('receive', `错误: ${data.message}`);
+                        connectBtn.disabled = false;
+                    }
+                })
+                .catch(error => {
+                    updateConnectionStatus(false, `连接失败: ${error.message}`);
+                    logMessage('receive', `错误: ${error.message}`);
+                    connectBtn.disabled = false;
+                });
+            }
+        }
+
+        // 断开连接
+        function disconnect() {
+            if (connected) {
+                logMessage('send', '正在断开连接...');
+                
+                // 停止数据轮询
+                stopPolling();
+                
+                // 根据当前模式选择不同的断开方式
+                if (currentMode === 'tcp') {
+                    // 使用后端API关闭TCP连接
+                    fetch('/api/serial/close-tcp', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ page: 'sscom' })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        // 无论成功与否，都更新状态
+                        updateConnectionStatus(false, '已断开连接');
+                        logMessage('receive', `连接已断开${data.message ? ': ' + data.message : ''}`);
+                        resetSensorData();
+                        
+                        // 停止问询
+                        fetch('/api/query/stop', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ page: 'sscom' })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            logMessage('receive', `问询已停止: ${data.message}`);
+                        })
+                        .catch(error => {
+                            logMessage('receive', `问询停止错误: ${error.message}`);
+                        });
+                    })
+                    .catch(error => {
+                        // 即使出错，也要更新状态
+                        updateConnectionStatus(false, '已断开连接');
+                        logMessage('receive', `错误: ${error.message}`);
+                        resetSensorData();
+                    });
+                } else if (currentMode === 'serial') {
+                    // 使用后端API关闭串口连接
+                    fetch('/api/serial/close', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ page: 'sscom' })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        updateConnectionStatus(false, '已断开连接');
+                        logMessage('receive', `连接已断开${data.message ? ': ' + data.message : ''}`);
+                        resetSensorData();
+                        
+                        // 停止问询
+                        fetch('/api/query/stop', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ page: 'sscom' })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            logMessage('receive', `问询已停止: ${data.message}`);
+                        })
+                        .catch(error => {
+                            logMessage('receive', `问询停止错误: ${error.message}`);
+                        });
+                    })
+                    .catch(error => {
+                        updateConnectionStatus(false, `断开失败: ${error.message}`);
+                        logMessage('receive', `错误: ${error.message}`);
+                    });
+                }
+            }
+        }
+
+        // 发送数据
+        function sendData() {
+            const hexData = sendDataInput.value.trim();
+            if (!hexData) {
+                alert('请输入要发送的HEX数据');
+                return;
+            }
+
+            if (!connected) {
+                alert('请先连接到服务器');
+                return;
+            }
+
+            try {
+                const bytes = hexToBytes(hexData);
+                const dataStr = bytesToHex(bytes);
+                
+                logMessage('send', `HEX: ${dataStr}\n长度: ${bytes.length} 字节`);
+                
+                // 使用默认的LoRa设置
+                const networkType = 'lora';
+                const targetAddress = '5678';
+                
+                // 更新当前页面的问询帧
+                fetch('/api/serial/communication-config', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        communication_mode: currentMode,
+                        network_type: networkType,
+                        target_address: targetAddress,
+                        config: {
+                            query_frame: hexData
+                        },
+                        page: 'sscom'
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        logMessage('receive', '问询帧已更新');
+                        // 立即发送一次数据
+                        fetch('/api/query/start', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ page: 'sscom' })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.status === 'success') {
+                                logMessage('receive', `数据已发送: ${data.message}`);
+                                // 延迟停止问询，确保数据发送完成
+                                setTimeout(() => {
+                                    fetch('/api/query/stop', {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json'
+                                        },
+                                        body: JSON.stringify({ page: 'sscom' })
+                                    });
+                                }, 1000);
+                            } else {
+                                logMessage('receive', `发送数据失败: ${data.message}`);
+                            }
+                        })
+                        .catch(error => {
+                            logMessage('receive', `发送数据错误: ${error.message}`);
+                        });
+                    } else {
+                        logMessage('receive', `更新问询帧失败: ${data.message}`);
+                    }
+                })
+                .catch(error => {
+                    logMessage('receive', `更新问询帧错误: ${error.message}`);
+                });
+
+            } catch (error) {
+                logMessage('send', `错误: ${error.message}`);
+            }
+        }
+
+        // 数据轮询相关变量
+        let pollingInterval = null;
+        let lastQueryFrame = '';
+        let lastResponseFrame = '';
+
+        // 开始数据轮询
+        function startPolling() {
+            // 每500毫秒轮询一次数据
+            pollingInterval = setInterval(() => {
+                fetchFrameData();
+            }, 500);
+        }
+
+        // 停止数据轮询
+        function stopPolling() {
+            if (pollingInterval) {
+                clearInterval(pollingInterval);
+                pollingInterval = null;
+            }
+        }
+
+        // 获取帧数据
+        function fetchFrameData() {
+            fetch('/api/serial/frames?page=sscom')
+                .then(response => response.json())
+                .then(data => {
+                    if (data) {
+                        // 检查是否有新的问询帧
+                        if (data.query && data.query !== lastQueryFrame && data.query !== 'TCP模式暂不支持' && data.query !== '问询未运行') {
+                            lastQueryFrame = data.query;
+                            const queryLength = data.query.split(' ').length;
+                            let ipFrameMsg = '';
+                            if (data.frames && data.frames.length > 0) {
+                                const lastFrame = data.frames[data.frames.length - 1];
+                                if (lastFrame.type === 'query' && lastFrame.ip_frame) {
+                                    ipFrameMsg = `\n${lastFrame.ip_frame}`;
+                                }
+                            }
+                            logMessage('send', `HEX: ${data.query}\n长度: ${queryLength} 字节${ipFrameMsg}`);
+                            
+                            // 尝试解析问询帧
+                            try {
+                                const bytes = hexToBytes(data.query);
+                                parseSensorData(bytes);
+                            } catch (error) {
+                                console.error('解析问询帧失败:', error);
+                            }
+                        }
+                        
+                        // 检查是否有新的应答帧
+                        if (data.response && data.response !== lastResponseFrame && data.response !== 'TCP模式暂不支持' && data.response !== '问询未运行') {
+                            lastResponseFrame = data.response;
+                            const responseLength = data.response.split(' ').length;
+                            let ipFrameMsg = '';
+                            if (data.frames && data.frames.length > 0) {
+                                const lastFrame = data.frames[data.frames.length - 1];
+                                if (lastFrame.type === 'response' && lastFrame.ip_frame) {
+                                    ipFrameMsg = `\n${lastFrame.ip_frame}`;
+                                }
+                            }
+                            logMessage('receive', `HEX: ${data.response}\n长度: ${responseLength} 字节${ipFrameMsg}`);
+                            
+                            // 尝试解析应答帧
+                            try {
+                                const bytes = hexToBytes(data.response);
+                                parseSensorData(bytes);
+                            } catch (error) {
+                                console.error('解析应答帧失败:', error);
+                            }
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('获取帧数据失败:', error);
+                });
+        }
+
+        // 清空发送区域
+        function clearSend() {
+            sendDataInput.value = '';
+        }
+
+        // 轮询状态管理
+        let pollingRunning = false;
+
+        // 开始轮询
+        function startPollingData() {
+            if (!connected) {
+                alert('请先连接到服务器');
+                return;
+            }
+
+            const hexData = sendDataInput.value.trim();
+            if (!hexData) {
+                alert('请输入要发送的HEX数据');
+                return;
+            }
+
+            const interval = parseInt(pollingIntervalInput.value);
+            if (isNaN(interval) || interval < 1 || interval > 60) {
+                alert('请输入有效的轮询时间（1-60秒）');
+                return;
+            }
+
+            try {
+                // 更新问询帧
+                const networkType = 'lora';
+                const targetAddress = '5678';
+
+                fetch('/api/serial/communication-config', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        communication_mode: currentMode,
+                        network_type: networkType,
+                        target_address: targetAddress,
+                        config: {
+                            query_frame: hexData
+                        },
+                        page: 'sscom'
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        // 更新轮询间隔
+                        fetch('/api/serial/interval', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                interval: interval,
+                                page: 'sscom'
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.status === 'success') {
+                                // 启动问询
+                                fetch('/api/query/start', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify({ page: 'sscom' })
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.status === 'success') {
+                                        logMessage('receive', `轮询已启动，间隔: ${interval}秒`);
+                                        pollingRunning = true;
+                                        updatePollingButtonStatus();
+                                    } else {
+                                        logMessage('receive', `启动轮询失败: ${data.message}`);
+                                    }
+                                })
+                                .catch(error => {
+                                    logMessage('receive', `启动轮询错误: ${error.message}`);
+                                });
+                            } else {
+                                logMessage('receive', `更新轮询间隔失败: ${data.message}`);
+                            }
+                        })
+                        .catch(error => {
+                            logMessage('receive', `更新轮询间隔错误: ${error.message}`);
+                        });
+                    } else {
+                        logMessage('receive', `更新问询帧失败: ${data.message}`);
+                    }
+                })
+                .catch(error => {
+                    logMessage('receive', `更新问询帧错误: ${error.message}`);
+                });
+            } catch (error) {
+                logMessage('send', `错误: ${error.message}`);
+            }
+        }
+
+        // 停止轮询
+        function stopPollingData() {
+            fetch('/api/query/stop', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ page: 'sscom' })
+            })
+            .then(response => response.json())
+            .then(data => {
+                logMessage('receive', `轮询已停止: ${data.message}`);
+                pollingRunning = false;
+                updatePollingButtonStatus();
+            })
+            .catch(error => {
+                logMessage('receive', `停止轮询错误: ${error.message}`);
+            });
+        }
+
+        // 发送多条数据
+        function sendMultiData() {
+            if (!connected) {
+                alert('请先连接到服务器');
+                return;
+            }
+
+            const selectedData = [];
+            multiDataCheckboxes.forEach(checkbox => {
+                if (checkbox.checked) {
+                    const module = checkbox.getAttribute('data-module');
+                    const dataInput = document.querySelector(`.multi-data-input[data-module="${module}"]`);
+                    const hexData = dataInput.value.trim();
+                    if (hexData) {
+                        selectedData.push({ module, hexData });
+                    }
+                }
+            });
+
+            if (selectedData.length === 0) {
+                alert('请至少选择一条数据');
+                return;
+            }
+
+            // 依次发送每条数据
+            selectedData.forEach((item, index) => {
+                setTimeout(() => {
+                    try {
+                        const bytes = hexToBytes(item.hexData);
+                        const dataStr = bytesToHex(bytes);
+                        
+                        logMessage('send', `[${item.module}] HEX: ${dataStr}\n长度: ${bytes.length} 字节`);
+                        
+                        // 更新问询帧并发送
+                        const networkType = 'lora';
+                        const targetAddress = item.module === 'light-gas' ? '5678' : 
+                                           item.module === 'temp-humidity' ? '0002' : '0003';
+
+                        fetch('/api/serial/communication-config', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                communication_mode: currentMode,
+                                network_type: networkType,
+                                target_address: targetAddress,
+                                config: {
+                                    query_frame: item.hexData
+                                },
+                                page: 'sscom'
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.status === 'success') {
+                                // 立即发送一次数据
+                                fetch('/api/query/start', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify({ page: 'sscom' })
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.status === 'success') {
+                                        logMessage('receive', `[${item.module}] 数据已发送: ${data.message}`);
+                                        // 延迟停止问询，确保数据发送完成
+                                        setTimeout(() => {
+                                            fetch('/api/query/stop', {
+                                                method: 'POST',
+                                                headers: {
+                                                    'Content-Type': 'application/json'
+                                                },
+                                                body: JSON.stringify({ page: 'sscom' })
+                                            });
+                                        }, 500);
+                                    } else {
+                                        logMessage('receive', `[${item.module}] 发送数据失败: ${data.message}`);
+                                    }
+                                })
+                                .catch(error => {
+                                    logMessage('receive', `[${item.module}] 发送数据错误: ${error.message}`);
+                                });
+                            } else {
+                                logMessage('receive', `[${item.module}] 更新问询帧失败: ${data.message}`);
+                            }
+                        })
+                        .catch(error => {
+                            logMessage('receive', `[${item.module}] 更新问询帧错误: ${error.message}`);
+                        });
+
+                    } catch (error) {
+                        logMessage('send', `[${item.module}] 错误: ${error.message}`);
+                    }
+                }, index * 1000); // 每条数据延迟 1 秒发送，避免冲突
+            });
+        }
+
+        // 更新轮询按钮状态
+        function updatePollingButtonStatus() {
+            if (connected) {
+                if (pollingRunning) {
+                    startPollingBtn.disabled = true;
+                    stopPollingBtn.disabled = false;
+                } else {
+                    startPollingBtn.disabled = false;
+                    stopPollingBtn.disabled = true;
+                }
+            } else {
+                startPollingBtn.disabled = true;
+                stopPollingBtn.disabled = true;
+            }
+        }
+
+        // 清空接收区域
+        function clearReceive() {
+            receiveHistory.innerHTML = '';
+        }
+
+        // 事件监听
+        connectBtn.addEventListener('click', connect);
+        disconnectBtn.addEventListener('click', disconnect);
+        sendBtn.addEventListener('click', sendData);
+        clearSendBtn.addEventListener('click', clearSend);
+        clearReceiveBtn.addEventListener('click', clearReceive);
+        // 轮询设置事件监听
+        startPollingBtn.addEventListener('click', startPollingData);
+        stopPollingBtn.addEventListener('click', stopPollingData);
+        // 多数据发送事件监听
+        sendMultiDataBtn.addEventListener('click', sendMultiData);
+
+        // 回车键发送
+        sendDataInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendData();
+            }
+        });
+
+        // 初始化
+        updateConnectionStatus(false, '未连接');
+        resetSensorData();
+        lastQueryFrame = '';
+        lastResponseFrame = '';
+        initCommunicationMode();
+        setupModuleTabs();
+        setupModuleQueryFrames();
+        loadSavedConfig();
+        
+        // 从本地存储加载保存的配置
+        function loadSavedConfig() {
+            const modules = ['light-gas', 'temp-humidity', 'temp-vibration'];
+            modules.forEach(module => {
+                const savedLoraEnabled = localStorage.getItem(`sscom_${module}_lora_enabled`);
+                const savedLoraAddress = localStorage.getItem(`sscom_${module}_lora_address`);
+                const savedQueryFrame = localStorage.getItem(`sscom_${module}_query_frame`);
+                
+                if (savedLoraEnabled !== null) {
+                    const loraEnabledInput = document.querySelector(`.module-lora-enabled[data-module="${module}"]`);
+                    if (loraEnabledInput) {
+                        loraEnabledInput.checked = savedLoraEnabled === 'true';
+                    }
+                }
+                
+                if (savedLoraAddress) {
+                    const loraAddressInput = document.querySelector(`.module-lora-address[data-module="${module}"]`);
+                    if (loraAddressInput) {
+                        loraAddressInput.value = savedLoraAddress;
+                    }
+                }
+                
+                if (savedQueryFrame) {
+                    const queryFrameInput = document.querySelector(`.module-query-frame[data-module="${module}"]`);
+                    if (queryFrameInput) {
+                        queryFrameInput.value = savedQueryFrame;
+                    }
+                }
+            });
+        }
+
+        // 模拟初始消息
+        setTimeout(() => {
+            logMessage('receive', 'SSCOM 模拟器就绪\n支持 TCP 客户端和串口模式测试\nHEX 数据发送和接收\n传感器数据解析');
+        }, 500);
+
+        // 页面关闭时清理
+        window.addEventListener('beforeunload', function() {
+            stopPolling();
+            if (connected) {
+                disconnect();
+            }
+        });
+    });
+</script>
+{% endblock %}

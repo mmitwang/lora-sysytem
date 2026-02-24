@@ -41,7 +41,16 @@ def open_tcp():
     data = request.json
     tcp_server_ip = data.get('tcp_server_ip', '127.0.0.1')
     tcp_server_port = data.get('tcp_server_port', 502)
+    network_type = data.get('network_type', 'serial')
+    target_address = data.get('target_address', '5678')
     page = data.get('page', 'light')
+    
+    # 更新LoRa配置
+    if network_type == 'lora':
+        success, message = serial_service.update_lora_config(network_type, target_address, page)
+        if not success:
+            return jsonify({"status": "error", "message": message})
+    
     success, message = serial_service.open_tcp(tcp_server_ip, tcp_server_port, page)
     return jsonify({"status": "success" if success else "error", "message": message})
 
@@ -165,6 +174,14 @@ def get_vibration_data():
     """获取温振数据"""
     vibration_data = serial_service.get_vibration_data()
     return jsonify(vibration_data)
+
+
+@api_bp.route('/vibration/clear-frame-history', methods=['POST'])
+def clear_vibration_frame_history():
+    """清空振动传感器的帧数据历史记录"""
+    page = 'vibration'
+    success, message = serial_service.clear_frame_history(page)
+    return jsonify({"status": "success" if success else "error", "message": message})
 
 
 @api_bp.route('/air/data', methods=['GET'])

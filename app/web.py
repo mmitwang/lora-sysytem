@@ -43,6 +43,12 @@ def light():
     return render_template('light.html', active_page='light')
 
 
+@web_bp.route('/sscom')
+def sscom():
+    """SSCOM模拟器页面"""
+    return render_template('sscom.html', active_page='sscom')
+
+
 @web_bp.route('/config')
 def config():
     """配置调试页面"""
