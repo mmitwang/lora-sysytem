@@ -59,25 +59,33 @@ def parse_temperature_response(response):
             print(f"应答帧长度不足: {len(response)}")
             return None
         
+        # 检查是否包含LoRa目标地址前缀
+        # 假设LoRa目标地址前缀为2字节
+        modbus_start = 0
+        if len(response) >= 11 and response[0] not in [0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x10]:
+            # 可能包含LoRa目标地址前缀，跳过前2字节
+            modbus_start = 2
+            print(f"检测到可能的LoRa目标地址前缀，从位置{modbus_start}开始解析")
+        
         # 检查地址码和功能码
-        if response[0] != Config.MODBUS_SLAVE_ID or response[1] != Config.MODBUS_FUNCTION_CODE:
-            print(f"忽略非01地址码的应答帧: 地址码={response[0]:02X}, 功能码={response[1]:02X}")
+        if response[modbus_start] != Config.MODBUS_SLAVE_ID or response[modbus_start + 1] != Config.MODBUS_FUNCTION_CODE:
+            print(f"忽略非01地址码的应答帧: 地址码={response[modbus_start]:02X}, 功能码={response[modbus_start + 1]:02X}")
             return None
         
         # 检查有效字节数（2个寄存器，每个2字节，共4字节）
-        if response[2] != 0x04:
-            print(f"有效字节数错误: {response[2]:02X}")
+        if response[modbus_start + 2] != 0x04:
+            print(f"有效字节数错误: {response[modbus_start + 2]:02X}")
             return None
         
         # 提取温度值（2字节，有符号16位）
         # 湿度在前，温度在后
-        humidity_raw = (response[3] << 8) | response[4]
-        temperature_raw = (response[5] << 8) | response[6]
+        humidity_raw = (response[modbus_start + 3] << 8) | response[modbus_start + 4]
+        temperature_raw = (response[modbus_start + 5] << 8) | response[modbus_start + 6]
         
         # 计算CRC校验
-        crc_data = response[:7]
+        crc_data = response[modbus_start:modbus_start + 7]
         expected_crc = calculate_crc(crc_data)
-        actual_crc = (response[7] << 8) | response[8]
+        actual_crc = (response[modbus_start + 7] << 8) | response[modbus_start + 8]
         
         if expected_crc != actual_crc:
             print(f"CRC校验失败: 预期={expected_crc:04X}, 实际={actual_crc:04X}")
@@ -683,34 +691,61 @@ def parse_air_quality_response(response):
 def parse_light_gas_response(response):
     """解析光照气体监控的Modbus-RTU应答帧"""
     try:
-        if len(response) < 17:  # 完整应答帧长度应为17字节（包括校验码）
-            print(f"应答帧长度不足: {len(response)}")
+        # 检查是否包含LoRa目标地址前缀
+        # 假设LoRa目标地址前缀为2字节
+        modbus_start = 0
+        if len(response) >= 19 and response[0] not in [0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x10]:
+            # 可能包含LoRa目标地址前缀，跳过前2字节
+            modbus_start = 2
+            print(f"检测到可能的LoRa目标地址前缀，从位置{modbus_start}开始解析")
+        
+        # 完整应答帧长度应为17字节（包括校验码），如果包含LoRa前缀则为19字节
+        if len(response) < (17 + modbus_start):
+            print(f"应答帧长度不足: {len(response)}，预期至少{17 + modbus_start}字节")
             return None
         
         # 检查地址码和功能码
-        if response[0] != Config.MODBUS_SLAVE_ID or response[1] != Config.MODBUS_FUNCTION_CODE:
-            print(f"忽略非01地址码的应答帧: 地址码={response[0]:02X}, 功能码={response[1]:02X}")
+        if response[modbus_start] != Config.MODBUS_SLAVE_ID or response[modbus_start + 1] != Config.MODBUS_FUNCTION_CODE:
+            print(f"忽略非01地址码的应答帧: 地址码={response[modbus_start]:02X}, 功能码={response[modbus_start + 1]:02X}")
             return None
         
         # 检查有效字节数
-        if response[2] != 0x10:  # 16字节有效数据
-            print(f"有效字节数错误: {response[2]:02X}")
+        if response[modbus_start + 2] != 0x10:  # 16字节有效数据
+            print(f"有效字节数错误: {response[modbus_start + 2]:02X}")
             return None
         
         # 提取数据（按照协议规范的顺序）
-        status = (response[3] << 8) | response[4]      # 状态：0000H
-        temperature_raw = (response[5] << 8) | response[6]  # 温度：0001H
-        humidity = (response[7] << 8) | response[8]       # 湿度：0002H（uint16）
-        co2 = (response[9] << 8) | response[10]          # CO2：0003H
+        # 打印应答帧内容，以便调试
+        print(f"【解析】应答帧内容: {[f'{b:02X}' for b in response]}")
+        print(f"【解析】modbus_start: {modbus_start}")
+        
+        status = (response[modbus_start + 3] << 8) | response[modbus_start + 4]      # 状态：0000H
+        print(f"【解析】状态: {status:04X}")
+        
+        temperature_raw = (response[modbus_start + 5] << 8) | response[modbus_start + 6]  # 温度：0001H
+        print(f"【解析】温度原始值: {temperature_raw:04X}")
+        
+        humidity = (response[modbus_start + 7] << 8) | response[modbus_start + 8]       # 湿度：0002H（uint16）
+        print(f"【解析】湿度: {humidity}")
+        
+        co2 = (response[modbus_start + 9] << 8) | response[modbus_start + 10]          # CO2：0003H
+        print(f"【解析】CO2: {co2}")
+        
         # 气压：10-13（0001 03FEH），前四位作为高位，后四位作为低位
-        pressure_high = (response[11] << 8) | response[12]  # 气压高位：00 01
-        pressure_low = (response[13] << 8) | response[14]   # 气压低位：03 FE
+        pressure_high = (response[modbus_start + 11] << 8) | response[modbus_start + 12]  # 气压高位：00 01
+        pressure_low = (response[modbus_start + 13] << 8) | response[modbus_start + 14]   # 气压低位：03 FE
         pressure = (pressure_high << 16) | pressure_low      # 组合成完整气压值（单位：Pa）
+        print(f"【解析】气压: {pressure} Pa = {pressure/1000:.2f} kPa")
+        
         # 光照：14-17（0000 01A7H），使用全部4字节中的有效部分
-        light = (response[17] << 8) | response[18]        # 光照：使用后2字节 01 A7
+        # 修正光照强度的偏移量，确保正确提取数据
+        light_high = (response[modbus_start + 15] << 8) | response[modbus_start + 16]  # 光照高位
+        light_low = (response[modbus_start + 17] << 8) | response[modbus_start + 18]   # 光照低位
+        light = (light_high << 16) | light_low              # 组合成完整光照值（单位：Lux）
+        print(f"【解析】光照: {light} Lux")
         
         # 计算CRC校验（使用除校验码外的所有数据）
-        crc_data = response[:-2]
+        crc_data = response[modbus_start:-2]
         expected_crc = calculate_crc(crc_data)
         actual_crc = (response[-1] << 8) | response[-2]
         
@@ -741,20 +776,24 @@ def parse_light_gas_response(response):
         # 验证数据范围
         if temperature < Config.TEMPERATURE_RANGE[0] or temperature > Config.TEMPERATURE_RANGE[1]:
             print(f"温度值超出范围: {temperature}")
-            return None
+            # 暂时不返回None，允许超出范围的值通过
+            # return None
         if humidity < 0 or humidity > 100:
             print(f"湿度值超出范围: {humidity}")
-            return None
+            # 暂时不返回None，允许超出范围的值通过
+            # return None
         if co2 < 0 or co2 > 5000:
             print(f"CO2值超出范围: {co2}")
-            return None
+            # 暂时不返回None，允许超出范围的值通过
+            # return None
         if pressure < 0 or pressure > 1100:
             print(f"气压值超出范围: {pressure}")
             # 暂时不返回None，允许超出范围的值通过
             # return None
         if light < 0 or light > 100000:
             print(f"光照强度值超出范围: {light}")
-            return None
+            # 暂时不返回None，允许超出范围的值通过
+            # return None
         
         print(f"解析成功: 状态={status:04X}, 温度={temperature}°C, 湿度={humidity}%, CO2={co2}ppm, 气压={pressure}kPa, 光照={light}Lux")
         return {

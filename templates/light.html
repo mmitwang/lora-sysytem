@@ -1152,6 +1152,12 @@
                 })
                 .then(data => {
                     console.log('获取到光照气体数据:', data);
+                    // 检查数据是否包含所有必要的字段
+                    if (data) {
+                        console.log('数据包含:', Object.keys(data));
+                    } else {
+                        console.error('数据为空');
+                    }
                     updateLightData(data);
                     // 更新帧数据
                     console.log('更新帧数据');
@@ -1172,6 +1178,8 @@
             const now = new Date();
             const timeString = now.toLocaleTimeString();
             
+            console.log('更新光照气体数据:', data);
+            
             // 更新光照数据
             const lightValue = document.getElementById('light-value');
             if (lightValue) {
@@ -1180,7 +1188,7 @@
                 setTimeout(() => {
                     lightValue.classList.remove('scale-110');
                 }, 300);
-                lightValue.textContent = data.light !== undefined ? data.light : '';
+                lightValue.textContent = data.light !== undefined && data.light !== null ? data.light : '--';
             }
             
             // 更新CO2数据
@@ -1190,7 +1198,7 @@
                 setTimeout(() => {
                     co2Value.classList.remove('scale-110');
                 }, 300);
-                co2Value.textContent = data.co2 !== undefined ? data.co2 : '';
+                co2Value.textContent = data.co2 !== undefined && data.co2 !== null ? data.co2 : '--';
             }
             
             // 更新温度数据
@@ -1200,7 +1208,7 @@
                 setTimeout(() => {
                     tempValue.classList.remove('scale-110');
                 }, 300);
-                tempValue.textContent = data.temperature !== undefined ? data.temperature : '';
+                tempValue.textContent = data.temperature !== undefined && data.temperature !== null ? data.temperature : '--';
             }
             
             // 更新湿度数据
@@ -1210,7 +1218,7 @@
                 setTimeout(() => {
                     humidityValue.classList.remove('scale-110');
                 }, 300);
-                humidityValue.textContent = data.humidity !== undefined ? data.humidity : '';
+                humidityValue.textContent = data.humidity !== undefined && data.humidity !== null ? data.humidity : '--';
             }
             
             // 更新气压数据
@@ -1220,7 +1228,7 @@
                 setTimeout(() => {
                     pressureValue.classList.remove('scale-110');
                 }, 300);
-                pressureValue.textContent = data.pressure !== undefined ? data.pressure : '';
+                pressureValue.textContent = data.pressure !== undefined && data.pressure !== null ? data.pressure : '--';
             }
             
             // 更新环境状态

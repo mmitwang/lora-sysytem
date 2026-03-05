@@ -51,7 +51,7 @@ class SerialService:
                 "query_interval": Config.DEFAULT_QUERY_INTERVAL,
                 "serial_config": Config.DEFAULT_SERIAL_CONFIG.copy(),
                 "communication_mode": "tcp",  # 默认通讯模式
-                "network_type": "serial",  # 默认网络类型
+                "network_type": "lora",  # 默认网络类型
                 "target_address": "0002",  # 默认LoRa目标地址
                 "tcp_server_ip": "192.168.0.80",  # 默认TCP服务器IP
                 "tcp_server_port": 10125,  # 默认TCP服务器端口
